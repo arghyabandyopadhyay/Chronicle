@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "64373596865",
+    "firebase_url": "https://chronicle-51eee-default-rtdb.firebaseio.com",
+    "project_id": "chronicle-51eee",
+    "storage_bucket": "chronicle-51eee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64373596865:android:fb5e9597518aba743bea40",
+        "android_client_info": {
+          "package_name": "com.ArghyaBandyopadhyay.Chronicle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "64373596865-v3vodc5och9qnarvepmcbt2pb9cdu6tp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRaBzKVDmaliA7xiIc0ENzPZcGKTz5dYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "64373596865-v3vodc5och9qnarvepmcbt2pb9cdu6tp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
