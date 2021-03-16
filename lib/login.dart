@@ -2,7 +2,7 @@ import 'package:Chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Chronicle/myHomePage.dart';
+import 'package:Chronicle/Pages/myHomePage.dart';
 import 'auth.dart';
 
 class LoginPage extends StatelessWidget {
