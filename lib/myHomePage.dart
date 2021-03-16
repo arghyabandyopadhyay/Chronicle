@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:Chronicle/database.dart';
 import 'Models/clientModel.dart';
 import 'clientList.dart';
-import 'textInputWidget.dart';
+import 'registerNewClientWidget.dart';
 
 class MyHomePage extends StatefulWidget {
   final User user;
@@ -17,16 +17,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<ClientModel> clients = [];
 
-  void newClientModel(String text) {
-    var client = new ClientModel(name: "widget.user.displayName", startDate: DateTime.now(), endDate: DateTime.now().add(Duration(days: 30)),dob: DateTime.now(),due: 1,fathersName: text,address: text, education: text, fitnessGoal: text,weight: 100,height: 183);
-    client.setId(registerUser(client));
+  void newClientModel(ClientModel client) {
+    client.setId(registerUser(client,widget.user));
     this.setState(() {
       clients.add(client);
     });
   }
+  void updateClientModel() {
+    this.setState(() {
+    });
+  }
 
   void updateClientModels() {
-    getAllClients().then((clients) => {
+    getAllClients(widget.user).then((clients) => {
           this.setState(() {
             this.clients = clients;
           })
@@ -42,10 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Hello World!')),
+        appBar: AppBar(title: Text("Client List"),
+        actions: [
+          IconButton(icon: Icon(Icons.notifications_active,color: Colors.black,), onPressed: null)
+        ],),
         body: Column(children: <Widget>[
           Expanded(child: ClientList(this.clients, widget.user)),
-          TextInputWidget(this.newClientModel)
-        ]));
+        ]),
+      floatingActionButton: RegisterNewClientWidget(this.newClientModel),
+    );
   }
 }

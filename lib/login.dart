@@ -1,4 +1,6 @@
+import 'package:Chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Chronicle/myHomePage.dart';
 import 'auth.dart';
@@ -6,10 +8,9 @@ import 'auth.dart';
 class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('Hello World!')), body: Body());
+    return Scaffold(appBar: AppBar(title: Text('Chronicle')), body: Body());
   }
 }
-
 class Body extends StatefulWidget {
   @override
   _BodyState createState() => _BodyState();
@@ -17,29 +18,26 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   User user;
-
   @override
   void initState() {
     super.initState();
     signOutGoogle();
   }
-
   void click() {
-    // signInWithGoogle().then((user) => {
-    //       this.user = user,
-    //       Navigator.push(context,
-    //           MaterialPageRoute(builder: (context) => MyHomePage(user)))
-    //     });
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MyHomePage(user)));
+    var id;
+    signInWithGoogle().then((user) => {
+          this.user = user,
+          registerUserDetail(user).then((value) => {
+            if(value!=null)Navigator.push(context,
+                CupertinoPageRoute(builder: (context) => MyHomePage(user)))
+            else{
+            }
+          }),
+        });
   }
-
   Widget googleLoginButton() {
-    return OutlineButton(
+    return OutlinedButton(
         onPressed: this.click,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(45)),
-        splashColor: Colors.grey,
-        borderSide: BorderSide(color: Colors.grey),
         child: Padding(
             padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Row(

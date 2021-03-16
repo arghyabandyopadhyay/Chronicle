@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "64373596865-us16k6knn56agld9o2rumvb6irblgl3s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ArghyaBandyopadhyay.Chronicle",
+            "certificate_hash": "1cbdb3704e9a4035547269537fd3a4dc9af2a345"
+          }
+        },
+        {
           "client_id": "64373596865-v3vodc5och9qnarvepmcbt2pb9cdu6tp.apps.googleusercontent.com",
           "client_type": 3
         }

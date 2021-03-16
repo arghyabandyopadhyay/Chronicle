@@ -304,8 +304,10 @@
 //   }
 //}
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:Chronicle/login.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(MyApp());
@@ -315,13 +317,45 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Tims App',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: LoginPage(),
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    return FutureBuilder(
+      // Initialize FlutterFire
+      future: Firebase.initializeApp(),
+      builder: (context, snapshot) {
+        // Check for errors
+        if (snapshot.hasError) {
+          return MaterialApp(
+            title: 'Chronicle',
+            theme: ThemeData(
+              primarySwatch: Colors.orange,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            home: LoginPage(),
+          );
+        }
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MaterialApp(
+            title: 'Chronicle',
+            theme: ThemeData(
+              primarySwatch: Colors.orange,
+              visualDensity: VisualDensity.adaptivePlatformDensity,
+            ),
+            home: LoginPage(),
+          );
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return MaterialApp(
+          title: 'Chronicle',
+          theme: ThemeData(
+            primarySwatch: Colors.orange,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: LoginPage(),
+        );
+      },
     );
   }
 }
