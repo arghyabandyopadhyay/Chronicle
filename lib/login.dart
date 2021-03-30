@@ -28,7 +28,7 @@ class _BodyState extends State<Body> {
     signInWithGoogle().then((user) => {
           this.user = user,
           registerUserDetail(user).then((value) => {
-            if(value!=null)Navigator.push(context,
+            if(value!=null)Navigator.pushReplacement(context,
                 CupertinoPageRoute(builder: (context) => MyHomePage(user)))
             else{
             }

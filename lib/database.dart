@@ -1,15 +1,25 @@
 import 'dart:convert';
 
+import 'package:Chronicle/Models/registerModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'Models/clientModel.dart';
 import 'Models/userModel.dart';
 final databaseReference=FirebaseDatabase.instance.reference();
 
-DatabaseReference registerUser(ClientModel client,User user)
+DatabaseReference registerUser(ClientModel client,User user,String registerId)
 {
-  var id=databaseReference.child('${user.uid}/client/').push();
+  var id=databaseReference.child('${user.uid}/registers/$registerId/client/').push();
   id.set(client.toJson());
+  return id;
+}
+
+DatabaseReference addToRegister(User user,String name,)
+{
+  var id=databaseReference.child('${user.uid}/registers/').push();
+  id.set({
+    "Name":name,
+  });
   return id;
 }
 Future<DatabaseReference> registerUserDetail(User user) async {
@@ -30,17 +40,30 @@ void updateClient(ClientModel client, DatabaseReference id) {
   id.update(client.toJson());
 }
 
-Future<List<ClientModel>> getAllClients(User user) async {
-  DataSnapshot dataSnapshot = await databaseReference.child('${user.uid}/client/').once();
+Future<List<ClientModel>> getAllClients(User user,String registerId) async {
+  DataSnapshot dataSnapshot = await databaseReference.child('${user.uid}/registers/${registerId}/client/').once();
   List<ClientModel> clients = [];
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       ClientModel client = ClientModel.fromJson(jsonDecode(jsonEncode(value)));
-      client.setId(databaseReference.child('${user.uid}/client/' + key));
+      client.setId(databaseReference.child('${user.uid}/registers/$registerId/client/' + key));
       clients.add(client);
     });
   }
   return clients;
+}
+
+Future<List<RegisterModel>> getAllRegisters(User user) async {
+  DataSnapshot dataSnapshot = await databaseReference.child('${user.uid}/registers').once();
+  List<RegisterModel> registers = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      RegisterModel register = RegisterModel.fromJson(jsonDecode(jsonEncode(value)));
+      register.setId(databaseReference.child('${user.uid}/registers' + key));
+      registers.add(register);
+    });
+  }
+  return registers;
 }
 
 Future<UserModel> getUserDetails(User user) async {

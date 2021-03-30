@@ -6,13 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/widgets.dart';
 
-class AddRegisterPage extends StatefulWidget {
+class AddPaymentPage extends StatefulWidget {
+  final int noOfMonths;
   final Function(ClientModel) callback;
-  const AddRegisterPage({Key key, this.callback}) : super(key: key);
+  const AddPaymentPage({Key key, this.callback,this.noOfMonths}) : super(key: key);
   @override
-  _AddRegisterPageState createState() => _AddRegisterPageState();
+  _AddPaymentPageState createState() => _AddPaymentPageState();
 }
-class _AddRegisterPageState extends State<AddRegisterPage> {
+class _AddPaymentPageState extends State<AddPaymentPage> {
   final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
   ClientModel clientData = ClientModel();
 
@@ -61,7 +62,7 @@ class _AddRegisterPageState extends State<AddRegisterPage> {
     const sizedBoxSpace = SizedBox(height: 24);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Register Client",),
+        title: Text("Add Payment",),
       ),
       key: _scaffoldKey,
       body: Form(

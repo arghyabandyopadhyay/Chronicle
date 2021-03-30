@@ -1,9 +1,13 @@
+import 'package:Chronicle/Widgets/addQuantityDialog.dart';
 import 'package:Chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Models/clientModel.dart';
+import 'Pages/addPaymentPage.dart';
+import 'Widgets/AddPaymentDialog.dart';
 
 class ClientList extends StatefulWidget {
   final List<ClientModel> listItems;
@@ -16,11 +20,6 @@ class ClientList extends StatefulWidget {
 }
 
 class _ClientListState extends State<ClientList> {
-  void like(Function callBack) {
-    this.setState(() {
-      callBack();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +31,8 @@ class _ClientListState extends State<ClientList> {
             actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
             child:ListTile(
+              onTap: (){
+              },
           title: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +55,6 @@ class _ClientListState extends State<ClientList> {
             children: [
               Text((client.startDate!=null?client.startDate.day.toString()+"-"+client.startDate.month.toString()+"-"+client.startDate.year.toString()+" to ":"")+((client.endDate!=null)?client.endDate.day.toString()+"-"+client.endDate.month.toString()+"-"+client.endDate.year.toString():"")),
               Text(client.mobileNo),
-              Text(client.bloodGroup.toString()),
               Text("Due: "+client.due.toString(),style: TextStyle(color: client.due!=null&&client.due==0?Colors.green:Colors.red,),)
             ]
           ),
@@ -76,11 +76,15 @@ class _ClientListState extends State<ClientList> {
               caption: 'Add Payment',
               icon: Icons.add,
               color: Colors.green,
-              onTap: () async {
-                setState(() {
-                  client.due=client.due>0?client.due-1:0;
-                  updateClient(client, client.id);
-                });
+              onTap: () {
+
+                  showDialog(context: context, builder: (_) =>new AddQuantityDialog()
+                  ).then((value) {
+                    setState(() {client.due=client.due-value>=0?client.due-value:0;
+                    updateClient(client, client.id);});
+                  });
+
+
               },
               closeOnTap: false,
             ),

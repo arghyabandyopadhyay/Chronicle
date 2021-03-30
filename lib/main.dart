@@ -309,6 +309,8 @@ import 'package:flutter/material.dart';
 import 'package:Chronicle/login.dart';
 import 'package:flutter/services.dart';
 
+import 'Pages/SignInScreen.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -318,44 +320,54 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
-    return FutureBuilder(
-      // Initialize FlutterFire
-      future: Firebase.initializeApp(),
-      builder: (context, snapshot) {
-        // Check for errors
-        if (snapshot.hasError) {
-          return MaterialApp(
-            title: 'Chronicle',
-            theme: ThemeData(
-              primarySwatch: Colors.orange,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-            ),
-            home: LoginPage(),
-          );
-        }
+    // return FutureBuilder(
+    //   // Initialize FlutterFire
+    //   future: Firebase.initializeApp(),
+    //   builder: (context, snapshot) {
+    //     // Check for errors
+    //     if (snapshot.hasError) {
+    //       return MaterialApp(
+    //         title: 'Chronicle',
+    //         theme: ThemeData(
+    //           primarySwatch: Colors.orange,
+    //           visualDensity: VisualDensity.adaptivePlatformDensity,
+    //         ),
+    //         home: LoginPage(),
+    //       );
+    //     }
+    //
+    //     // Once complete, show your application
+    //     if (snapshot.connectionState == ConnectionState.done) {
+    //       return MaterialApp(
+    //         title: 'Chronicle',
+    //         theme: ThemeData(
+    //           primarySwatch: Colors.orange,
+    //           visualDensity: VisualDensity.adaptivePlatformDensity,
+    //         ),
+    //         home: LoginPage(),
+    //       );
+    //     }
+    //
+    //     // Otherwise, show something whilst waiting for initialization to complete
+    //     return MaterialApp(
+    //       title: 'Chronicle',
+    //       theme: ThemeData(
+    //         primarySwatch: Colors.orange,
+    //         visualDensity: VisualDensity.adaptivePlatformDensity,
+    //       ),
+    //       home: LoginPage(),
+    //     );
+    //   },
+    // );
 
-        // Once complete, show your application
-        if (snapshot.connectionState == ConnectionState.done) {
-          return MaterialApp(
-            title: 'Chronicle',
-            theme: ThemeData(
-              primarySwatch: Colors.orange,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-            ),
-            home: LoginPage(),
-          );
-        }
-
-        // Otherwise, show something whilst waiting for initialization to complete
-        return MaterialApp(
-          title: 'Chronicle',
-          theme: ThemeData(
-            primarySwatch: Colors.orange,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
-          home: LoginPage(),
-        );
-      },
+    return MaterialApp(
+      title: 'FlutterFire Samples',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        brightness: Brightness.dark,
+      ),
+      home: SignInScreen(),
     );
   }
 }

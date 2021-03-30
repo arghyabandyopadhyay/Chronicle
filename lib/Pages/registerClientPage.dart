@@ -151,8 +151,8 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                   SizedBox(height: 8,),
                   DateTimeFormField(
                     decoration: const InputDecoration(
-                      hintStyle: TextStyle(color: Colors.black45),
-                      errorStyle: TextStyle(color: Colors.redAccent),
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText: 'DOB',
@@ -263,8 +263,8 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                   SizedBox(height: 8,),
                   DateTimeFormField(
                     decoration: const InputDecoration(
-                      hintStyle: TextStyle(color: Colors.black45),
-                      errorStyle: TextStyle(color: Colors.redAccent),
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText: 'Start Date',
@@ -279,8 +279,8 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                   SizedBox(height: 8,),
                   DateTimeFormField(
                     decoration: const InputDecoration(
-                      hintStyle: TextStyle(color: Colors.black45),
-                      errorStyle: TextStyle(color: Colors.redAccent),
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText: 'End Date',
@@ -314,7 +314,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
             )
         ),
       ),
-      backgroundColor: Colors.white,
       floatingActionButton:FloatingActionButton.extended(
         icon: Icon(Icons.person_add),
         label: Text("Register",textScaleFactor:1,style: TextStyle(fontSize: 17),),
