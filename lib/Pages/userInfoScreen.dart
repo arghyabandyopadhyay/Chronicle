@@ -1,6 +1,13 @@
+import 'dart:io';
+
+import 'package:Chronicle/Models/userModel.dart';
+import 'package:Chronicle/Pages/qrCodePage.dart';
+import 'package:Chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:qr_code_tools/qr_code_tools.dart';
 
 import '../auth.dart';
 import '../customColors.dart';
@@ -20,7 +27,7 @@ class UserInfoScreen extends StatefulWidget {
 class _UserInfoScreenState extends State<UserInfoScreen> {
   User _user;
   bool _isSigningOut = false;
-
+  PickedFile _imageFile;
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
@@ -46,7 +53,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
     super.initState();
   }
-
+  dynamic _pickImageError;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +61,41 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: CustomColors.firebaseNavy,
-        title: Text("UserInfo"),
+        title: Text("My Profile"),
+        actions: [
+          IconButton(icon: Icon(Icons.qr_code), onPressed: ()async{
+            UserModel userModel=await getUserDetails(widget._user);
+            if(userModel.qrcodeDetail!=null){
+              Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail,user: widget._user,)));
+            }
+            else {
+              String _data = '';
+              try {
+                final pickedFile = await ImagePicker().getImage(
+                  source: ImageSource.gallery,
+                  maxWidth: 300,
+                  maxHeight: 300,
+                  imageQuality: 30,
+                );
+                setState(() {
+                  _imageFile = pickedFile;
+                  QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
+                    _data = value;
+                    userModel.qrcodeDetail=_data;
+                    updateUserDetails(userModel, userModel.id);
+
+                  });
+
+                });
+              } catch (e) {
+                print(e);
+                setState(() {
+                  _data = '';
+                });
+              }
+            }
+          })
+        ],
       ),
       body: SafeArea(
         child: Padding(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:Chronicle/database.dart';
 import '../Models/clientModel.dart';
 import '../clientList.dart';
+import '../customColors.dart';
 import '../registerNewClientWidget.dart';
 
 class ClientPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class _ClientPageState extends State<ClientPage> {
   List<ClientModel> clients = [];
 
   void newClientModel(ClientModel client) {
-    client.setId(registerUser(client,widget.user,widget.register.id.key));
+    client.setId(registerUser(client,widget.user,widget.register.id.key.replaceAll("registers", "")));
     this.setState(() {
       clients.add(client);
     });
@@ -49,7 +50,9 @@ class _ClientPageState extends State<ClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: GestureDetector(child: Container(child: Text(widget.register.name),),
+      backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+        elevation: 0,title: GestureDetector(child: Container(child: Text(widget.register.name),),
         onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(list: [],));},),
         actions: [
           IconButton(icon: Icon(Icons.notifications_active,), onPressed: null),

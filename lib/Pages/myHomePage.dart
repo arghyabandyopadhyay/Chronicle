@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:Chronicle/database.dart';
 import '../Models/clientModel.dart';
 import '../clientList.dart';
+import '../customColors.dart';
 import '../registerNewClientWidget.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -52,7 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     // print(registers[0]);
     return Scaffold(
-        appBar: AppBar(title: Text("My Registers"),
+      backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+        elevation: 0,title: Text("My Registers"),
         actions: [
           IconButton(icon: Icon(Icons.account_circle_outlined,), onPressed: (){
             Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen(user: widget.user,)));

@@ -35,6 +35,9 @@ dependencies:
   date_field: ^1.0.4
   flutter_slidable: ^0.5.7
   url_launcher: ^6.0.2
+  qr_code_tools: ^0.0.7
+  image_picker: ^0.7.4
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_test:

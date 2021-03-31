@@ -1,8 +1,9 @@
+import 'package:Chronicle/Pages/idBlockedPage.dart';
 import 'package:Chronicle/Pages/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:Chronicle/database.dart';
 import '../auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
@@ -42,8 +43,13 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             _isSigningIn = false;
           });
 
-          if(user!=null)Navigator.pushReplacement(context,
-              CupertinoPageRoute(builder: (context) => MyHomePage(user)));
+          if(user!=null)registerUserDetail(user).then((value) => {
+            if(value!=null)Navigator.pushReplacement(context,
+                CupertinoPageRoute(builder: (context) => MyHomePage(user)))
+            else{
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage(user: user,)))
+            }
+          });
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),

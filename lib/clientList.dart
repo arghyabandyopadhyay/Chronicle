@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Models/clientModel.dart';
-import 'Pages/addPaymentPage.dart';
 import 'Widgets/AddPaymentDialog.dart';
 
 class ClientList extends StatefulWidget {
@@ -38,14 +37,14 @@ class _ClientListState extends State<ClientList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(client.name),
-                Text(client.fathersName)
+                Text(client.registrationId!=null?client.registrationId:client.id.key)
               ]
           ),
           subtitle: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(client.fitnessGoal+" | Injuries: "+client.injuries),
+                Text((client.sex!=null?client.sex+" | ":"")+"Injuries: "+client.injuries),
                 Text(client.height.toString()+" cm | "+client.weight.toString()+" kg")
               ]
           ),

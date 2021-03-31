@@ -6,13 +6,14 @@ class ClientModel
 {
   DatabaseReference id;
   String name;
+  String registrationId;
   String fathersName;
   String education;
   String occupation;
   String address;
   String injuries;
-  String fitnessGoal;
-  String bloodGroup;
+  String sex;
+  String caste;
   String mobileNo;
   DateTime startDate;
   DateTime endDate;
@@ -20,7 +21,7 @@ class ClientModel
   int height;
   int weight;
   int due;
-  ClientModel({this.name,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.fitnessGoal,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due,this.bloodGroup});
+  ClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due});
   void setId(DatabaseReference id)
   {
     this.id=id;
@@ -30,6 +31,7 @@ class ClientModel
   }
   factory ClientModel.fromJson(Map<String, dynamic> json1) {
     return ClientModel(
+        registrationId: json1['RegistrationId'],
         name: json1['Name'],
         fathersName: json1['FathersName'],
         mobileNo: json1['MobileNo'],
@@ -37,8 +39,8 @@ class ClientModel
         occupation: json1['Occupation'],
         address: json1['Address'],
         injuries: json1['Injuries'],
-        fitnessGoal: json1['FitnessGoal'],
-        bloodGroup: json1['BloodGroup'],
+        sex: json1['Sex'],
+        caste: json1['Caste'],
         startDate: json1['StartDate']!=null?DateTime.parse(json1['StartDate']):null,
         endDate: json1['EndDate']!=null?DateTime.parse(json1['EndDate']):null,
         dob: json1['Dob']!=null?DateTime.parse(json1['Dob']):null,
@@ -49,6 +51,7 @@ class ClientModel
   }
   Map<String,dynamic> toJson() =>
       {
+        "RegistrationId":this.registrationId,
         "Name":this.name,
         "FathersName":this.fathersName,
         "MobileNo":this.mobileNo,
@@ -56,10 +59,10 @@ class ClientModel
         "Occupation":this.occupation,
         "Address":this.address,
         "Injuries":this.injuries,
-        "FitnessGoal":this.fitnessGoal,
+        "Sex":this.sex,
         "StartDate":this.startDate!=null?this.startDate.toIso8601String():null,
         "EndDate":this.endDate!=null?this.endDate.toIso8601String():null,
-        "BloodGroup":this.bloodGroup,
+        "Caste":this.caste,
         "Dob":this.dob!=null?this.dob.toIso8601String():null,
         "Height":this.height,
         "Weight":this.weight,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:Chronicle/Models/registerModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,10 @@ DatabaseReference addToRegister(User user,String name,)
 Future<DatabaseReference> registerUserDetail(User user) async {
   var id=databaseReference.child('${user.uid}/userDetails/').push();
   await getUserDetails(user).then((value) => {
-    if(value==null)id.set(new UserModel(displayName: user.displayName,email: user.email,canAccess: 1,phoneNumber: user.phoneNumber).toJson())
+    if(value==null){
+      id.set(new UserModel(displayName: user.displayName,email: user.email,canAccess: 0,phoneNumber: user.phoneNumber).toJson()),
+      id=null
+    }
     else{
       if(value.canAccess==0)
       {
@@ -71,7 +75,16 @@ Future<UserModel> getUserDetails(User user) async {
   var json=jsonDecode(jsonEncode(dataSnapshot.value));
   UserModel userDetail;
   if (dataSnapshot.value != null) {
-    userDetail = UserModel.fromJson(json[json.keys.toList()[0]]);
+    dataSnapshot.value.forEach((key, value) {
+      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)));
+      userDetail.setId(databaseReference.child('${user.uid}/userDetails/'+key));
+    });
+    // userDetail = UserModel.fromJson(json[json.keys.toList()[0]]);
+    // userDetail.setId(databaseReference.child('${user.uid}/userDetails/'));
   }
   return userDetail;
+}
+
+void updateUserDetails(UserModel user, DatabaseReference id) {
+  id.update(user.toJson());
 }

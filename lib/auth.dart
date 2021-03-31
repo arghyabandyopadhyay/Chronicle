@@ -1,3 +1,4 @@
+import 'package:Chronicle/Pages/idBlockedPage.dart';
 import 'package:Chronicle/Pages/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -5,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'database.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -39,8 +42,13 @@ class Authentication{
   }) async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
     User user = FirebaseAuth.instance.currentUser;
-    if(user!=null)Navigator.pushReplacement(context,
-        CupertinoPageRoute(builder: (context) => MyHomePage(user)));
+    if(user!=null)registerUserDetail(user).then((value) => {
+      if(value!=null)Navigator.pushReplacement(context,
+          CupertinoPageRoute(builder: (context) => MyHomePage(user)))
+      else{
+        Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage(user: user,)))
+      }
+    });
     return firebaseApp;
   }
   static Future<User> signInWithGoogle({BuildContext context}) async {
