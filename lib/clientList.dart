@@ -1,5 +1,6 @@
-import 'package:Chronicle/Widgets/addQuantityDialog.dart';
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/Pages/clientInformationPage.dart';
+import 'package:chronicle/Widgets/addQuantityDialog.dart';
+import 'package:chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,64 +26,58 @@ class _ClientListState extends State<ClientList> {
     return ListView.builder(
       itemCount: this.widget.listItems.length,
       itemBuilder: (context, index) {
-        var client = this.widget.listItems[index];
         return Slidable(
             actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
             child:ListTile(
               onTap: (){
+                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(user:this.widget.listItems[index])));
               },
           title: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(client.name),
-                Text(client.registrationId!=null?client.registrationId:client.id.key)
+                Text(this.widget.listItems[index].name!,style: TextStyle(fontWeight: FontWeight.w900),),
+                Text((this.widget.listItems[index].registrationId!=null?this.widget.listItems[index].registrationId:this.widget.listItems[index].id!.key)!,style: TextStyle(fontWeight: FontWeight.w300),)
               ]
           ),
-          subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text((client.sex!=null?client.sex+" | ":"")+"Injuries: "+client.injuries),
-                Text(client.height.toString()+" cm | "+client.weight.toString()+" kg")
-              ]
-          ),
+          subtitle: Text("\u2709: "+this.widget.listItems[index].address.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text((client.startDate!=null?client.startDate.day.toString()+"-"+client.startDate.month.toString()+"-"+client.startDate.year.toString()+" to ":"")+((client.endDate!=null)?client.endDate.day.toString()+"-"+client.endDate.month.toString()+"-"+client.endDate.year.toString():"")),
-              Text(client.mobileNo),
-              Text("Due: "+client.due.toString(),style: TextStyle(color: client.due!=null&&client.due==0?Colors.green:Colors.red,),)
+              Text((this.widget.listItems[index].startDate!=null?this.widget.listItems[index].startDate!.day.toString()+"-"+this.widget.listItems[index].startDate!.month.toString()+"-"+this.widget.listItems[index].startDate!.year.toString()+" to ":"")+((this.widget.listItems[index].endDate!=null)?this.widget.listItems[index].endDate!.day.toString()+"-"+this.widget.listItems[index].endDate!.month.toString()+"-"+this.widget.listItems[index].endDate!.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
+              Text("\u2706: "+this.widget.listItems[index].mobileNo!),
+              Text("Due: "+this.widget.listItems[index].due.toString(),style: TextStyle(color: this.widget.listItems[index].due!=null&&this.widget.listItems[index].due==0?Colors.green:Colors.red,fontWeight: FontWeight.bold),)
             ]
           ),
         ),
           secondaryActions: <Widget>[
             IconSlideAction(
               caption: 'Add Due',
-              icon: Icons.add,
+              icon: Icons.more_time,
               color: Colors.red,
               onTap: () async {
                 setState(() {
-                  client.due=client.due+1;
-                  updateClient(client, client.id);
+                  this.widget.listItems[index].due=this.widget.listItems[index].due!+1;
+                  updateClient(this.widget.listItems[index], this.widget.listItems[index].id!);
                 });
               },
               closeOnTap: false,
             ),
             IconSlideAction(
               caption: 'Add Payment',
-              icon: Icons.add,
+              icon: Icons.payment,
               color: Colors.green,
               onTap: () {
-
                   showDialog(context: context, builder: (_) =>new AddQuantityDialog()
                   ).then((value) {
-                    setState(() {client.due=client.due-value>=0?client.due-value:0;
-                    updateClient(client, client.id);});
+                    int intVal=int.parse(value.toString());
+                    setState(() {
+                      this.widget.listItems[index].due=this.widget.listItems[index].due!-intVal>=0?this.widget.listItems[index].due!-intVal:0;
+                      updateClient(this.widget.listItems[index], this.widget.listItems[index].id!);
+                    });
                   });
-
 
               },
               closeOnTap: false,
@@ -93,9 +88,9 @@ class _ClientListState extends State<ClientList> {
               caption: 'Call',
               icon: Icons.call,
               onTap: () async {
-                if(client.mobileNo!=null&&client.mobileNo!="")
+                if(this.widget.listItems[index].mobileNo!=null&&this.widget.listItems[index].mobileNo!="")
                 {
-                  var url = 'tel:<${client.mobileNo}>';
+                  var url = 'tel:<${this.widget.listItems[index].mobileNo}>';
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {
@@ -108,9 +103,9 @@ class _ClientListState extends State<ClientList> {
               caption: 'Send Remainder',
               icon: Icons.send,
               onTap: () async {
-                if(client.mobileNo!=null&&client.mobileNo!="")
+                if(this.widget.listItems[index].mobileNo!=null&&this.widget.listItems[index].mobileNo!="")
                 {
-                  var url = "https://wa.me/+91${client.mobileNo}?text=${client.name}, Your subscription has come to an end"
+                  var url = "https://wa.me/+91${this.widget.listItems[index].mobileNo}?text=${this.widget.listItems[index].name}, Your subscription has come to an end"
                       ", please clear your dues for further continuation of services.";
                   if (await canLaunch(url)) {
                     await launch(url);

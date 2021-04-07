@@ -1,4 +1,4 @@
-import 'package:Chronicle/Models/clientModel.dart';
+import 'package:chronicle/Models/clientModel.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 import '../customColors.dart';
 
 class RegisterClientPage extends StatefulWidget {
-  final Function(ClientModel) callback;
-  const RegisterClientPage({Key key, this.callback}) : super(key: key);
+  final Function(ClientModel)? callback;
+  const RegisterClientPage({Key? key, this.callback}) : super(key: key);
   @override
   _RegisterClientPageState createState() => _RegisterClientPageState();
 }
@@ -28,34 +28,34 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   var registrationIdTextField=TextEditingController();
   var heightTextField=TextEditingController();
   var weightTextField=TextEditingController();
-  String sexDropDown;
-  String casteDropDown;
+  String? sexDropDown;
+  String? casteDropDown;
 
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //Functions
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState.hideCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
+    _scaffoldKey.currentState!.hideCurrentSnackBar();
+    _scaffoldKey.currentState!.showSnackBar(SnackBar(
       content: Text(value,textScaleFactor:1),
     ));
   }
   Future<void> _handleSubmitted() async {
     final form = _formKey.currentState;
-    if (!form.validate()) {// Start validating on every change.
+    if (!form!.validate()) {// Start validating on every change.
     }
     else {
       form.save();
       clientData.due= 0;
       clientData.sex=sexDropDown;
       clientData.caste=casteDropDown;
-      widget.callback(clientData);
+      widget.callback!(clientData);
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
     }
   }
-  String _validateName(String value) {
-    if(value.isEmpty)nameTextField.text="";
+  String? _validateName(String? value) {
+    if(value!.isEmpty)nameTextField.text="";
     return null;
   }
   //Overrides
@@ -148,7 +148,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     ),
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
-                    validator: (e) => (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
                     onDateSelected: (DateTime value) {
                       clientData.dob=value;
                     },
@@ -203,7 +202,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                         color: Colors.white,
                       ),
                       dropdownColor: CustomColors.firebaseNavy,
-                      onChanged: (String newValue) {
+                      onChanged: (String? newValue) {
                         setState(() {
                           sexDropDown = newValue;
                         });
@@ -233,7 +232,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                         color: Colors.white,
                       ),
                       dropdownColor: CustomColors.firebaseNavy,
-                      onChanged: (String newValue) {
+                      onChanged: (String? newValue) {
                         setState(() {
                           casteDropDown = newValue;
                         });
@@ -259,7 +258,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      clientData.weight = int.parse(value);
+                      clientData.weight = double.parse(value!);
                     },
                   ),
                   SizedBox(height: 8,),
@@ -275,7 +274,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      clientData.height = int.parse(value);
+                      clientData.height = double.parse(value!);
                     },
                   ),
                   SizedBox(height: 8,),
@@ -337,7 +336,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     ),
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
-                    validator: (e) => (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
                     onDateSelected: (DateTime value) {
                       clientData.startDate=value;
                     },
@@ -353,7 +351,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     ),
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
-                    validator: (e) => (e?.day ?? 0) == 1 ? 'Please not the first day' : null,
                     onDateSelected: (DateTime value) {
                       clientData.endDate=value;
                     },

@@ -1,14 +1,14 @@
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/database.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class UserModel
 {
-  DatabaseReference id;
-  String displayName;
-  String email;
-  String phoneNumber;
-  String qrcodeDetail;
-  int canAccess;
+  DatabaseReference? id;
+  String? displayName;
+  String? email;
+  String? phoneNumber;
+  String? qrcodeDetail;
+  int? canAccess;
   UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
@@ -24,7 +24,7 @@ class UserModel
     this.id=id;
   }
   void update() {
-    updateUserDetails(this, this.id);
+    updateUserDetails(this, this.id!);
   }
   Map<String,dynamic> toJson() =>
       {

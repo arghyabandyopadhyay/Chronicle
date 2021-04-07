@@ -1,11 +1,11 @@
-import 'package:Chronicle/Models/registerModel.dart';
-import 'package:Chronicle/Pages/userInfoScreen.dart';
-import 'package:Chronicle/Widgets/registerOptionBottomSheet.dart';
-import 'package:Chronicle/registerList.dart';
+import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Pages/userInfoScreen.dart';
+import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
+import 'package:chronicle/registerList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/database.dart';
 import '../Models/clientModel.dart';
 import '../clientList.dart';
 import '../customColors.dart';
@@ -24,7 +24,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<RegisterModel> registers = [];
 
   void newRegisterModel(RegisterModel register) {
-    register.setId(addToRegister(widget.user,register.name));
+    register.setId(addToRegister(widget.user,register.name!));
     this.setState(() {
       registers.add(register);
     });

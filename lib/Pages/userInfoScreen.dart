@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:Chronicle/Models/userModel.dart';
-import 'package:Chronicle/Pages/qrCodePage.dart';
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/Models/userModel.dart';
+import 'package:chronicle/Pages/qrCodePage.dart';
+import 'package:chronicle/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,20 +14,20 @@ import '../customColors.dart';
 import 'SignInScreen.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  const UserInfoScreen({Key key, User user})
+  const UserInfoScreen({Key? key, User? user})
       : _user = user,
         super(key: key);
 
-  final User _user;
+  final User? _user;
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
 }
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
-  User _user;
+  User? _user;
   bool _isSigningOut = false;
-  PickedFile _imageFile;
+  PickedFile? _imageFile;
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
@@ -64,8 +64,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         title: Text("My Profile"),
         actions: [
           IconButton(icon: Icon(Icons.qr_code), onPressed: ()async{
-            UserModel userModel=await getUserDetails(widget._user);
-            if(userModel.qrcodeDetail!=null){
+            UserModel? userModel=await getUserDetails(widget._user!);
+            if(userModel!.qrcodeDetail!=null){
               Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail,user: widget._user,)));
             }
             else {
@@ -79,10 +79,10 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 );
                 setState(() {
                   _imageFile = pickedFile;
-                  QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
+                  QrCodeToolsPlugin.decodeFrom(pickedFile!.path).then((value) {
                     _data = value;
                     userModel.qrcodeDetail=_data;
-                    updateUserDetails(userModel, userModel.id);
+                    updateUserDetails(userModel, userModel.id!);
 
                   });
 
@@ -105,15 +105,15 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             bottom: 20.0,
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Row(),
-              _user.photoURL != null
+              SizedBox(height: 50.0),
+              _user!.photoURL != null
                   ? ClipOval(
                 child: Material(
                   color: CustomColors.firebaseGrey.withOpacity(0.3),
                   child: Image.network(
-                    _user.photoURL,
+                    _user!.photoURL!,
                     fit: BoxFit.fitHeight,
                   ),
                 ),
@@ -131,17 +131,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              SizedBox(height: 20.0),
               Text(
-                'Hello',
-                style: TextStyle(
-                  color: CustomColors.firebaseGrey,
-                  fontSize: 26,
-                ),
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                _user.displayName,
+                _user!.displayName!,
                 style: TextStyle(
                   color: CustomColors.firebaseYellow,
                   fontSize: 26,
@@ -149,7 +141,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               SizedBox(height: 8.0),
               Text(
-                '( ${_user.email} )',
+                '( ${_user!.email} )',
                 style: TextStyle(
                   color: CustomColors.firebaseOrange,
                   fontSize: 20,
@@ -159,52 +151,92 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 24.0),
               Text(
                 'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                     color: CustomColors.firebaseGrey.withOpacity(0.8),
                     fontSize: 14,
                     letterSpacing: 0.2),
               ),
               SizedBox(height: 16.0),
-              _isSigningOut
-                  ? CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              )
-                  : ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Colors.redAccent,
-                  ),
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-                onPressed: () async {
-                  setState(() {
-                    _isSigningOut = true;
-                  });
-                  await Authentication.signOut(context: context);
-                  setState(() {
-                    _isSigningOut = false;
-                  });
-                  Navigator.of(context)
-                      .pushReplacement(_routeToSignInScreen());
-                },
-                child: Padding(
-                  padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-                  child: Text(
-                    'Sign Out',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ),
-              ),
+              // _isSigningOut
+              //     ? CircularProgressIndicator(
+              //   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              // )
+              //     : ElevatedButton(
+              //   style: ButtonStyle(
+              //     backgroundColor: MaterialStateProperty.all(
+              //       Colors.redAccent,
+              //     ),
+              //     shape: MaterialStateProperty.all(
+              //       RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(10),
+              //       ),
+              //     ),
+              //   ),
+              //   onPressed: () async {
+              //     setState(() {
+              //       _isSigningOut = true;
+              //     });
+              //     await Authentication.signOut(context: context);
+              //     setState(() {
+              //       _isSigningOut = false;
+              //     });
+              //     Navigator.of(context).popUntil((route) => route.isFirst);
+              //     Navigator.of(context).pushReplacement(_routeToSignInScreen());
+              //   },
+              //   child: Padding(
+              //     padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+              //     child: Text(
+              //       'Sign Out',
+              //       style: TextStyle(
+              //         fontSize: 20,
+              //         fontWeight: FontWeight.bold,
+              //         color: Colors.white,
+              //         letterSpacing: 2,
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
+          ),
+        ),
+      ),
+      floatingActionButton: _isSigningOut
+          ? CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      )
+          : ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(
+            Colors.redAccent,
+          ),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
+        onPressed: () async {
+          setState(() {
+            _isSigningOut = true;
+          });
+          await Authentication.signOut(context: context);
+          setState(() {
+            _isSigningOut = false;
+          });
+          Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context).pushReplacement(_routeToSignInScreen());
+        },
+        child: Padding(
+          padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+          child: Text(
+            'Sign Out',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              letterSpacing: 2,
+            ),
           ),
         ),
       ),

@@ -1,9 +1,9 @@
-import 'package:Chronicle/Models/registerModel.dart';
-import 'package:Chronicle/Widgets/registerOptionBottomSheet.dart';
+import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -13,10 +13,10 @@ import '../customColors.dart';
 import '../registerNewClientWidget.dart';
 
 class QrCodePage extends StatefulWidget {
-  String qrCode;
-  final User _user;
+  String? qrCode;
+  final User? _user;
 
-  QrCodePage({Key key,this.qrCode,User user}): _user = user,
+  QrCodePage({Key? key,this.qrCode,User? user}): _user = user,
         super(key: key);
 
   @override
@@ -30,7 +30,6 @@ class _QrCodePageState extends State<QrCodePage> {
   void initState() {
     super.initState();
   }
-  PickedFile _imageFile;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +40,7 @@ class _QrCodePageState extends State<QrCodePage> {
         ),
       body: Center(
         child: QrImage(
-          data: widget.qrCode,
+          data: widget.qrCode!,
           version: QrVersions.auto,
           size: 320,
           gapless: false,
@@ -58,15 +57,14 @@ class _QrCodePageState extends State<QrCodePage> {
             imageQuality: 30,
           );
           setState(() {
-            _imageFile = pickedFile;
-            QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
+            QrCodeToolsPlugin.decodeFrom(pickedFile!.path).then((value) {
               _data = value;
-              getUserDetails(widget._user).then((value) {
-                value.qrcodeDetail=_data;
+              getUserDetails(widget._user!).then((value) {
+                value!.qrcodeDetail=_data;
                 setState(() {
                   widget.qrCode=_data;
                 });
-                updateUserDetails(value, value.id);
+                updateUserDetails(value, value.id!);
               });
 
             });

@@ -1,7 +1,6 @@
 import 'dart:convert';
-import 'dart:ffi';
 
-import 'package:Chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/registerModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'Models/clientModel.dart';
@@ -23,12 +22,14 @@ DatabaseReference addToRegister(User user,String name,)
   });
   return id;
 }
-Future<DatabaseReference> registerUserDetail(User user) async {
-  var id=databaseReference.child('${user.uid}/userDetails/').push();
+void deleteDatabaseNode(DatabaseReference id) {
+  databaseReference.child(id.path.replaceAll("registers", "registers/").replaceAll("client", "client/")).remove();
+}
+Future<DatabaseReference?> registerUserDetail(User user) async {
+  DatabaseReference? id=databaseReference.child('${user.uid}/userDetails/').push();
   await getUserDetails(user).then((value) => {
     if(value==null){
-      id.set(new UserModel(displayName: user.displayName,email: user.email,canAccess: 0,phoneNumber: user.phoneNumber).toJson()),
-      id=null
+      id!.set(new UserModel(displayName: user.displayName,email: user.email,canAccess: 0,phoneNumber: user.phoneNumber).toJson()),
     }
     else{
       if(value.canAccess==0)
@@ -70,14 +71,13 @@ Future<List<RegisterModel>> getAllRegisters(User user) async {
   return registers;
 }
 
-Future<UserModel> getUserDetails(User user) async {
+Future<UserModel?> getUserDetails(User user) async {
   DataSnapshot dataSnapshot = await databaseReference.child('${user.uid}/userDetails/').once();
-  var json=jsonDecode(jsonEncode(dataSnapshot.value));
-  UserModel userDetail;
+  UserModel? userDetail;
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)));
-      userDetail.setId(databaseReference.child('${user.uid}/userDetails/'+key));
+      userDetail!.setId(databaseReference.child('${user.uid}/userDetails/'+key));
     });
     // userDetail = UserModel.fromJson(json[json.keys.toList()[0]]);
     // userDetail.setId(databaseReference.child('${user.uid}/userDetails/'));

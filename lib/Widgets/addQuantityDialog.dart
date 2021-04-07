@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 
 class AddQuantityDialog extends StatefulWidget {
-  const AddQuantityDialog({Key key}) : super(key: key);
+  const AddQuantityDialog({Key? key}) : super(key: key);
   @override
   _AddQuantityDialogState createState() => _AddQuantityDialogState();
 }
@@ -62,10 +62,10 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                 keyboardType: TextInputType.number,
               ),
               SizedBox(
-                width: 320.0,
+                width: MediaQuery.of(context).size.width*0.9,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop(int.parse(quantityController.text));
+                    Navigator.of(context).pop(quantityController.text);
                   },
                   child: Text(
                     "Ok",textScaleFactor: 1,
@@ -83,9 +83,10 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                     itemBuilder: (context, id) {
                       return GestureDetector(
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          margin: EdgeInsets.symmetric(horizontal: 2  ),
                           alignment: Alignment.center,
                           height: 20,
+                          width: MediaQuery.of(context).size.width/8,
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),

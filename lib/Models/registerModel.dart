@@ -3,9 +3,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'clientModel.dart';
 
 class RegisterModel {
-  final List<ClientModel> clients;
-  final String name;
-  DatabaseReference id;
+  final List<ClientModel>? clients;
+  final String? name;
+  DatabaseReference? id;
 
   RegisterModel({this.clients, this.name});
 

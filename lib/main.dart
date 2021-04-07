@@ -306,7 +306,6 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:Chronicle/login.dart';
 import 'package:flutter/services.dart';
 
 import 'Pages/SignInScreen.dart';
@@ -314,7 +313,6 @@ import 'Pages/SignInScreen.dart';
 void main() {
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -361,7 +359,7 @@ class MyApp extends StatelessWidget {
     // );
 
     return MaterialApp(
-      title: 'FlutterFire Samples',
+      title: 'Chronicle',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.indigo,

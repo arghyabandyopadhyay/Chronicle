@@ -1,9 +1,9 @@
-import 'package:Chronicle/Pages/idBlockedPage.dart';
-import 'package:Chronicle/Pages/myHomePage.dart';
+import 'package:chronicle/Pages/idBlockedPage.dart';
+import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Chronicle/database.dart';
+import 'package:chronicle/database.dart';
 import '../auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
@@ -36,8 +36,8 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             _isSigningIn = true;
           });
 
-          User user =
-          await Authentication.signInWithGoogle(context: context);
+          User? user =
+          await Authentication.signInWithGoogle(context);
 
           setState(() {
             _isSigningIn = false;

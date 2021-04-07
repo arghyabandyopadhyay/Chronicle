@@ -1,8 +1,12 @@
-import 'package:Chronicle/Widgets/googleSignInButton.dart';
+import 'package:chronicle/Widgets/googleSignInButton.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../auth.dart';
 import '../customColors.dart';
+import '../database.dart';
+import 'idBlockedPage.dart';
+import 'myHomePage.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -60,7 +64,21 @@ class _SignInScreenState extends State<SignInScreen> {
                   if (snapshot.hasError) {
                     return Text('Error initializing Firebase');
                   } else if (snapshot.connectionState == ConnectionState.done) {
-                    return GoogleSignInButton();
+                    User? user = FirebaseAuth.instance.currentUser;
+                    if(user!=null){
+                      registerUserDetail(user).then((value) => {
+                        if(value!=null)Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => MyHomePage(user)))
+                        else{
+                          Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage(user: user,)))
+                        }
+                      });
+                      return CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          CustomColors.firebaseOrange,
+                        ),
+                      );
+                    }
+                    else return GoogleSignInButton();
                   }
                   return CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
