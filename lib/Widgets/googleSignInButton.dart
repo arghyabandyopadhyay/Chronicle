@@ -1,10 +1,11 @@
 import 'package:chronicle/Pages/idBlockedPage.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
+import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chronicle/database.dart';
-import '../auth.dart';
+import 'package:chronicle/Modules/database.dart';
+import '../Modules/auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: _isSigningIn
           ? CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        valueColor: AlwaysStoppedAnimation<Color>(CustomColors.firebaseYellow),
       )
           : OutlinedButton(
         style: ButtonStyle(

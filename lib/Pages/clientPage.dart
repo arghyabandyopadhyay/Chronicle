@@ -3,11 +3,11 @@ import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import '../Models/clientModel.dart';
-import '../clientList.dart';
+import '../Widgets/clientList.dart';
 import '../customColors.dart';
-import '../registerNewClientWidget.dart';
+import '../Widgets/registerNewClientWidget.dart';
 
 class ClientPage extends StatefulWidget {
   final User user;
@@ -22,7 +22,7 @@ class ClientPage extends StatefulWidget {
 class _ClientPageState extends State<ClientPage> {
   List<ClientModel> clients = [];
   bool _isSearching=false;
-
+  int sortVal=1;
   List<ClientModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
@@ -92,8 +92,7 @@ class _ClientPageState extends State<ClientPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.firebaseNavy,
-      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(
         elevation: 0,
         title: appBarTitle,
         leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:Icons.arrow_back),),
@@ -109,7 +108,33 @@ class _ClientPageState extends State<ClientPage> {
               else _handleSearchEnd();
             });
           }),
-          IconButton(icon: Icon(Icons.notifications_active,color: Colors.white), onPressed: null),
+          IconButton(icon: Icon(Icons.sort), onPressed: (){
+            setState(() {
+              if(sortVal==1)
+                {
+                  List<ClientModel> temp=clients.where((element) => element.due!>0).toList();
+                  clients.removeWhere((element) => element.due!>0);
+                  clients.addAll(temp);
+                  temp=clients.where((element) => element.due!<=0).toList();
+                  clients.removeWhere((element) => element.due!<=0);
+                  clients.addAll(temp);
+                  sortVal=0;
+                }
+              else
+              {
+                List<ClientModel> temp=clients.where((element) => element.due!<=0).toList();
+                clients.removeWhere((element) => element.due!<=0);
+                clients.addAll(temp);
+                temp=clients.where((element) => element.due!>0).toList();
+                clients.removeWhere((element) => element.due!>0);
+                clients.addAll(temp);
+                sortVal=1;
+              }
+            });
+          }),
+          IconButton(icon: Icon(Icons.refresh), onPressed: (){
+            getClientModels();
+          }),
         ],),
       body: Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients, widget.user)),

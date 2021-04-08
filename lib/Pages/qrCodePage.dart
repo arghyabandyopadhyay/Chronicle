@@ -3,14 +3,14 @@ import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../Models/clientModel.dart';
-import '../clientList.dart';
+import '../Widgets/clientList.dart';
 import '../customColors.dart';
-import '../registerNewClientWidget.dart';
+import '../Widgets/registerNewClientWidget.dart';
 
 class QrCodePage extends StatefulWidget {
   String? qrCode;
@@ -33,10 +33,9 @@ class _QrCodePageState extends State<QrCodePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.firebaseNavy,
-      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(
         elevation: 0,
-        title: Text("My QrCode"),
+        title: Text("QR Code"),
         ),
       body: Center(
         child: QrImage(

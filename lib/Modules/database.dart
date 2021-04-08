@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'Models/clientModel.dart';
-import 'Models/userModel.dart';
-final databaseReference=FirebaseDatabase.instance.reference();
-
+import '../Models/clientModel.dart';
+import '../Models/userModel.dart';
+FirebaseDatabase database=FirebaseDatabase.instance;
+final databaseReference=database.reference();
 DatabaseReference registerUser(ClientModel client,User user,String registerId)
 {
   var id=databaseReference.child('${user.uid}/registers/$registerId/client/').push();
@@ -26,6 +26,8 @@ void deleteDatabaseNode(DatabaseReference id) {
   databaseReference.child(id.path.replaceAll("registers", "registers/").replaceAll("client", "client/")).remove();
 }
 Future<DatabaseReference?> registerUserDetail(User user) async {
+  database.setPersistenceEnabled(true);
+  database.setPersistenceCacheSizeBytes(10000000);
   DatabaseReference? id=databaseReference.child('${user.uid}/userDetails/').push();
   await getUserDetails(user).then((value) => {
     if(value==null){

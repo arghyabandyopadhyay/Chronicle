@@ -1,6 +1,7 @@
 import 'package:chronicle/Models/clientModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     setState(() {
                       isLoading=true;
                     });
-                    widget.user!.due= 0;
                     widget.user!.sex=sexDropDown;
                     widget.user!.caste=casteDropDown;
                     updateClient(widget.user!,widget.user!.id!);
@@ -100,8 +100,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       counter++;
     }
     return ScaffoldMessenger(child: Scaffold(
-      backgroundColor: CustomColors.firebaseNavy,
-      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(
         elevation: 0,
         title: Text(widget.user!.name!=null?widget.user!.name!:"Client Profile",),
         actions: [
@@ -140,10 +139,20 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       }
                     }
                   },),
-                  IconButton(icon: Icon(Icons.more_time,color: Colors.red), onPressed: () async {
+                  IconButton(icon: Icon(this.widget.user!.due!>-1?Icons.more_time:Icons.remove_circle,color: Colors.red), onPressed: () async {
                     setState(() {
-                      widget.user!.due=widget.user!.due!+1;
-                      updateClient(widget.user!, widget.user!.id!);
+                      this.widget.user!.due=this.widget.user!.due!+1;
+                      if(this.widget.user!.due!<=1){
+                        this.widget.user!.startDate=this.widget.user!.startDate!.add(Duration(days: getDuration(this.widget.user!.startDate!.month,this.widget.user!.startDate!.year,1)));
+                      }
+                      if(this.widget.user!.due!>=1)
+                      {
+                        this.widget.user!.endDate=this.widget.user!.endDate!.add(Duration(days: getDuration(this.widget.user!.startDate!.month,this.widget.user!.startDate!.year,1)));
+                      }
+                      updateClient(this.widget.user!, this.widget.user!.id!);
+                      // widget.user!.due=widget.user!.due!+1;
+                      // this.widget.user!.endDate=this.widget.user!.endDate!.add(Duration(days: getNoOfDays(this.widget.user!.endDate!.month,this.widget.user!.endDate!.year)));
+                      // updateClient(widget.user!, widget.user!.id!);
                     });
                   }),
                   IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
@@ -151,8 +160,18 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     ).then((value) {
                       int intVal=int.parse(value.toString());
                       setState(() {
-                        widget.user!.due=widget.user!.due!-intVal>=0?widget.user!.due!-intVal:0;
-                        updateClient(widget.user!, widget.user!.id!);
+                        this.widget.user!.due=this.widget.user!.due!-intVal;
+                        if(this.widget.user!.due!>0){
+                          this.widget.user!.startDate=this.widget.user!.startDate!.add(Duration(days: getDuration(this.widget.user!.startDate!.month,this.widget.user!.startDate!.year,intVal)));
+                        }
+                        else if(this.widget.user!.due!<0)
+                        {
+                          this.widget.user!.endDate=this.widget.user!.endDate!.add(Duration(days: getDuration(this.widget.user!.startDate!.month,this.widget.user!.startDate!.year,intVal)));
+                        }
+                        updateClient(this.widget.user!, this.widget.user!.id!);
+                        // widget.user!.due=widget.user!.due!-intVal>=0?widget.user!.due!-intVal:0;
+                        // this.widget.user!.startDate=this.widget.user!.startDate!.add(Duration(days: getDuration(this.widget.user!.startDate!.month,this.widget.user!.startDate!.year,intVal)));
+                        // updateClient(widget.user!, widget.user!.id!);
                       });
                     });
 
@@ -360,10 +379,10 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        border: Border.all(width: 0.7,color: Colors.white54), borderRadius: BorderRadius.all(Radius.circular(5.0))
+                        border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(4.0))
                     ),
-                    child: DropdownButton<String>(
-                      hint: Container(child: Text("Sex:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
+                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                      hint: Container(child: Text("Sex:"),width: MediaQuery.of(context).size.width-110),
                       iconSize: 24,
                       value: sexDropDown,
                       elevation: 16,
@@ -371,7 +390,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      dropdownColor: CustomColors.firebaseNavy,
                       onChanged: (String? newValue) {
                         setState(() {
                           sexDropDown = newValue;
@@ -381,7 +399,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
                         );
                       }).toList(),
                     ),),),]),
@@ -399,9 +417,9 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      border: Border.all(width: 0.7,color: Colors.white54), borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     ),
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                       hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
                       iconSize: 24,
                       value: casteDropDown,
@@ -410,7 +428,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      dropdownColor: CustomColors.firebaseNavy,
                       onChanged: (String? newValue) {
                         setState(() {
                           casteDropDown = newValue;
@@ -420,7 +437,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
                         );
                       }).toList(),
                     ),),),]),
@@ -603,7 +620,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       floatingActionButton: FloatingActionButton.extended(
           onPressed: (){
             _handleSubmitted();
-          }, label: Text("Save")),
+          }, label: Text("Save"),icon: Icon(Icons.save,),),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     ),key: scaffoldKey,);
   }

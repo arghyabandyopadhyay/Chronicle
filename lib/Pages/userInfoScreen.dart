@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 
-import '../auth.dart';
+import '../Modules/auth.dart';
 import '../customColors.dart';
 import 'SignInScreen.dart';
 
@@ -57,13 +57,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: CustomColors.firebaseNavy,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: CustomColors.firebaseNavy,
         title: Text("My Profile"),
         actions: [
-          IconButton(icon: Icon(Icons.qr_code), onPressed: ()async{
+          IconButton(icon: Icon(Icons.payment), onPressed: ()async{
             UserModel? userModel=await getUserDetails(widget._user!);
             if(userModel!.qrcodeDetail!=null){
               Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail,user: widget._user,)));

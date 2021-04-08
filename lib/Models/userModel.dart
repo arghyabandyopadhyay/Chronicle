@@ -1,4 +1,4 @@
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class UserModel

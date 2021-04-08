@@ -42,6 +42,7 @@ dependencies:
   provider: ^5.0.0
   shared_preferences: ^2.0.5
   shimmer: ^1.1.2
+  settings_ui: ^0.6.0
 
 dev_dependencies:
   flutter_test:

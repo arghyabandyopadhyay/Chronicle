@@ -63,8 +63,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   Widget build(BuildContext context) {
     const sizedBoxSpace = SizedBox(height: 24);
     return Scaffold(
-      backgroundColor: CustomColors.firebaseNavy,
-      appBar: AppBar(backgroundColor: CustomColors.firebaseNavy,
+      appBar: AppBar(
         elevation: 0,
         title: Text("Register Client",),
       ),
@@ -190,9 +189,9 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        border: Border.all(width: 0.7,color: Colors.white54), borderRadius: BorderRadius.all(Radius.circular(5.0))
+                        border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0))
                     ),
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                       hint: Container(child: Text("Sex:",style:TextStyle()),width: MediaQuery.of(context).size.width*0.75),
                       iconSize: 24,
                       value: sexDropDown,
@@ -201,7 +200,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      dropdownColor: CustomColors.firebaseNavy,
                       onChanged: (String? newValue) {
                         setState(() {
                           sexDropDown = newValue;
@@ -211,7 +209,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
                         );
                       }).toList(),
                     ),),
@@ -220,9 +218,9 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     padding: EdgeInsets.symmetric(horizontal: 10),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        border: Border.all(width: 0.7,color: Colors.white54), borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
                     ),
-                    child: DropdownButton<String>(
+                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
                       hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width*0.75),
                       iconSize: 24,
                       value: casteDropDown,
@@ -231,7 +229,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      dropdownColor: CustomColors.firebaseNavy,
                       onChanged: (String? newValue) {
                         setState(() {
                           casteDropDown = newValue;
@@ -241,7 +238,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
                         );
                       }).toList(),
                     ),),
@@ -363,7 +360,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       ),
       floatingActionButton:FloatingActionButton.extended(
         icon: Icon(Icons.person_add),
-        label: Text("Register",textScaleFactor:1,style: TextStyle(fontSize: 17),),
+        label: Text("Register",),
         onPressed: _handleSubmitted,
       ),
       floatingActionButtonLocation:

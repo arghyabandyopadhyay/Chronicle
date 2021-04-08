@@ -1,6 +1,6 @@
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Pages/clientPage.dart';
-import 'package:chronicle/database.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

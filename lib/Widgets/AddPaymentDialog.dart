@@ -12,21 +12,21 @@ class AddPaymentDialog extends StatelessWidget  {
       content: Text("How many months do you want to make a payment of?",textScaleFactor:1,style: TextStyle(fontSize: 17),),
       actions: [
         CupertinoDialogAction(child: Text(
-          "1", style: TextStyle(fontSize:20,color: Colors.blueAccent),
+          "1", style: TextStyle(fontSize:20),
         ),
           onPressed: (){
             Navigator.of(context).pop(1);
           },
         ),
         CupertinoDialogAction(child: Text(
-          "3", style: TextStyle(fontSize:20,color: Colors.blueAccent),
+          "3", style: TextStyle(fontSize:20),
         ),
           onPressed: (){
             Navigator.of(context).pop(3);
           },
         ),
         CupertinoDialogAction(child: Text(
-          "12", style: TextStyle(fontSize:20,color: Colors.blueAccent),
+          "12", style: TextStyle(fontSize:20),
         ),
           onPressed: (){
             Navigator.of(context).pop(12);
