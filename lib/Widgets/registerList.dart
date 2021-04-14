@@ -8,9 +8,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 
 class RegisterList extends StatefulWidget {
   final List<RegisterModel> listItems;
-  final User user;
 
-  RegisterList(this.listItems, this.user);
+  RegisterList(this.listItems);
 
   @override
   _RegisterListState createState() => _RegisterListState();
@@ -28,9 +27,9 @@ class _RegisterListState extends State<RegisterList> {
           actionExtentRatio: 0.25,
           child:ListTile(
             onTap: (){
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientPage(widget.user,this.widget.listItems[index] )));
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientPage(this.widget.listItems[index] )));
             },
-            title: Text(this.widget.listItems[index].name!),
+            title: Text(this.widget.listItems[index].name),
           ),
           secondaryActions: <Widget>[
             IconSlideAction(
@@ -44,7 +43,7 @@ class _RegisterListState extends State<RegisterList> {
                   actions: [
                     ActionChip(label: Text("Yes"), onPressed: (){
                       setState(() {
-                        deleteDatabaseNode(this.widget.listItems[index].id!);
+                        deleteDatabaseNode(this.widget.listItems[index].id);
                         this.widget.listItems.removeAt(index);
                         Navigator.of(context).pop();
                       });

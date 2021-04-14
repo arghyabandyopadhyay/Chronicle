@@ -12,8 +12,8 @@ import 'package:shimmer/shimmer.dart';
 import '../customColors.dart';
 
 class SettingsPage extends StatefulWidget {
-  User? user;
-  SettingsPage({ Key? key,this.user}) : super(key: key);
+  User user;
+  SettingsPage({ Key key,this.user}) : super(key: key);
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }

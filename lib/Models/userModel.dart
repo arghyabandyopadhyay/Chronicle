@@ -3,20 +3,22 @@ import 'package:firebase_database/firebase_database.dart';
 
 class UserModel
 {
-  DatabaseReference? id;
-  String? displayName;
-  String? email;
-  String? phoneNumber;
-  String? qrcodeDetail;
-  int? canAccess;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail});
+  DatabaseReference id;
+  String displayName;
+  String email;
+  String phoneNumber;
+  String qrcodeDetail;
+  String token;
+  int canAccess;
+  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
         displayName: json1['DisplayName'],
         email: json1['Email'],
         phoneNumber: json1['PhoneNumber'],
         canAccess: json1['CanAccess'],
-        qrcodeDetail: json1['QrCodeDetail']
+        qrcodeDetail: json1['QrCodeDetail'],
+        token: json1['Token'],
     );
   }
   void setId(DatabaseReference id)
@@ -24,7 +26,7 @@ class UserModel
     this.id=id;
   }
   void update() {
-    updateUserDetails(this, this.id!);
+    updateUserDetails(this, this.id);
   }
   Map<String,dynamic> toJson() =>
       {
@@ -33,5 +35,6 @@ class UserModel
         "PhoneNumber":this.phoneNumber,
         "CanAccess":this.canAccess,
         "QrCodeDetail":this.qrcodeDetail,
+        "Token":this.token
       };
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class AddPaymentDialog extends StatelessWidget  {
   // This widget is the root of your application.
-  const AddPaymentDialog({Key? key,}) : super(key: key);
+  const AddPaymentDialog({Key key,}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

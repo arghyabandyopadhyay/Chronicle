@@ -1,3 +1,4 @@
+import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/googleSignInButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,12 +32,13 @@ class _SignInScreenState extends State<SignInScreen> {
               );
             }
             else if (snapshot.connectionState == ConnectionState.done) {
-              User? user = FirebaseAuth.instance.currentUser;
+              User user = FirebaseAuth.instance.currentUser;
               if(user!=null){
-                registerUserDetail(user).then((value) => {
-                  if(value!=null)Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context,animation,secondAnimation) => MyHomePage(user)))
+                GlobalClass.user=user;
+                registerUserDetail().then((value) => {
+                  if(value!=null)Navigator.pushReplacement(context, PageRouteBuilder(pageBuilder: (context,animation,secondAnimation) => MyHomePage()))
                   else{
-                    Navigator.of(context).pushReplacement(PageRouteBuilder(pageBuilder: (context,animation,secondAnimation) =>IdBlockedPage(user: user,)))
+                    Navigator.of(context).pushReplacement(PageRouteBuilder(pageBuilder: (context,animation,secondAnimation) =>IdBlockedPage()))
                   }
                 });
                 return Container(
@@ -129,7 +131,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               ),
                               SizedBox(height: 20),
                               Text(
-                                'Chronicles',
+                                'Chronicle',
                                 style: TextStyle(
                                   color: CustomColors.firebaseYellow,
                                   fontSize: 40,

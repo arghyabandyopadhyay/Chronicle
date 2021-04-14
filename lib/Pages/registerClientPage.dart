@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 import '../customColors.dart';
 
 class RegisterClientPage extends StatefulWidget {
-  final Function(ClientModel)? callback;
-  const RegisterClientPage({Key? key, this.callback}) : super(key: key);
+  final Function(ClientModel) callback;
+  const RegisterClientPage({Key key, this.callback}) : super(key: key);
   @override
   _RegisterClientPageState createState() => _RegisterClientPageState();
 }
@@ -28,34 +28,34 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   var registrationIdTextField=TextEditingController();
   var heightTextField=TextEditingController();
   var weightTextField=TextEditingController();
-  String? sexDropDown;
-  String? casteDropDown;
+  String sexDropDown;
+  String casteDropDown;
 
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //Functions
   void showInSnackBar(String value) {
-    _scaffoldKey.currentState!.hideCurrentSnackBar();
-    _scaffoldKey.currentState!.showSnackBar(SnackBar(
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
       content: Text(value,textScaleFactor:1),
     ));
   }
   Future<void> _handleSubmitted() async {
     final form = _formKey.currentState;
-    if (!form!.validate()) {// Start validating on every change.
+    if (!form.validate()) {// Start validating on every change.
     }
     else {
       form.save();
       clientData.due= 0;
       clientData.sex=sexDropDown;
       clientData.caste=casteDropDown;
-      widget.callback!(clientData);
+      widget.callback(clientData);
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
     }
   }
-  String? _validateName(String? value) {
-    if(value!.isEmpty)nameTextField.text="";
+  String _validateName(String value) {
+    if(value.isEmpty)nameTextField.text="";
     return null;
   }
   //Overrides
@@ -200,7 +200,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      onChanged: (String? newValue) {
+                      onChanged: (String newValue) {
                         setState(() {
                           sexDropDown = newValue;
                         });
@@ -209,7 +209,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
                         );
                       }).toList(),
                     ),),
@@ -229,7 +229,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       underline: Container(
                         color: Colors.white,
                       ),
-                      onChanged: (String? newValue) {
+                      onChanged: (String newValue) {
                         setState(() {
                           casteDropDown = newValue;
                         });
@@ -238,7 +238,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
-                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1!.color),),
+                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
                         );
                       }).toList(),
                     ),),
@@ -255,7 +255,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      clientData.weight = double.parse(value!);
+                      clientData.weight = double.parse(value);
                     },
                   ),
                   SizedBox(height: 8,),
@@ -271,7 +271,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      clientData.height = double.parse(value!);
+                      clientData.height = double.parse(value);
                     },
                   ),
                   SizedBox(height: 8,),

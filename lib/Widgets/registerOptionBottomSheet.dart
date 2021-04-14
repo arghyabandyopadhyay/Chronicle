@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class RegisterOptionBottomSheet extends StatelessWidget {
   //list of options you want to show in the bottom sheet
-  final List<RegisterModel>? list;
-  const RegisterOptionBottomSheet({Key? key, this.list}) : super(key: key);
+  final List<RegisterModel> list;
+  const RegisterOptionBottomSheet({Key key, this.list}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,12 +27,12 @@ class RegisterOptionBottomSheet extends StatelessWidget {
           Expanded(child:ListView.builder(
             physics: BouncingScrollPhysics(),
             shrinkWrap: true,
-            itemCount: list!.length,
+            itemCount: list.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(list![index].name!),
+                title: Text(list[index].name),
                 onTap: (){
-                  print(list![index].name!);
+                  print(list[index].name);
                 }
               );
             },

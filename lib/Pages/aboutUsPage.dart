@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../customColors.dart';
 
 class AboutUsPage extends StatefulWidget {
-  AboutUsPage({Key? key,}) : super(key: key);
+  AboutUsPage({Key key,}) : super(key: key);
   @override
   _AboutPageState createState() => _AboutPageState();
 }

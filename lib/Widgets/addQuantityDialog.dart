@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 
 class AddQuantityDialog extends StatefulWidget {
-  const AddQuantityDialog({Key? key}) : super(key: key);
+  const AddQuantityDialog({Key key}) : super(key: key);
   @override
   _AddQuantityDialogState createState() => _AddQuantityDialogState();
 }

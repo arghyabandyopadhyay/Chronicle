@@ -1,9 +1,13 @@
+
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/aboutUsPage.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
@@ -21,11 +25,10 @@ import '../Widgets/clientList.dart';
 import '../customColors.dart';
 import '../Widgets/registerNewClientWidget.dart';
 import 'SignInScreen.dart';
+import 'globalClass.dart';
 
 class MyHomePage extends StatefulWidget {
-  final User user;
-
-  MyHomePage(this.user);
+  MyHomePage();
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -33,11 +36,43 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<RegisterModel> registers = [];
-  PickedFile? _imageFile;
+  PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+  String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
+  Future<void> sendNotifications() async {
+    if (GlobalClass.applicationToken == null) {
+      print('Unable to send FCM message, no token exists.');
+      return;
+    }
 
+    try {
+      registers.forEach((registerElement)  {
+        registerElement.clients.forEach((clientElement) async{
+          if(clientElement.notificationCount<3)
+            {
+              int a=clientElement.endDate.difference(DateTime.now()).inDays;
+              if((a>-3&&a<1)&&clientElement.due>=0)
+              {
+                await http.post(
+                  Uri.parse('https://fcm.googleapis.com/fcm/send'),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    'Authorization':'key=${serverKey}'
+                  },
+                  body: constructFCMPayload(GlobalClass.applicationToken,clientElement,registerElement.name),
+                );
+                clientElement.notificationCount++;
+                updateClient(clientElement, clientElement.id);
+              }
+            }
+        });
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
   void newRegisterModel(RegisterModel register) {
-    register.setId(addToRegister(widget.user,register.name!));
+    register.setId(addToRegister(register.name));
     this.setState(() {
       registers.add(register);
     });
@@ -48,10 +83,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getRegisters() {
-    getAllRegisters(widget.user).then((registers) => {
+    getAllRegisters().then((registers) => {
       this.setState(() {
         this.registers = registers;
-      })
+      }),
+      sendNotifications()
     });
   }
 
@@ -69,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
       key:scaffoldKey,
       drawer: Drawer(
         child: DrawerContent(
-          user: widget.user,
           drawerItems: [
             DrawerActionModel(Icons.notifications, "Notifications", ()async{
               Navigator.pop(context);
@@ -77,9 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
             DrawerActionModel(Icons.qr_code, "QR code", ()async{
               Navigator.pop(context);
-              UserModel? userModel=await getUserDetails(widget.user);
-              if(userModel!.qrcodeDetail!=null){
-                Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail,user: widget.user,)));
+              UserModel userModel=await getUserDetails();
+              if(userModel.qrcodeDetail!=null){
+                Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
               }
               else {
                 String _data = '';
@@ -92,10 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                   setState(() {
                     _imageFile = pickedFile;
-                    QrCodeToolsPlugin.decodeFrom(pickedFile!.path).then((value) {
+                    QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                       _data = value;
                       userModel.qrcodeDetail=_data;
-                      updateUserDetails(userModel, userModel.id!);
+                      updateUserDetails(userModel, userModel.id);
 
                     });
 
@@ -110,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
             DrawerActionModel(Icons.account_circle, "Profile", ()async{
               Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen(user: widget.user,)));
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen()));
             }),
             DrawerActionModel(Icons.info, "About Us", ()async{
               Navigator.pop(context);
@@ -118,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
             DrawerActionModel(Icons.settings, "Settings", ()async{
               Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage(user: widget.user,)));
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
             }),
             DrawerActionModel(Icons.logout, "Log out", ()async{
               await Authentication.signOut(context: context);
@@ -145,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,title: Text("Registers"),
       ),
       body: Column(children: <Widget>[
-          Expanded(child: RegisterList(this.registers, widget.user)),
+          Expanded(child: RegisterList(this.registers)),
         ]),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));

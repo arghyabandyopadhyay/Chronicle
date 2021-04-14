@@ -1,3 +1,4 @@
+import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/idBlockedPage.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/customColors.dart';
@@ -37,20 +38,22 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             _isSigningIn = true;
           });
 
-          User? user =
+          User user =
           await Authentication.signInWithGoogle(context);
 
           setState(() {
             _isSigningIn = false;
           });
 
-          if(user!=null)registerUserDetail(user).then((value) => {
+          if(user!=null){
+            GlobalClass.user=user;
+          registerUserDetail().then((value) => {
             if(value!=null)Navigator.pushReplacement(context,
-                CupertinoPageRoute(builder: (context) => MyHomePage(user)))
+                CupertinoPageRoute(builder: (context) => MyHomePage()))
             else{
-              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage(user: user,)))
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
             }
-          });
+          });}
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),

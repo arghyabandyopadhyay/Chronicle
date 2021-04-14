@@ -13,22 +13,22 @@ import 'database.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 
-Future<User?> signInWithGoogle() async {
-  final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+Future<User> signInWithGoogle() async {
+  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount!.authentication;
+      await googleSignInAccount.authentication;
   final AuthCredential credential = GoogleAuthProvider.credential(
       idToken: googleSignInAuthentication.idToken,
       accessToken: googleSignInAuthentication.accessToken);
 
   final UserCredential authResult = await _auth.signInWithCredential(credential);
-  final User? user = authResult.user;
+  final User user = authResult.user;
 
-  assert(!user!.isAnonymous);
-  assert(await user!.getIdToken() != null);
+  assert(!user.isAnonymous);
+  assert(await user.getIdToken() != null);
 
-  final User? currentUser = await _auth.currentUser;
-  assert(currentUser!.uid == user!.uid);
+  final User currentUser = await _auth.currentUser;
+  assert(currentUser.uid == user.uid);
 
   return user;
 }
@@ -37,36 +37,36 @@ void signOutGoogle() async {
   await googleSignIn.signOut();
 }
 class FirebaseAuthService {
-  String? uid;
-  String? name;
-  String? userEmail;
-  String? imageUrl;
+  String uid;
+  String name;
+  String userEmail;
+  String imageUrl;
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-  FirebaseAuthService({required FirebaseAuth firebaseAuth, required GoogleSignIn googleSignin})
+  FirebaseAuthService({ FirebaseAuth firebaseAuth,  GoogleSignIn googleSignin})
       : _firebaseAuth = firebaseAuth,
         _googleSignIn = googleSignin;
 
-  User? _userFromFirebase(User? user) {
+  User _userFromFirebase(User user) {
     if (user == null) {
       return null;
     }
     return user;
   }
 
-  Stream<User?> get onAuthStateChanged {
+  Stream<User> get onAuthStateChanged {
     return _firebaseAuth.authStateChanges().map(_userFromFirebase);
   }
 
-  Future<User?> signInAnonymously() async {
+  Future<User> signInAnonymously() async {
     final authResult = await _firebaseAuth.signInAnonymously();
     return _userFromFirebase(authResult.user);
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<User> signInWithGoogle() async {
     final googleUser = await _googleSignIn.signIn();
-    final googleAuth = await googleUser!.authentication;
+    final googleAuth = await googleUser.authentication;
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -79,26 +79,26 @@ class FirebaseAuthService {
     return _firebaseAuth.signOut();
   }
 
-  Future<User?> currentUser() async {
+  Future<User> currentUser() async {
     final user = await _firebaseAuth.currentUser;
     return _userFromFirebase(user);
   }
 }
 class Authentication{
-  static String? uniqueId;
-  static String? uniqueuserName;
-  static String? uniqueuserEmail;
-  static String? uniqueUserimageUrl;
+  static String uniqueId;
+  static String uniqueuserName;
+  static String uniqueuserEmail;
+  static String uniqueUserimageUrl;
   static Future<FirebaseApp> initializeFirebase({
-    required BuildContext context,
+     BuildContext context,
   }) async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
 
     return firebaseApp;
   }
-  static Future<User?> signInWithGoogle(BuildContext context) async {
+  static Future<User> signInWithGoogle(BuildContext context) async {
     FirebaseAuth auth = FirebaseAuth.instance;
-    User? user;
+    User user;
     if (kIsWeb) {
       GoogleAuthProvider authProvider = GoogleAuthProvider();
 
@@ -115,7 +115,7 @@ class Authentication{
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount googleSignInAccount =
-      (await googleSignIn.signIn())!;
+      (await googleSignIn.signIn());
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
@@ -167,7 +167,7 @@ class Authentication{
     return user;
   }
 
-  static SnackBar customSnackBar({required String content}) {
+  static SnackBar customSnackBar({ String content}) {
     return SnackBar(
       backgroundColor: Colors.black,
       content: Text(
@@ -177,9 +177,9 @@ class Authentication{
     );
   }
 
-  Future<User?> registerWithEmailPassword(String email, String password) async {
+  Future<User> registerWithEmailPassword(String email, String password) async {
     await Firebase.initializeApp();
-    User? user;
+    User user;
 
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
@@ -206,9 +206,9 @@ class Authentication{
     return user;
   }
 
-  Future<User?> signInWithEmailPassword(String email, String password) async {
+  Future<User> signInWithEmailPassword(String email, String password) async {
     await Firebase.initializeApp();
-    User? user;
+    User user;
 
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -241,7 +241,7 @@ class Authentication{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool authSignedIn = prefs.getBool('auth') ?? false;
 
-    final User? user = _auth.currentUser;
+    final User user = _auth.currentUser;
 
     if (authSignedIn == true) {
       if (user != null) {
@@ -253,7 +253,7 @@ class Authentication{
     }
   }
 
-  static Future<void> signOut({BuildContext? context}) async {
+  static Future<void> signOut({BuildContext context}) async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
@@ -262,7 +262,7 @@ class Authentication{
       }
       await FirebaseAuth.instance.signOut();
     } catch (e) {
-      ScaffoldMessenger.of(context!).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         Authentication.customSnackBar(
           content: 'Error signing out. Try again.',
         ),

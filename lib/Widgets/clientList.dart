@@ -12,9 +12,8 @@ import 'AddPaymentDialog.dart';
 
 class ClientList extends StatefulWidget {
   final List<ClientModel> listItems;
-  final User user;
 
-  ClientList(this.listItems, this.user);
+  ClientList(this.listItems);
 
   @override
   _ClientListState createState() => _ClientListState();
@@ -32,14 +31,14 @@ class _ClientListState extends State<ClientList> {
         actionExtentRatio: 0.25,
             child:ListTile(
               onTap: () async {
-                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(user:this.widget.listItems[index])));
+                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.widget.listItems[index])));
               },
           title: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(this.widget.listItems[index].name!,style: TextStyle(fontWeight: FontWeight.w900),),
-                Text((this.widget.listItems[index].registrationId!=null&&this.widget.listItems[index].registrationId!=""?this.widget.listItems[index].registrationId:this.widget.listItems[index].id!.key)!,style: TextStyle(fontWeight: FontWeight.w300),)
+                Text(this.widget.listItems[index].name,style: TextStyle(fontWeight: FontWeight.w900),),
+                Text((this.widget.listItems[index].registrationId!=null&&this.widget.listItems[index].registrationId!=""?this.widget.listItems[index].registrationId:this.widget.listItems[index].id.key),style: TextStyle(fontWeight: FontWeight.w300),)
               ]
           ),
           subtitle: Text("\u2709: "+this.widget.listItems[index].address.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
@@ -47,28 +46,29 @@ class _ClientListState extends State<ClientList> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text((this.widget.listItems[index].startDate!=null?this.widget.listItems[index].startDate!.day.toString()+"-"+this.widget.listItems[index].startDate!.month.toString()+"-"+this.widget.listItems[index].startDate!.year.toString()+" to ":"")+((this.widget.listItems[index].endDate!=null)?this.widget.listItems[index].endDate!.day.toString()+"-"+this.widget.listItems[index].endDate!.month.toString()+"-"+this.widget.listItems[index].endDate!.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
-              Text("\u2706: "+this.widget.listItems[index].mobileNo!),
-              Text("${this.widget.listItems[index].due!=null&&this.widget.listItems[index].due!<0?"Paid":"Due"}: "+this.widget.listItems[index].due!.abs().toString(),style: TextStyle(color: this.widget.listItems[index].due!=null&&this.widget.listItems[index].due==0?null:this.widget.listItems[index].due!>0?Colors.red:Colors.green,fontWeight: FontWeight.bold),)
+              Text((this.widget.listItems[index].startDate!=null?this.widget.listItems[index].startDate.day.toString()+"-"+this.widget.listItems[index].startDate.month.toString()+"-"+this.widget.listItems[index].startDate.year.toString()+" to ":"")+((this.widget.listItems[index].endDate!=null)?this.widget.listItems[index].endDate.day.toString()+"-"+this.widget.listItems[index].endDate.month.toString()+"-"+this.widget.listItems[index].endDate.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
+              Text("\u2706: "+this.widget.listItems[index].mobileNo),
+              Text("${this.widget.listItems[index].due!=null&&this.widget.listItems[index].due<0?"Paid":"Due"}: "+this.widget.listItems[index].due.abs().toString(),style: TextStyle(color: this.widget.listItems[index].due!=null&&this.widget.listItems[index].due==0?null:this.widget.listItems[index].due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold),)
             ]
           ),
         ),
           secondaryActions: <Widget>[
             IconSlideAction(
-              caption: this.widget.listItems[index].due!>-1?'Add Due':'Reduce Payment',
-              icon: this.widget.listItems[index].due!>-1?Icons.more_time:Icons.remove_circle,
+              caption: this.widget.listItems[index].due>-1?'Add Due':'Reduce Payment',
+              icon: this.widget.listItems[index].due>-1?Icons.more_time:Icons.remove_circle,
               color: Colors.red,
               onTap: () async {
                 setState(() {
-                  this.widget.listItems[index].due=this.widget.listItems[index].due!+1;
-                  if(this.widget.listItems[index].due!<=1){
-                    this.widget.listItems[index].startDate=this.widget.listItems[index].startDate!.add(Duration(days: getDuration(this.widget.listItems[index].startDate!.month,this.widget.listItems[index].startDate!.year,1)));
+                  this.widget.listItems[index].due=this.widget.listItems[index].due+1;
+                  if(this.widget.listItems[index].due<=1){
+                    this.widget.listItems[index].startDate=this.widget.listItems[index].startDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,1)));
                   }
-                  if(this.widget.listItems[index].due!>=1)
+                  if(this.widget.listItems[index].due>=1)
                     {
-                      this.widget.listItems[index].endDate=this.widget.listItems[index].endDate!.add(Duration(days: getDuration(this.widget.listItems[index].startDate!.month,this.widget.listItems[index].startDate!.year,1)));
+                      this.widget.listItems[index].endDate=this.widget.listItems[index].endDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,1)));
                     }
-                  updateClient(this.widget.listItems[index], this.widget.listItems[index].id!);
+                  this.widget.listItems[index].notificationCount=0;
+                  updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                 });
               },
               closeOnTap: false,
@@ -82,15 +82,16 @@ class _ClientListState extends State<ClientList> {
                   ).then((value) {
                     int intVal=int.parse(value.toString());
                     setState(() {
-                      this.widget.listItems[index].due=this.widget.listItems[index].due!-intVal;
-                      if(this.widget.listItems[index].due!>0){
-                        this.widget.listItems[index].startDate=this.widget.listItems[index].startDate!.add(Duration(days: getDuration(this.widget.listItems[index].startDate!.month,this.widget.listItems[index].startDate!.year,intVal)));
+                      this.widget.listItems[index].due=this.widget.listItems[index].due-intVal;
+                      if(this.widget.listItems[index].due>0){
+                        this.widget.listItems[index].startDate=this.widget.listItems[index].startDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,intVal)));
                       }
-                      else if(this.widget.listItems[index].due!<0)
+                      else if(this.widget.listItems[index].due<0)
                       {
-                        this.widget.listItems[index].endDate=this.widget.listItems[index].endDate!.add(Duration(days: getDuration(this.widget.listItems[index].startDate!.month,this.widget.listItems[index].startDate!.year,intVal)));
+                        this.widget.listItems[index].endDate=this.widget.listItems[index].endDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,intVal)));
                       }
-                      updateClient(this.widget.listItems[index], this.widget.listItems[index].id!);
+                      this.widget.listItems[index].notificationCount=0;
+                      updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                     });
                   });
 

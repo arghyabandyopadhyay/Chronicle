@@ -10,10 +10,9 @@ import '../customColors.dart';
 import '../Widgets/registerNewClientWidget.dart';
 
 class ClientPage extends StatefulWidget {
-  final User user;
   final RegisterModel register;
 
-  ClientPage(this.user,this.register);
+  ClientPage(this.register);
 
   @override
   _ClientPageState createState() => _ClientPageState();
@@ -46,7 +45,7 @@ class _ClientPageState extends State<ClientPage> {
       this.icon = new Icon(
         Icons.search,
       );
-      this.appBarTitle = Text(widget.register.name!,
+      this.appBarTitle = Text(widget.register.name,
         textScaleFactor: 1,
       );
       _isSearching = false;
@@ -57,13 +56,13 @@ class _ClientPageState extends State<ClientPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=clients.where((ClientModel element) => (element.name!.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\s+"), ""))).toList();
+      searchResult=clients.where((ClientModel element) => (element.name.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\s+"), ""))).toList();
       setState(() {
       });
     }
   }
   void newClientModel(ClientModel client) {
-    client.setId(registerUser(client,widget.user,widget.register.id!.key.replaceAll("registers", "")));
+    client.setId(registerUser(client,widget.register.id.key.replaceAll("registers", "")));
     this.setState(() {
       clients.add(client);
     });
@@ -74,7 +73,7 @@ class _ClientPageState extends State<ClientPage> {
   }
 
   void getClientModels() {
-    getAllClients(widget.user,widget.register.id!.key.replaceAll("registers", "")).then((clients) => {
+    getAllClients(widget.register.id.key.replaceAll("registers", "")).then((clients) => {
       this.setState(() {
         this.clients = clients;
       })
@@ -85,7 +84,7 @@ class _ClientPageState extends State<ClientPage> {
   void initState() {
     super.initState();
     getClientModels();
-    appBarTitle=GestureDetector(child: Container(child: Text(widget.register.name!),),
+    appBarTitle=GestureDetector(child: Container(child: Text(widget.register.name),),
       onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(list: [],));},);
   }
 
@@ -112,21 +111,21 @@ class _ClientPageState extends State<ClientPage> {
             setState(() {
               if(sortVal==1)
                 {
-                  List<ClientModel> temp=clients.where((element) => element.due!>0).toList();
-                  clients.removeWhere((element) => element.due!>0);
+                  List<ClientModel> temp=clients.where((element) => element.due>0).toList();
+                  clients.removeWhere((element) => element.due>0);
                   clients.addAll(temp);
-                  temp=clients.where((element) => element.due!<=0).toList();
-                  clients.removeWhere((element) => element.due!<=0);
+                  temp=clients.where((element) => element.due<=0).toList();
+                  clients.removeWhere((element) => element.due<=0);
                   clients.addAll(temp);
                   sortVal=0;
                 }
               else
               {
-                List<ClientModel> temp=clients.where((element) => element.due!<=0).toList();
-                clients.removeWhere((element) => element.due!<=0);
+                List<ClientModel> temp=clients.where((element) => element.due<=0).toList();
+                clients.removeWhere((element) => element.due<=0);
                 clients.addAll(temp);
-                temp=clients.where((element) => element.due!>0).toList();
-                clients.removeWhere((element) => element.due!>0);
+                temp=clients.where((element) => element.due>0).toList();
+                clients.removeWhere((element) => element.due>0);
                 clients.addAll(temp);
                 sortVal=1;
               }
@@ -137,7 +136,7 @@ class _ClientPageState extends State<ClientPage> {
           }),
         ],),
       body: Column(children: <Widget>[
-        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients, widget.user)),
+        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
       ]),
       floatingActionButton: RegisterNewClientWidget(this.newClientModel),
     );
