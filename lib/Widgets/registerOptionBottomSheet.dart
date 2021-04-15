@@ -32,7 +32,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
               return ListTile(
                 title: Text(list[index].name),
                 onTap: (){
-                  print(list[index].name);
+                  debugPrint(list[index].name);
                 }
               );
             },

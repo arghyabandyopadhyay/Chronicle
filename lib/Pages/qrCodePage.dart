@@ -66,7 +66,7 @@ class _QrCodePageState extends State<QrCodePage> {
 
           });
         } catch (e) {
-          print(e);
+          debugPrint(e);
           setState(() {
             _data = '';
           });

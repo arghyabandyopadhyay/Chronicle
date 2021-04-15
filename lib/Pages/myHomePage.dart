@@ -28,8 +28,8 @@ import 'SignInScreen.dart';
 import 'globalClass.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage();
-
+  bool isFirstTime;
+  MyHomePage(this.isFirstTime);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -41,10 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
   Future<void> sendNotifications() async {
     if (GlobalClass.applicationToken == null) {
-      print('Unable to send FCM message, no token exists.');
+      debugPrint('Unable to send FCM message, no token exists.');
       return;
     }
-
     try {
       registers.forEach((registerElement)  {
         registerElement.clients.forEach((clientElement) async{
@@ -68,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
     } catch (e) {
-      print(e);
+      debugPrint(e);
     }
   }
   void newRegisterModel(RegisterModel register) {
@@ -94,16 +93,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // getClientModels();
     getRegisters();
   }
   TextEditingController textEditingController=new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    // print(registers[0]);
     return Scaffold(
       key:scaffoldKey,
-      drawer: Drawer(
+      appBar: widget.isFirstTime?AppBar(title: Text("Registers"),elevation: 0,):null,
+      drawer: widget.isFirstTime?Drawer(
         child: DrawerContent(
           drawerItems: [
             DrawerActionModel(Icons.notifications, "Notifications", ()async{
@@ -131,12 +129,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       _data = value;
                       userModel.qrcodeDetail=_data;
                       updateUserDetails(userModel, userModel.id);
-
                     });
 
                   });
                 } catch (e) {
-                  print(e);
+                  debugPrint(e);
                   setState(() {
                     _data = '';
                   });
@@ -146,14 +143,6 @@ class _MyHomePageState extends State<MyHomePage> {
             DrawerActionModel(Icons.account_circle, "Profile", ()async{
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen()));
-            }),
-            DrawerActionModel(Icons.info, "About Us", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutUsPage()));
-            }),
-            DrawerActionModel(Icons.settings, "Settings", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
             }),
             DrawerActionModel(Icons.logout, "Log out", ()async{
               await Authentication.signOut(context: context);
@@ -175,24 +164,23 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
           ],
         ),
-      ),
-      appBar: AppBar(
-        elevation: 0,title: Text("Registers"),
-      ),
+      ):null,
       body: Column(children: <Widget>[
           Expanded(child: RegisterList(this.registers)),
         ]),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));
         showDialog(context: context, builder: (_)=>new AlertDialog(
-          title: Text("Type The Name Of Register"),
+          title: Text("Name your Register"),
           content: TextField(controller: textEditingController,),
-          actions: [ElevatedButton(child: Text("Add"),onPressed: (){
+          actions: [ActionChip(label: Text("Add"), onPressed: (){
             newRegisterModel(new RegisterModel(name: textEditingController.text));
             textEditingController.clear();
             Navigator.of(context).pop();
-          },),
-          ElevatedButton(onPressed: (){Navigator.of(context).pop();}, child: Text("Cancel"))],
+          }),
+          ActionChip(label: Text("Cancel"), onPressed: (){
+            Navigator.of(context).pop();
+          }),],
         ));
       },
         label: Text("Add Registers"),icon: Icon(Icons.addchart_outlined),),

@@ -1,5 +1,10 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/aboutUsPage.dart';
+import 'package:chronicle/Pages/clientAccessEditPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,10 +16,9 @@ class DrawerContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(color:Colors.black,padding: EdgeInsets.only(bottom: 15,top: 3,left: 5),child: Row(mainAxisAlignment:MainAxisAlignment.spaceBetween,children: [Text(" Chronicle",style: TextStyle(color: Colors.white),),Text("Version 2021.1",style: TextStyle(color: Colors.white)),],)),
       appBar: AppBar(
         elevation: 0,
-        title: Text(" Chronicle",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+        title: Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisAlignment:MainAxisAlignment.start,children: [Text("Chronicle",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.start,),Text("      Version 2020.1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 10),textAlign: TextAlign.end,)],),
         automaticallyImplyLeading: false,
       ),
       body: ListView(
@@ -22,7 +26,7 @@ class DrawerContent extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>
           [
-            DrawerHeader(
+            if(GlobalClass.user!=null)DrawerHeader(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +65,7 @@ class DrawerContent extends StatelessWidget {
               decoration: BoxDecoration(
               ),
             ),
-            ListView.builder(
+            if(GlobalClass.user!=null)ListView.builder(
                 shrinkWrap: true,
                 physics: BouncingScrollPhysics(),
                 itemCount: drawerItems.length,
@@ -74,6 +78,38 @@ class DrawerContent extends StatelessWidget {
                   );
                 }
             ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text("About Us"),
+              onTap: ()async{
+              Navigator.pop(context);
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutUsPage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text("Settings"),
+              onTap: ()async{
+                Navigator.pop(context);
+                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
+              },
+            ),
+            // if(GlobalClass.user.uid=="8daK26SfAmTAguFwBdNBAzTstuK2"||GlobalClass.user.uid=="G9xL84Y5bHM0XsdF3PUdVgU7UeX2"||GlobalClass.user.uid=="dXNxq289Z1hBhYBJ4JnaTGW9lKD3"||GlobalClass.user.uid=="TxJ48XQnEQN9Dph4xsHlmHCvjb82")ListTile(
+            if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
+              leading: Icon(Icons.send),
+              title: Text("Dispatch Notification"),
+              onTap: ()async{
+                sendNotificationsToAll();
+              },
+            ),
+            if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
+              leading: Icon(Icons.pending_actions),
+              title: Text("Users Access"),
+              onTap: ()async{
+                Navigator.of(context).pop();
+                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
+              },
+            )
           ]
       ),
     );

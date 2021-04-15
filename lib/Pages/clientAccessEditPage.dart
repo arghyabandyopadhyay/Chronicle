@@ -1,5 +1,9 @@
+import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/userModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
+import 'package:chronicle/Widgets/usersList.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +13,17 @@ import '../Widgets/clientList.dart';
 import '../customColors.dart';
 import '../Widgets/registerNewClientWidget.dart';
 
-class NotificationsPage extends StatefulWidget {
-  static const String routeName = '/notificationPage';
-  NotificationsPage();
+class ClientAccessEditPage extends StatefulWidget {
+  ClientAccessEditPage();
 
   @override
-  _NotificationsPageState createState() => _NotificationsPageState();
+  _ClientAccessEditPageState createState() => _ClientAccessEditPageState();
 }
 
-class _NotificationsPageState extends State<NotificationsPage> {
-  List<ClientModel> clients = [];
+class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
+  List<UserModel> clients = [];
   bool _isSearching=false;
-  List<ClientModel> searchResult = [];
+  List<UserModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
   );
@@ -43,7 +46,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       this.icon = new Icon(
         Icons.search,
       );
-      this.appBarTitle = Text("Notifications",
+      this.appBarTitle = Text("Users",
         textScaleFactor: 1,
       );
       _isSearching = false;
@@ -54,20 +57,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=clients.where((ClientModel element) => (element.name.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\s+"), ""))).toList();
+      searchResult=clients.where((UserModel element) => (element.displayName.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\s+"), ""))).toList();
       setState(() {
       });
     }
   }
-  void updateClientModel() {
+  void updateDataModel() {
     this.setState(() {
     });
   }
 
-  void getNotifications() {
-    getNotificationClients().then((clients) => {
+  void getData() {
+    getAllData().then((clients) => {
       this.setState(() {
-        this.clients = clients;
+        this.clients.clear();
+        clients.forEach((element) {if(element.userDetails.first.isOwner==0)this.clients.add(element.userDetails.first);});
       })
     });
   }
@@ -75,8 +79,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   void initState() {
     super.initState();
-    getNotifications();
-    appBarTitle=GestureDetector(child: Container(child: Text("Notifications"),),
+    getData();
+    appBarTitle=GestureDetector(child: Container(child: Text("Users"),),
       onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(list: [],));},);
   }
 
@@ -100,11 +104,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
             });
           }),
           IconButton(icon: Icon(Icons.refresh), onPressed: (){
-            getNotifications();
+            getData();
           }),
         ],),
       body: Column(children: <Widget>[
-        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
+        Expanded(child: UsersList(_isSearching?this.searchResult:this.clients)),
       ]),
       floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
         //clearAllAnimation

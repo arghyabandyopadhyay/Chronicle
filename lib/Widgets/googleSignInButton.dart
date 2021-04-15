@@ -3,6 +3,7 @@ import 'package:chronicle/Pages/idBlockedPage.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -15,7 +16,13 @@ class GoogleSignInButton extends StatefulWidget {
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   bool _isSigningIn = false;
-
+  Future<void> setToken(String token) async {
+    GlobalClass.applicationToken = token;
+    getUserDetails().then((value) => {
+      value.token=token,
+      updateUserDetails(value, value.id)
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -48,8 +55,14 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           if(user!=null){
             GlobalClass.user=user;
           registerUserDetail().then((value) => {
-            if(value!=null)Navigator.pushReplacement(context,
-                CupertinoPageRoute(builder: (context) => MyHomePage()))
+            if(value!=null)
+            {
+              FirebaseMessaging.instance.getToken().then(setToken),
+              Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => MyHomePage(true)))
+            }
             else{
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
             }

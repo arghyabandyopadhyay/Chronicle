@@ -64,14 +64,10 @@ Future<List<ClientModel>> getNotificationClients() async {
   List<ClientModel> clients = [];
   registers.forEach((registerElement)  {
     registerElement.clients.forEach((clientElement) async{
-      if(clientElement.notificationCount<3)
+      int a=clientElement.endDate.difference(DateTime.now()).inDays;
+      if((a>-3&&a<1)&&clientElement.due>=0)
       {
-        int a=clientElement.endDate.difference(DateTime.now()).inDays;
-        print(a);
-        if((a>-3&&a<1)&&clientElement.due>=0)
-        {
-          clients.add(clientElement);
-        }
+        clients.add(clientElement);
       }
     });
   });
@@ -102,6 +98,7 @@ Future<UserModel> getUserDetails() async {
     // userDetail = UserModel.fromJson(json[json.keys.toList()[0]]);
     // userDetail.setId(databaseReference.child('${GlobalClass.user.uid}/userDetails/'));
   }
+  GlobalClass.userDetail=userDetail;
   return userDetail;
 }
 

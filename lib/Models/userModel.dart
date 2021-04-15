@@ -10,13 +10,15 @@ class UserModel
   String qrcodeDetail;
   String token;
   int canAccess;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token});
+  int isOwner;
+  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
         displayName: json1['DisplayName'],
         email: json1['Email'],
         phoneNumber: json1['PhoneNumber'],
         canAccess: json1['CanAccess'],
+        isOwner: json1['IsOwner']!=null?json1['IsOwner']:0,
         qrcodeDetail: json1['QrCodeDetail'],
         token: json1['Token'],
     );

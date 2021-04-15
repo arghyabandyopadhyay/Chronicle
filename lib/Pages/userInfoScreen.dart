@@ -80,7 +80,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
                 });
               } catch (e) {
-                print(e);
+                debugPrint(e);
                 setState(() {
                   _data = '';
                 });

@@ -19,7 +19,6 @@ class _TokenMonitor extends State<TokenMonitor> {
   Stream<String> _tokenStream;
 
   void setToken(String token) {
-    print('FCM Token: $token');
     setState(() {
       _token = token;
     });
