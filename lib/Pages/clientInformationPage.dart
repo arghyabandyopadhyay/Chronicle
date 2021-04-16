@@ -116,7 +116,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
               padding: EdgeInsets.symmetric(horizontal: 5),
               children: [
                 Row(mainAxisAlignment:MainAxisAlignment.spaceAround, children: [
-                  IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
+                  Column(children: [IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
                     if(widget.client.mobileNo!=null&&widget.client.mobileNo!="")
                     {
                       var url = 'tel:<${widget.client.mobileNo}>';
@@ -126,8 +126,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         throw 'Could not launch $url';
                       }
                     }
-                  },),
-                  IconButton(icon: Icon(Icons.send,color: Colors.lightBlueAccent), onPressed: () async {
+                  },),Text("Call")],),
+                  Column(children: [IconButton(icon: Icon(Icons.message,color: Colors.lightBlueAccent), onPressed: () async {
                     if(widget.client.mobileNo!=null&&widget.client.mobileNo!="")
                     {
                       var url = "https://wa.me/+91${widget.client.mobileNo}?text=${widget.client.name}, Your subscription has come to an end"
@@ -138,8 +138,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         throw 'Could not launch $url';
                       }
                     }
-                  },),
-                  IconButton(icon: Icon(this.widget.client.due>-1?Icons.more_time:Icons.remove_circle,color: Colors.red), onPressed: () async {
+                  },),Text("Message")],),
+                  Column(children: [IconButton(icon: Icon(this.widget.client.due>-1?Icons.more_time:Icons.remove_circle,color: Colors.red), onPressed: () async {
                     setState(() {
                       this.widget.client.due=this.widget.client.due+1;
                       if(this.widget.client.due<=1){
@@ -155,8 +155,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       // this.widget.client!.endDate=this.widget.client!.endDate!.add(Duration(days: getNoOfDays(this.widget.client!.endDate!.month,this.widget.client!.endDate!.year)));
                       // updateClient(widget.client!, widget.client!.id!);
                     });
-                  }),
-                  IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
+                  }),Text(this.widget.client.due>-1?"Add Due":"Reduce Payment")],),
+                  Column(children: [IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
                     showDialog(context: context, builder: (_) =>new AddQuantityDialog()
                     ).then((value) {
                       int intVal=int.parse(value.toString());
@@ -177,8 +177,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       });
                     });
 
-                  },),
-                  IconButton(icon: Icon(Icons.delete,color: Colors.deepOrange), onPressed: (){
+                  },),Text("Add Payment")],),
+                  Column(children: [IconButton(icon: Icon(Icons.delete,color: Colors.deepOrange), onPressed: (){
                     showDialog(context: context, builder: (_)=>new AlertDialog(
                       title: Text("Confirm Delete"),
                       content: Text("Are you sure?"),
@@ -196,14 +196,14 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         })
                       ],
                     ));
-                  }),
+                  }),Text("Delete")],),
                 ],),
                 SizedBox(height: 20,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/registrationId.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -228,7 +228,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/name.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -254,7 +254,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/dad.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -280,7 +280,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/dob.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -305,7 +305,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/mobile.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -346,7 +346,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/address.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -372,7 +372,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/sex.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -410,7 +410,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/caste.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -448,7 +448,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/weight.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -473,7 +473,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/height.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -498,7 +498,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/injuries.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -523,7 +523,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/education.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -547,7 +547,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/occupation.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -567,11 +567,11 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   },
                 ),),]),
                 SizedBox(height: 8,),
-            Row(children:[
+                Row(children:[
               CircleAvatar(
               radius: 25,
               child: Image.asset(
-                'assets/firebase_logo.png',
+                'assets/date.png',
                 height: 30,
               ),
               backgroundColor: Colors.transparent,
@@ -595,7 +595,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/firebase_logo.png',
+                      'assets/date1.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
@@ -632,10 +632,4 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   void dispose() {
     super.dispose();
   }
-}
-
-void globalShowInSnackBar(GlobalKey<ScaffoldMessengerState> messengerState,String content)
-{
-  messengerState.currentState.hideCurrentSnackBar();
-  messengerState.currentState.showSnackBar(new SnackBar(content: Text(content)));
 }

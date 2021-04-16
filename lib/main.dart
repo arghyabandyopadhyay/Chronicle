@@ -10,6 +10,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 import 'Models/receivedNotificationModel.dart';
 import 'Modules/auth.dart';
+import 'Modules/universalModule.dart';
 import 'Pages/SignInScreen.dart';
 import 'Pages/globalClass.dart';
 import 'Pages/idBlockedPage.dart';
@@ -21,7 +22,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 import 'message.dart';
 import 'message_list.dart';
 import 'permissions.dart';
@@ -35,7 +35,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
-  debugPrint('Handling a background message ${message.messageId}');
 }
 /// Create a [AndroidNotificationChannel] for heads up notifications
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -104,31 +103,14 @@ void main() async{
     badge: true,
     sound: true,
   );
-  runApp(MyApp());
+  runApp(Chronicle());
 }
-class Chronicle extends StatelessWidget {
+class Chronicle extends StatefulWidget {
+  const Chronicle({Key key}) : super(key: key);
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Chronicle',
-      debugShowCheckedModeBanner: false,
-      theme: lightThemeData,
-      darkTheme: darkThemeData,
-      themeMode: ThemeMode.system,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => MyApp(),
-        '/message': (context) => NotificationsPage(),
-      },
-    );
-  }
+  _ChronicleState createState() => _ChronicleState();
 }
-class MyApp extends StatefulWidget {
-  const MyApp({Key key}) : super(key: key);
-  @override
-  _AppState createState() => _AppState();
-}
-class _AppState extends State<MyApp> {
+class _ChronicleState extends State<Chronicle> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
   bool _requested = false;
   bool _fetching = false;
@@ -143,43 +125,6 @@ class _AppState extends State<MyApp> {
       updateUserDetails(value, value.id)
     });
   }
-  Future<void> onActionSelected(String value) async {
-    switch (value) {
-      case 'subscribe':
-        {
-          debugPrint(
-              'FlutterFire Messaging Example: Subscribing to topic "fcm_test".');
-          await FirebaseMessaging.instance.subscribeToTopic('fcm_test');
-          debugPrint(
-              'FlutterFire Messaging Example: Subscribing to topic "fcm_test" successful.');
-        }
-        break;
-      case 'unsubscribe':
-        {
-          debugPrint(
-              'FlutterFire Messaging Example: Unsubscribing from topic "fcm_test".');
-          await FirebaseMessaging.instance.unsubscribeFromTopic('fcm_test');
-          debugPrint(
-              'FlutterFire Messaging Example: Unsubscribing from topic "fcm_test" successful.');
-        }
-        break;
-      case 'get_apns_token':
-        {
-          if (defaultTargetPlatform == TargetPlatform.iOS ||
-              defaultTargetPlatform == TargetPlatform.macOS) {
-            debugPrint('FlutterFire Messaging Example: Getting APNs token...');
-            String token = await FirebaseMessaging.instance.getAPNSToken();
-            debugPrint('FlutterFire Messaging Example: Got APNs token: $token');
-          } else {
-            debugPrint(
-                'FlutterFire Messaging Example: Getting an APNs token is only supported on iOS and macOS platforms.');
-          }
-        }
-        break;
-      default:
-        break;
-    }
-  }
 
   Future<void> requestPermissions() async {
     NotificationSettings settings =
@@ -193,7 +138,6 @@ class _AppState extends State<MyApp> {
   void _configureDidReceiveLocalNotificationSubject() {
     didReceiveLocalNotificationSubject.stream
         .listen((ReceivedNotificationModel receivedNotification) async {
-      debugPrint("didReceiveLocalNotificationSubject");
       await showDialog(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
@@ -219,7 +163,6 @@ class _AppState extends State<MyApp> {
   }
   void _configureSelectNotificationSubject() {
     selectNotificationSubject.stream.listen((String payload) async {
-      debugPrint("selectNotificationSubject");
       navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
     });
   }
@@ -254,7 +197,6 @@ class _AppState extends State<MyApp> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint('A new onMessageOpenedApp event was published!');
       navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
     });
     FirebaseMessaging.instance.getToken().then(setToken);
@@ -281,7 +223,84 @@ class _AppState extends State<MyApp> {
       theme: lightThemeData,
       darkTheme: darkThemeData,
       themeMode: ThemeMode.system,
-      home: SignInScreen(),
+      home: Scaffold(
+      body:FutureBuilder(
+          future: Authentication.initializeFirebase(context: context),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return IdBlockedPage();
+            }
+            else if (snapshot.connectionState == ConnectionState.done) {
+              return SignInScreen();
+            }
+            return Scaffold(
+                appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
+                body: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Expanded(
+                          child: Shimmer.fromColors(
+                              baseColor: Colors.white,
+                              highlightColor: Colors.grey.withOpacity(0.5),
+                              enabled: true,
+                              child: ListView.builder(
+                                itemBuilder: (_, __) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 48.0,
+                                        height: 48.0,
+                                        color: Colors.white,
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                      ),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Container(
+                                              width: double.infinity,
+                                              height: 8.0,
+                                              color: Colors.white,
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.symmetric(vertical: 2.0),
+                                            ),
+                                            Container(
+                                              width: double.infinity,
+                                              height: 8.0,
+                                              color: Colors.white,
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.symmetric(vertical: 2.0),
+                                            ),
+                                            Container(
+                                              width: 40.0,
+                                              height: 8.0,
+                                              color: Colors.white,
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                itemCount: 4,
+                              )
+                          ),
+                        ),
+                      ],
+                    )
+                ));
+          }
+          ),
+      )
     );
   }
 }

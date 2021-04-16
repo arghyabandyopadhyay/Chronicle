@@ -1,79 +1,37 @@
-
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/aboutUsPage.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:chronicle/Pages/qrCodePage.dart';
-import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
-import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:chronicle/Widgets/registerList.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
-import '../Models/clientModel.dart';
-import '../Widgets/clientList.dart';
-import '../customColors.dart';
-import '../Widgets/registerNewClientWidget.dart';
+import 'package:shimmer/shimmer.dart';
 import 'SignInScreen.dart';
 import 'globalClass.dart';
 
 class MyHomePage extends StatefulWidget {
-  bool isFirstTime;
-  MyHomePage(this.isFirstTime);
+  MyHomePage();
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<RegisterModel> registers = [];
   PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
-  Future<void> sendNotifications() async {
-    if (GlobalClass.applicationToken == null) {
-      debugPrint('Unable to send FCM message, no token exists.');
-      return;
-    }
-    try {
-      registers.forEach((registerElement)  {
-        registerElement.clients.forEach((clientElement) async{
-          if(clientElement.notificationCount<3)
-            {
-              int a=clientElement.endDate.difference(DateTime.now()).inDays;
-              if((a>-3&&a<1)&&clientElement.due>=0)
-              {
-                await http.post(
-                  Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                  headers: <String, String>{
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'Authorization':'key=${serverKey}'
-                  },
-                  body: constructFCMPayload(GlobalClass.applicationToken,clientElement,registerElement.name),
-                );
-                clientElement.notificationCount++;
-                updateClient(clientElement, clientElement.id);
-              }
-            }
-        });
-      });
-    } catch (e) {
-      debugPrint(e);
-    }
-  }
   void newRegisterModel(RegisterModel register) {
     register.setId(addToRegister(register.name));
     this.setState(() {
-      registers.add(register);
+      GlobalClass.registerList.add(register);
     });
   }
   void updateRegisterModel() {
@@ -84,9 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void getRegisters() {
     getAllRegisters().then((registers) => {
       this.setState(() {
-        this.registers = registers;
+        GlobalClass.registerList = registers;
       }),
-      sendNotifications()
+      sendNotifications(scaffoldMessengerKey),
     });
   }
 
@@ -98,11 +56,12 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController textEditingController=new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       key:scaffoldKey,
-      appBar: widget.isFirstTime?AppBar(title: Text("Registers"),elevation: 0,):null,
-      drawer: widget.isFirstTime?Drawer(
+      appBar: AppBar(title: Text("Registers"),elevation: 0,),
+      drawer: Drawer(
         child: DrawerContent(
+          scaffoldMessengerKey: scaffoldMessengerKey,
           drawerItems: [
             DrawerActionModel(Icons.notifications, "Notifications", ()async{
               Navigator.pop(context);
@@ -133,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   });
                 } catch (e) {
-                  debugPrint(e);
+                  globalShowInSnackBar(scaffoldMessengerKey,e);
                   setState(() {
                     _data = '';
                   });
@@ -164,26 +123,95 @@ class _MyHomePageState extends State<MyHomePage> {
             }),
           ],
         ),
-      ):null,
-      body: Column(children: <Widget>[
-          Expanded(child: RegisterList(this.registers)),
-        ]),
+      ),
+      body: GlobalClass.registerList!=null?Column(children: <Widget>[
+        Expanded(child: RegisterList(false)),
+      ]):
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: Colors.grey.withOpacity(0.5),
+                    enabled: true,
+                    child: ListView.builder(
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 48.0,
+                              height: 48.0,
+                              color: Colors.white,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: 40.0,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      itemCount: 4,
+                    )
+                ),
+              ),
+            ],
+          )
+      ),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Name your Register"),
           content: TextField(controller: textEditingController,),
           actions: [ActionChip(label: Text("Add"), onPressed: (){
-            newRegisterModel(new RegisterModel(name: textEditingController.text));
-            textEditingController.clear();
-            Navigator.of(context).pop();
+            if(textEditingController.text!=""){
+              newRegisterModel(new RegisterModel(name: textEditingController.text));
+              textEditingController.clear();
+              Navigator.of(context).pop();
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your register!!");
+              Navigator.of(context).pop();
+            }
           }),
-          ActionChip(label: Text("Cancel"), onPressed: (){
-            Navigator.of(context).pop();
-          }),],
+            ActionChip(label: Text("Cancel"), onPressed: (){
+              Navigator.of(context).pop();
+            }),],
         ));
       },
         label: Text("Add Registers"),icon: Icon(Icons.addchart_outlined),),
-    );
+    ),key: scaffoldMessengerKey,);
   }
 }

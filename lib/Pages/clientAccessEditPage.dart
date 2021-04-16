@@ -80,8 +80,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   void initState() {
     super.initState();
     getData();
-    appBarTitle=GestureDetector(child: Container(child: Text("Users"),),
-      onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(list: [],));},);
+    appBarTitle=Text("Users");
   }
 
   @override
@@ -110,9 +109,6 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
       body: Column(children: <Widget>[
         Expanded(child: UsersList(_isSearching?this.searchResult:this.clients)),
       ]),
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
-        //clearAllAnimation
-      },),
     );
   }
 }

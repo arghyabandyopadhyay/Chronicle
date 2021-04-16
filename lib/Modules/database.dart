@@ -26,8 +26,6 @@ void deleteDatabaseNode(DatabaseReference id) {
   databaseReference.child(id.path.replaceAll("registers", "registers/").replaceAll("client", "client/")).remove();
 }
 Future<DatabaseReference> registerUserDetail() async {
-  database.setPersistenceEnabled(true);
-  database.setPersistenceCacheSizeBytes(10000000);
   DatabaseReference id=databaseReference.child('${GlobalClass.user.uid}/userDetails/').push();
   await getUserDetails().then((value) => {
     if(value==null){

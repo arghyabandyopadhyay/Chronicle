@@ -10,6 +10,9 @@ import 'package:chronicle/Modules/database.dart';
 import '../Modules/auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
+
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  GoogleSignInButton({Key key,this.scaffoldMessengerKey}) : super(key: key);
   @override
   _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
 }
@@ -46,27 +49,26 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           });
 
           User user =
-          await Authentication.signInWithGoogle(context);
+          await Authentication.signInWithGoogle(context,widget.scaffoldMessengerKey);
 
           setState(() {
-            _isSigningIn = false;
+            if(user!=null){
+              GlobalClass.user=user;
+              registerUserDetail().then((value) => {
+              _isSigningIn = false,
+                if(value!=null)
+                  {
+                    FirebaseMessaging.instance.getToken().then(setToken),
+                    Navigator.pushReplacement(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (context) => MyHomePage()))
+                  }
+                else{
+                  Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
+                }
+              });}
           });
-
-          if(user!=null){
-            GlobalClass.user=user;
-          registerUserDetail().then((value) => {
-            if(value!=null)
-            {
-              FirebaseMessaging.instance.getToken().then(setToken),
-              Navigator.pushReplacement(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (context) => MyHomePage(true)))
-            }
-            else{
-              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
-            }
-          });}
         },
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),

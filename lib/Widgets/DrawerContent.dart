@@ -11,8 +11,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DrawerContent extends StatelessWidget {
-  DrawerContent({Key key,this.drawerItems}) : super(key: key);
+  DrawerContent({Key key,this.drawerItems,this.scaffoldMessengerKey}) : super(key: key);
   final List<DrawerActionModel> drawerItems;
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,11 +100,11 @@ class DrawerContent extends StatelessWidget {
               leading: Icon(Icons.send),
               title: Text("Dispatch Notification"),
               onTap: ()async{
-                sendNotificationsToAll();
+                sendNotificationsToAll(scaffoldMessengerKey);
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
-              leading: Icon(Icons.pending_actions),
+              leading: Icon(Icons.account_box),
               title: Text("Users Access"),
               onTap: ()async{
                 Navigator.of(context).pop();

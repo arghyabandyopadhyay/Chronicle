@@ -1,44 +1,77 @@
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class RegisterOptionBottomSheet extends StatelessWidget {
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  TextEditingController textEditingController=new TextEditingController();
   //list of options you want to show in the bottom sheet
-  final List<RegisterModel> list;
-  const RegisterOptionBottomSheet({Key key, this.list}) : super(key: key);
+  RegisterOptionBottomSheet({Key key, this.scaffoldMessengerKey}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    void newRegisterModel(RegisterModel register) {
+      register.setId(addToRegister(register.name));
+        GlobalClass.registerList.add(register);
+    }
     return Scaffold(
       appBar:AppBar(
         elevation: 0,
         title: Text("Registers"),
         leading: IconButton(
-          icon: Icon(Icons.addchart_outlined),
+          icon: Icon(Icons.book),
           onPressed: (){},
         ),
         actions: <Widget>[
+          new IconButton(icon: Icon(Icons.add), onPressed:(){
+            //closes the modal on pressing the Icons Button
+            showDialog(context: context, builder: (_)=>new AlertDialog(
+              title: Text("Name your Register"),
+              content: TextField(controller: textEditingController,),
+              actions: [ActionChip(label: Text("Add"), onPressed: (){
+                if(textEditingController.text!=""){
+                  newRegisterModel(new RegisterModel(name: textEditingController.text));
+                  textEditingController.clear();
+                  Navigator.of(context).pop();
+                }
+                else{
+                  globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                  Navigator.of(context).pop();
+                }
+              }),
+                ActionChip(label: Text("Cancel"), onPressed: (){
+                  Navigator.of(context).pop();
+                }),],
+            ));
+          }),
           new IconButton(icon: Icon(Icons.clear), onPressed:(){
             //closes the modal on pressing the Icons Button
             Navigator.pop(context);
           }),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(child:ListView.builder(
-            physics: BouncingScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: list.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title: Text(list[index].name),
-                onTap: (){
-                  debugPrint(list[index].name);
-                }
-              );
-            },
-          ),)
-        ],
-      ),
+      // body: Column(
+      //   children: [
+      //     Expanded(child:ListView.builder(
+      //       physics: BouncingScrollPhysics(),
+      //       shrinkWrap: true,
+      //       itemCount: GlobalClass.registerList.length,
+      //       itemBuilder: (context, index) {
+      //         return ListTile(
+      //           title: Text(GlobalClass.registerList[index].name),
+      //           onTap: (){
+      //             globalShowInSnackBar(scaffoldMessengerKey,GlobalClass.registerList[index].name);
+      //           }
+      //         );
+      //       },
+      //     ),)
+      //   ],
+      // ),
+      body: Column(children: <Widget>[
+        Expanded(child: RegisterList(true)),
+      ]),
     );
 
   }

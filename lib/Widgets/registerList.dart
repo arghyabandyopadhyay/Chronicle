@@ -1,50 +1,46 @@
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Pages/clientPage.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class RegisterList extends StatefulWidget {
-  final List<RegisterModel> listItems;
-
-  RegisterList(this.listItems);
-
+  bool isDialog;
+  RegisterList(this.isDialog);
   @override
   _RegisterListState createState() => _RegisterListState();
 }
 
 class _RegisterListState extends State<RegisterList> {
-
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: this.widget.listItems.length,
-      itemBuilder: (context, index) {
-        return Slidable(
-          actionPane: SlidableDrawerActionPane(),
-          actionExtentRatio: 0.25,
-          child:ListTile(
-            onTap: (){
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientPage(this.widget.listItems[index] )));
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: 4,
+      itemCount: GlobalClass.registerList.length,
+      itemBuilder: (BuildContext context, int index) => GestureDetector(child:Container(
+          color: Colors.grey.withOpacity(0.1),
+          alignment: Alignment.center,
+          child: Text(GlobalClass.registerList[index].name,textAlign: TextAlign.center,style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
+          onTap: (){
+              if(widget.isDialog)Navigator.of(context).pop();
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ClientPage(GlobalClass.registerList[index] )));
+              setLastRegister(GlobalClass.registerList[index].id.key);
             },
-            title: Text(this.widget.listItems[index].name),
-          ),
-          secondaryActions: <Widget>[
-            IconSlideAction(
-              caption: 'Delete',
-              icon: Icons.delete,
-              color: Colors.red,
-              onTap: () async {
-                showDialog(context: context, builder: (_)=>new AlertDialog(
+            onLongPress: (){
+              showDialog(context: context, builder: (_)=>new AlertDialog(
                   title: Text("Confirm Delete"),
-                  content: Text("Are you sure?"),
+                  content: Text("Are you sure to delete \"${GlobalClass.registerList[index].name}\" ? All the client data will be deleted."),
                   actions: [
                     ActionChip(label: Text("Yes"), onPressed: (){
                       setState(() {
-                        deleteDatabaseNode(this.widget.listItems[index].id);
-                        this.widget.listItems.removeAt(index);
+                        deleteDatabaseNode(GlobalClass.registerList[index].id);
+                        GlobalClass.registerList.removeAt(index);
                         Navigator.of(context).pop();
                       });
                     }),
@@ -55,11 +51,11 @@ class _RegisterListState extends State<RegisterList> {
                     })
                   ],
                 ));
-              },
-            ),
-          ],
-        );
-      },
+            },),
+      staggeredTileBuilder: (int index) =>
+      new StaggeredTile.count(2, index%3==0?1:index%3.toDouble()),
+      mainAxisSpacing: 5.0,
+      crossAxisSpacing: 5.0,
     );
   }
 }

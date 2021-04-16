@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomColors{
+  // static const Color firebaseBlue = Color(0XFF039BE5);
   static const Color firebaseBlue = Color(0XFF039BE5);
   static const Color firebaseCoral = Color(0XFFFF8A65);
   static const Color firebaseGrey = Color(0XFFECEFF1);
@@ -24,14 +25,27 @@ var lightThemeData=ThemeData(
 );
 var darkThemeData=ThemeData(
     accentColor: Colors.black,
-    primaryColor:Color(0XFF2C384A),
+    primaryColor:Colors.black,
     brightness: Brightness.dark,
-    primaryColorDark: Color(0XFF2C384A),
+    primaryColorDark: Colors.black,
     primaryColorLight: Colors.white,
-    scaffoldBackgroundColor: Color(0XFF2C384A),
-    dialogBackgroundColor: Color(0XFF2C384A),
+    scaffoldBackgroundColor: Colors.black,
+    dialogBackgroundColor: Colors.black,
     floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black
     )
 );
+// var darkThemeData=ThemeData(
+//     accentColor: Colors.black,
+//     primaryColor:Color(0XFF2C384A),
+//     brightness: Brightness.dark,
+//     primaryColorDark: Color(0XFF2C384A),
+//     primaryColorLight: Colors.white,
+//     scaffoldBackgroundColor: Color(0XFF2C384A),
+//     dialogBackgroundColor: Color(0XFF2C384A),
+//     floatingActionButtonTheme: FloatingActionButtonThemeData(
+//         backgroundColor: Colors.black,
+//         foregroundColor: Colors.white
+//     )
+// );

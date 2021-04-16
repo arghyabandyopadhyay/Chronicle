@@ -13,3 +13,16 @@ setShowNotificationValue(bool showNotification) async {
   final value = showNotification;
   prefs.setBool(key,value);
 }
+
+Future<String> getLastRegister() async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = 'lastRegister';
+  final value = prefs.getString(key);
+  return value;
+}
+void setLastRegister(String id) async {
+  final prefs = await SharedPreferences.getInstance();
+  final key = 'lastRegister';
+  final value = id;
+  prefs.setString(key,value);
+}

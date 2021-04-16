@@ -1,3 +1,5 @@
+import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/idBlockedPage.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,7 +98,7 @@ class Authentication{
 
     return firebaseApp;
   }
-  static Future<User> signInWithGoogle(BuildContext context) async {
+  static Future<User> signInWithGoogle(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User user;
     if (kIsWeb) {
@@ -108,7 +110,7 @@ class Authentication{
 
         user = userCredential.user;
       } catch (e) {
-        debugPrint(e);
+        globalShowInSnackBar(scaffoldMessengerKey,e);
       }
     }
     else{
@@ -177,7 +179,7 @@ class Authentication{
     );
   }
 
-  Future<User> registerWithEmailPassword(String email, String password) async {
+  Future<User> registerWithEmailPassword(String email, String password,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     await Firebase.initializeApp();
     User user;
 
@@ -195,18 +197,18 @@ class Authentication{
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        debugPrint('The password provided is too weak.');
+        globalShowInSnackBar(scaffoldMessengerKey,'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        debugPrint('The account already exists for that email.');
+        globalShowInSnackBar(scaffoldMessengerKey,'The account already exists for that email.');
       }
     } catch (e) {
-      debugPrint(e);
+      globalShowInSnackBar(scaffoldMessengerKey,e);
     }
 
     return user;
   }
 
-  Future<User> signInWithEmailPassword(String email, String password) async {
+  Future<User> signInWithEmailPassword(String email, String password,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     await Firebase.initializeApp();
     User user;
 
@@ -226,9 +228,9 @@ class Authentication{
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        debugPrint('No user found for that email.');
+        globalShowInSnackBar(scaffoldMessengerKey,'No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        debugPrint('Wrong password provided.');
+        globalShowInSnackBar(scaffoldMessengerKey,'Wrong password provided.');
       }
     }
 
@@ -254,6 +256,7 @@ class Authentication{
   }
 
   static Future<void> signOut({BuildContext context}) async {
+    setLastRegister(null);
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {

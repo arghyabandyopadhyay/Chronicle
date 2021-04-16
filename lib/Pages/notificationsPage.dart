@@ -76,8 +76,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void initState() {
     super.initState();
     getNotifications();
-    appBarTitle=GestureDetector(child: Container(child: Text("Notifications"),),
-      onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(list: [],));},);
+    appBarTitle=Text("Notifications");
   }
 
   @override
@@ -106,9 +105,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
       body: Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
       ]),
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
-        //clearAllAnimation
-      },),
+      // floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
+      //   //clearAllAnimation
+      // },),
     );
   }
 }

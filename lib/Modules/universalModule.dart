@@ -5,6 +5,7 @@ import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'database.dart';
 int _messageCount = 0;
@@ -67,7 +68,11 @@ String constructFCMPayload(String token, ClientModel clientElement,String regist
   }) ;
 }
 
-
+void globalShowInSnackBar(GlobalKey<ScaffoldMessengerState> messengerState,String content)
+{
+  messengerState.currentState.hideCurrentSnackBar();
+  messengerState.currentState.showSnackBar(new SnackBar(content: Text(content)));
+}
 
 
 Future<List<DataModel>> getAllData() async {
@@ -82,10 +87,45 @@ Future<List<DataModel>> getAllData() async {
   }
   return datas;
 }
-Future<void> sendNotificationsToAll() async {
+
+Future<void> sendNotifications(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
   String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
   if (GlobalClass.applicationToken == null) {
-    debugPrint('Unable to send FCM message, no token exists.');
+    globalShowInSnackBar(scaffoldMessengerKey,'Unable to send FCM message, no token exists.');
+    return;
+  }
+  try {
+    GlobalClass.registerList.forEach((registerElement)  {
+      registerElement.clients.forEach((clientElement) async{
+        if(clientElement.notificationCount<3)
+        {
+          int a=clientElement.endDate.difference(DateTime.now()).inDays;
+          if((a>-3&&a<1)&&clientElement.due>=0)
+          {
+            await http.post(
+              Uri.parse('https://fcm.googleapis.com/fcm/send'),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Authorization':'key=${serverKey}'
+              },
+              body: constructFCMPayload(GlobalClass.applicationToken,clientElement,registerElement.name),
+            );
+            clientElement.notificationCount++;
+            updateClient(clientElement, clientElement.id);
+          }
+        }
+      });
+    });
+  } catch (e) {
+    globalShowInSnackBar(scaffoldMessengerKey,e);
+  }
+}
+
+
+Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
+  if (GlobalClass.applicationToken == null) {
+    globalShowInSnackBar(scaffoldMessengerKey,'Unable to send FCM message, no token exists.');
     return;
   }
   try {
@@ -111,7 +151,7 @@ Future<void> sendNotificationsToAll() async {
       });
     });
   } catch (e) {
-    debugPrint(e);
+    globalShowInSnackBar(scaffoldMessengerKey,e);
   }
 }
 void updateClientUniversal(ClientModel client, DatabaseReference id) {

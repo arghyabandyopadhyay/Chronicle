@@ -1,5 +1,6 @@
 
 
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class QrCodePage extends StatefulWidget {
 
 class _QrCodePageState extends State<QrCodePage> {
 
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -28,11 +30,11 @@ class _QrCodePageState extends State<QrCodePage> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
         elevation: 0,
         title: Text("QR Code"),
-        ),
+      ),
       body: Center(
         child: QrImage(
           data: widget.qrCode,
@@ -66,13 +68,13 @@ class _QrCodePageState extends State<QrCodePage> {
 
           });
         } catch (e) {
-          debugPrint(e);
+          globalShowInSnackBar(scaffoldMessengerKey,e);
           setState(() {
             _data = '';
           });
         }
       },
-      child: Icon(Icons.edit),),
-    );
+        child: Icon(Icons.edit),),
+    ),key: scaffoldMessengerKey,);
   }
 }

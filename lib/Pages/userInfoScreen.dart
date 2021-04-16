@@ -1,6 +1,7 @@
 
 
 import 'package:chronicle/Models/userModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,6 +25,8 @@ class UserInfoScreen extends StatefulWidget {
 class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
   PickedFile _imageFile;
+
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
@@ -50,7 +53,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   dynamic _pickImageError;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child:Scaffold(
       appBar: AppBar(
         elevation: 0,
         title: Text("My Profile"),
@@ -80,7 +83,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
                 });
               } catch (e) {
-                debugPrint(e);
+                globalShowInSnackBar(scaffoldMessengerKey,e);
                 setState(() {
                   _data = '';
                 });
@@ -232,6 +235,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           ),
         ),
       ),
-    );
+    ),key:scaffoldMessengerKey);
   }
 }
