@@ -20,7 +20,7 @@ Future<String> getLastRegister() async {
   final value = prefs.getString(key);
   return value;
 }
-void setLastRegister(String id) async {
+Future<void> setLastRegister(String id) async {
   final prefs = await SharedPreferences.getInstance();
   final key = 'lastRegister';
   final value = id;

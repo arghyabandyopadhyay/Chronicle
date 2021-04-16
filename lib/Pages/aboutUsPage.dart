@@ -17,7 +17,7 @@ class _AboutPageState extends State<AboutUsPage> {
     return Scaffold(
       appBar: AppBar(
         title:Text("About Us"),
-        elevation: 0,
+
       ),
       body: ListView(
         physics: BouncingScrollPhysics(),

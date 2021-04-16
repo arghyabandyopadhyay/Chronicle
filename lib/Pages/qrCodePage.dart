@@ -32,7 +32,7 @@ class _QrCodePageState extends State<QrCodePage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-        elevation: 0,
+
         title: Text("QR Code"),
       ),
       body: Center(

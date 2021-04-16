@@ -55,7 +55,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child:Scaffold(
       appBar: AppBar(
-        elevation: 0,
+
         title: Text("My Profile"),
         actions: [
           IconButton(icon: Icon(Icons.payment), onPressed: ()async{

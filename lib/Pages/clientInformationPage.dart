@@ -101,7 +101,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
     }
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-        elevation: 0,
+
         title: Text(widget.client.name!=null?widget.client.name:"Client Profile",),
         actions: [
           Center(child: Text(widget.client.due.abs().toString()+"  ",style: TextStyle(color: this.widget.client.due!=null&&this.widget.client.due==0?null:this.widget.client.due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold,fontSize: 30),),)        ],

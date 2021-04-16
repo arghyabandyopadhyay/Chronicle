@@ -63,7 +63,7 @@ class _ClientPageState extends State<ClientPage> {
             children: [
               WidgetSpan(child: Text(widget.register.name)),
               WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
+                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
               ),
             ],
           ),
@@ -111,7 +111,7 @@ class _ClientPageState extends State<ClientPage> {
           children: [
             WidgetSpan(child: Text(widget.register.name)),
             WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
+                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
             ),
           ],
         ),
@@ -132,7 +132,7 @@ class _ClientPageState extends State<ClientPage> {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
             }),
             DrawerActionModel(Icons.book, "Registers", ()async{
-              setLastRegister(null);
+              setLastRegister("");
               Navigator.pop(context);
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MyHomePage()));
             }),
@@ -194,7 +194,7 @@ class _ClientPageState extends State<ClientPage> {
         ),
       ),
       appBar: AppBar(
-        elevation: 0,
+
         title: appBarTitle,
         leading: IconButton(onPressed: () { if(!_isSearching)scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
         actions: [

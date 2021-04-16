@@ -6,19 +6,18 @@ import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class RegisterOptionBottomSheet extends StatelessWidget {
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   TextEditingController textEditingController=new TextEditingController();
   //list of options you want to show in the bottom sheet
-  RegisterOptionBottomSheet({Key key, this.scaffoldMessengerKey}) : super(key: key);
+  RegisterOptionBottomSheet({Key key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     void newRegisterModel(RegisterModel register) {
       register.setId(addToRegister(register.name));
         GlobalClass.registerList.add(register);
     }
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       appBar:AppBar(
-        elevation: 0,
         title: Text("Registers"),
         leading: IconButton(
           icon: Icon(Icons.book),
@@ -29,7 +28,16 @@ class RegisterOptionBottomSheet extends StatelessWidget {
             //closes the modal on pressing the Icons Button
             showDialog(context: context, builder: (_)=>new AlertDialog(
               title: Text("Name your Register"),
-              content: TextField(controller: textEditingController,),
+              content: TextField(controller: textEditingController,
+                textCapitalization: TextCapitalization.words,
+                textInputAction: TextInputAction.done,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: "Name of the Register",
+                  contentPadding:
+                  EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                ),
+              ),
               actions: [ActionChip(label: Text("Add"), onPressed: (){
                 if(textEditingController.text!=""){
                   newRegisterModel(new RegisterModel(name: textEditingController.text));
@@ -72,7 +80,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
       body: Column(children: <Widget>[
         Expanded(child: RegisterList(true)),
       ]),
-    );
+    ),key: scaffoldMessengerKey,);
 
   }
 }

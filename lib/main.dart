@@ -1,8 +1,5 @@
-import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
-import 'package:chronicle/temp.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,22 +7,15 @@ import 'package:rxdart/rxdart.dart';
 import 'package:shimmer/shimmer.dart';
 import 'Models/receivedNotificationModel.dart';
 import 'Modules/auth.dart';
-import 'Modules/universalModule.dart';
 import 'Pages/SignInScreen.dart';
 import 'Pages/globalClass.dart';
 import 'Pages/idBlockedPage.dart';
-import 'Pages/myHomePage.dart';
-import 'Widgets/googleSignInButton.dart';
 import 'customColors.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'message.dart';
-import 'message_list.dart';
-import 'permissions.dart';
-import 'token_monitor.dart';
 
 /// Define a top-level named handler which background/terminated messages will
 /// call.

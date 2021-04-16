@@ -23,7 +23,7 @@ class _IdBlockedPageState extends State<IdBlockedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+
         title: Text("Id Blocked"),
         actions: [IconButton(icon: Icon(Icons.account_circle_outlined,), onPressed: (){
           Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen()));

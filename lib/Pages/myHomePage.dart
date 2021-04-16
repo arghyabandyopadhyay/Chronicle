@@ -40,12 +40,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getRegisters() {
-    getAllRegisters().then((registers) => {
-      this.setState(() {
+
+      getAllRegisters().then((registers) => {
+      setState(() {
         GlobalClass.registerList = registers;
       }),
-      sendNotifications(scaffoldMessengerKey),
-    });
+        sendNotifications(scaffoldMessengerKey),
+      });
+
   }
 
   @override
@@ -58,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       key:scaffoldKey,
-      appBar: AppBar(title: Text("Registers"),elevation: 0,),
+      appBar: AppBar(title: Text("Registers"),),
       drawer: Drawer(
         child: DrawerContent(
           scaffoldMessengerKey: scaffoldMessengerKey,

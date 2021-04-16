@@ -37,7 +37,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar:AppBar(
-          elevation: 0,
+
           title: Text("Settings")
         ),
         body: FutureBuilder<bool>(
