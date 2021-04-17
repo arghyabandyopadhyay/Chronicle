@@ -92,7 +92,6 @@ class _SignInScreenState extends State<SignInScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Flexible(
-                      flex: 1,
                       child: Image.asset(
                         'assets/firebase_logo.png',
                         // height: 400,

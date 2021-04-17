@@ -18,8 +18,8 @@
 <!--    </item>-->
     <item>
         <bitmap
-            android:gravity="center"
+            android:gravity="fill"
             android:antialias="true"
-            android:src="@drawable/chroniclelogosmall1" />
+            android:src="@drawable/splashscreen" />
     </item>
 </layer-list>
