@@ -11,7 +11,8 @@ class UserModel
   String token;
   int canAccess;
   int isOwner;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner});
+  String messageString;
+  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner,this.messageString});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
         displayName: json1['DisplayName'],
@@ -21,6 +22,7 @@ class UserModel
         isOwner: json1['IsOwner']!=null?json1['IsOwner']:0,
         qrcodeDetail: json1['QrCodeDetail'],
         token: json1['Token'],
+        messageString:json1['MessageString']
     );
   }
   void setId(DatabaseReference id)

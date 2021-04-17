@@ -63,7 +63,7 @@ class _SignInScreenState extends State<SignInScreen> {
             else {
                 await getAllRegisters().then((registers) => {
                     GlobalClass.registerList = registers,
-                    sendNotifications(scaffoldMessengerKey),
+                    // sendNotifications(scaffoldMessengerKey,GlobalClass.userDetail.messageString),
                   widget=ClientPage(registers.where((element) => element.id.key==lastRegister).first)
                 })
             }

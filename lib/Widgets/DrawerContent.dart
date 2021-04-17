@@ -95,12 +95,11 @@ class DrawerContent extends StatelessWidget {
                 Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
               },
             ),
-            // if(GlobalClass.user.uid=="8daK26SfAmTAguFwBdNBAzTstuK2"||GlobalClass.user.uid=="G9xL84Y5bHM0XsdF3PUdVgU7UeX2"||GlobalClass.user.uid=="dXNxq289Z1hBhYBJ4JnaTGW9lKD3"||GlobalClass.user.uid=="TxJ48XQnEQN9Dph4xsHlmHCvjb82")ListTile(
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
               leading: Icon(Icons.send),
               title: Text("Dispatch Notification"),
               onTap: ()async{
-                sendNotificationsToAll(scaffoldMessengerKey);
+                sendNotificationsToAll(scaffoldMessengerKey,GlobalClass.userDetail.messageString);
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(

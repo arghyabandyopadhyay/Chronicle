@@ -1,15 +1,7 @@
 import 'package:chronicle/Models/userModel.dart';
-import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/clientInformationPage.dart';
-import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../Models/clientModel.dart';
-import 'AddPaymentDialog.dart';
 
 class UsersList extends StatefulWidget {
   final List<UserModel> listItems;

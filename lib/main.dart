@@ -45,7 +45,7 @@ void main() async{
   await Firebase.initializeApp();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+  AndroidInitializationSettings('@drawable/ic_launcher');
 
   /// Note: permissions aren't requested here just to demonstrate that can be
   /// done later
@@ -180,7 +180,7 @@ class _ChronicleState extends State<Chronicle> {
                 channel.id,
                 channel.name,
                 channel.description,
-                icon: '@mipmap/ic_launcher',
+                icon: '@drawable/ic_launcher',
               ),
             ));
       }

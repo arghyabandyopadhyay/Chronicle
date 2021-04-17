@@ -40,12 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getRegisters() {
-
       getAllRegisters().then((registers) => {
       setState(() {
         GlobalClass.registerList = registers;
       }),
-        sendNotifications(scaffoldMessengerKey),
+        // sendNotifications(scaffoldMessengerKey,GlobalClass.userDetail.messageString),
       });
 
   }
