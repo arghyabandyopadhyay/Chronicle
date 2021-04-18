@@ -12,8 +12,9 @@ import 'AddPaymentDialog.dart';
 
 class ClientList extends StatefulWidget {
   final List<ClientModel> listItems;
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
 
-  ClientList(this.listItems);
+  ClientList(this.listItems,this.scaffoldMessengerKey);
 
   @override
   _ClientListState createState() => _ClientListState();
@@ -30,6 +31,26 @@ class _ClientListState extends State<ClientList> {
             actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
             child:ListTile(
+              onLongPress: (){
+                showDialog(context: context, builder: (_)=>new AlertDialog(
+                  title: Text("Confirm Delete"),
+                  content: Text("Are you sure to delete ${this.widget.listItems[index].name}?"),
+                  actions: [
+                    ActionChip(label: Text("Yes"), onPressed: (){
+                      setState(() {
+                        deleteDatabaseNode(this.widget.listItems[index].id);
+                        this.widget.listItems.removeAt(index);
+                        Navigator.of(_).pop();
+                      });
+                    }),
+                    ActionChip(label: Text("No"), onPressed: (){
+                      setState(() {
+                        Navigator.of(_).pop();
+                      });
+                    })
+                  ],
+                ));
+              },
               onTap: () async {
                 Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.widget.listItems[index])));
               },
@@ -47,26 +68,26 @@ class _ClientListState extends State<ClientList> {
               crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text((this.widget.listItems[index].startDate!=null?this.widget.listItems[index].startDate.day.toString()+"-"+this.widget.listItems[index].startDate.month.toString()+"-"+this.widget.listItems[index].startDate.year.toString()+" to ":"")+((this.widget.listItems[index].endDate!=null)?this.widget.listItems[index].endDate.day.toString()+"-"+this.widget.listItems[index].endDate.month.toString()+"-"+this.widget.listItems[index].endDate.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
-              Text("\u2706: "+this.widget.listItems[index].mobileNo),
+              Text("\u2706: "+(this.widget.listItems[index].mobileNo!=null?this.widget.listItems[index].mobileNo:"N/A")),
               Text("${this.widget.listItems[index].due!=null&&this.widget.listItems[index].due<0?"Paid":"Due"}: "+this.widget.listItems[index].due.abs().toString(),style: TextStyle(color: this.widget.listItems[index].due!=null&&this.widget.listItems[index].due==0?null:this.widget.listItems[index].due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold),)
             ]
           ),
         ),
           secondaryActions: <Widget>[
-            IconSlideAction(
-              caption: this.widget.listItems[index].due>-1?'Add Due':'Reduce Payment',
-              icon: this.widget.listItems[index].due>-1?Icons.more_time:Icons.remove_circle,
+            if(this.widget.listItems[index].due>-1)IconSlideAction(
+              caption: 'Add Due',
+              icon: Icons.more_time,
               color: Colors.red,
               onTap: () async {
                 setState(() {
                   this.widget.listItems[index].due=this.widget.listItems[index].due+1;
                   if(this.widget.listItems[index].due<=1){
-                    this.widget.listItems[index].startDate=this.widget.listItems[index].startDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,1)));
+                    this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].startDate.year,this.widget.listItems[index].startDate.month+1,this.widget.listItems[index].startDate.day);
                   }
                   if(this.widget.listItems[index].due>=1)
-                    {
-                      this.widget.listItems[index].endDate=this.widget.listItems[index].endDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,1)));
-                    }
+                  {
+                    this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+1,this.widget.listItems[index].endDate.day);;
+                  }
                   this.widget.listItems[index].notificationCount=0;
                   updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                 });
@@ -80,19 +101,33 @@ class _ClientListState extends State<ClientList> {
               onTap: () {
                   showDialog(context: context, builder: (_) =>new AddQuantityDialog()
                   ).then((value) {
-                    int intVal=int.parse(value.toString());
-                    setState(() {
-                      this.widget.listItems[index].due=this.widget.listItems[index].due-intVal;
-                      if(this.widget.listItems[index].due>0){
-                        this.widget.listItems[index].startDate=this.widget.listItems[index].startDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,intVal)));
-                      }
-                      else if(this.widget.listItems[index].due<0)
+                    try
                       {
-                        this.widget.listItems[index].endDate=this.widget.listItems[index].endDate.add(Duration(days: getDuration(this.widget.listItems[index].startDate.month,this.widget.listItems[index].startDate.year,intVal)));
+                        int intVal=int.parse(value.toString());
+                        setState(() {
+                          if(this.widget.listItems[index].due>intVal) {
+                            this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].startDate.year,this.widget.listItems[index].startDate.month+intVal,this.widget.listItems[index].startDate.day);
+                          }
+                          else{
+                            this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month-1,this.widget.listItems[index].endDate.day);
+                            this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+(intVal-this.widget.listItems[index].due),this.widget.listItems[index].endDate.day);
+                          }
+                          this.widget.listItems[index].due=this.widget.listItems[index].due-intVal;
+
+                          // if(this.widget.listItems[index].due>0){
+                          //   this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].startDate.year,this.widget.listItems[index].startDate.month+intVal,this.widget.listItems[index].startDate.day);
+                          // }
+                          // else if(this.widget.listItems[index].due<0)
+                          // {
+                          //   this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+intVal,this.widget.listItems[index].endDate.day);
+                          // }
+                          this.widget.listItems[index].notificationCount=0;
+                          updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
+                        });
                       }
-                      this.widget.listItems[index].notificationCount=0;
-                      updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
-                    });
+                    catch(E){
+                      globalShowInSnackBar(widget.scaffoldMessengerKey, "Invalid Quantity!!");
+                    }
                   });
 
               },

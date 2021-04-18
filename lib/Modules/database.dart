@@ -46,6 +46,7 @@ void updateClient(ClientModel client, DatabaseReference id) {
 }
 
 Future<List<ClientModel>> getAllClients(String registerId) async {
+
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/${registerId}/client/').once();
   List<ClientModel> clients = [];
   if (dataSnapshot.value != null) {

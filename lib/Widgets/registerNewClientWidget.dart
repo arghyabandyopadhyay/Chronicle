@@ -32,6 +32,7 @@ class _RegisterNewClientWidgetState extends State<RegisterNewClientWidget> {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      heroTag: "registerClients2",
       child: Icon(Icons.person_add),
       splashColor: Colors.blue,
       tooltip: "Register Clients",

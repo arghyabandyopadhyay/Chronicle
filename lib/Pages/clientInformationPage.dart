@@ -18,9 +18,7 @@ class ClientInformationPage extends StatefulWidget {
 }
 
 class _ClientInformationPageState extends State<ClientInformationPage> {
-  Future<dynamic> _futureProfile;
-  GlobalKey<ScaffoldMessengerState> scaffoldKey=new GlobalKey<ScaffoldMessengerState>();
-  dynamic _profile;
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=new GlobalKey<ScaffoldMessengerState>();
   var phoneNumberTextField=TextEditingController();
   var nameTextField=TextEditingController();
   var dueTextField=TextEditingController();
@@ -100,8 +98,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       counter++;
     }
     return ScaffoldMessenger(child: Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-
         title: Text(widget.client.name!=null?widget.client.name:"Client Profile",),
         actions: [
           Center(child: Text(widget.client.due.abs().toString()+"  ",style: TextStyle(color: this.widget.client.due!=null&&this.widget.client.due==0?null:this.widget.client.due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold,fontSize: 30),),)        ],
@@ -139,42 +137,43 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       }
                     }
                   },),Text("Message")],),
-                  Column(children: [IconButton(icon: Icon(this.widget.client.due>-1?Icons.more_time:Icons.remove_circle,color: Colors.red), onPressed: () async {
+                  if(this.widget.client.due>-1)Column(children: [IconButton(icon: Icon(Icons.more_time,color: Colors.red), onPressed: () async {
                     setState(() {
                       this.widget.client.due=this.widget.client.due+1;
                       if(this.widget.client.due<=1){
-                        this.widget.client.startDate=this.widget.client.startDate.add(Duration(days: getDuration(this.widget.client.startDate.month,this.widget.client.startDate.year,1)));
+                        this.widget.client.startDate=DateTime(this.widget.client.startDate.year,this.widget.client.startDate.month+1,this.widget.client.startDate.day);
                       }
                       if(this.widget.client.due>=1)
                       {
-                        this.widget.client.endDate=this.widget.client.endDate.add(Duration(days: getDuration(this.widget.client.startDate.month,this.widget.client.startDate.year,1)));
+                        this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+1,this.widget.client.endDate.day);;
                       }
                       this.widget.client.notificationCount=0;
                       updateClient(this.widget.client, this.widget.client.id);
-                      // widget.client!.due=widget.client!.due!+1;
-                      // this.widget.client!.endDate=this.widget.client!.endDate!.add(Duration(days: getNoOfDays(this.widget.client!.endDate!.month,this.widget.client!.endDate!.year)));
-                      // updateClient(widget.client!, widget.client!.id!);
                     });
-                  }),Text(this.widget.client.due>-1?"Add Due":"Reduce Payment")],),
+                  }),Text("Add Due")],),
                   Column(children: [IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
                     showDialog(context: context, builder: (_) =>new AddQuantityDialog()
                     ).then((value) {
-                      int intVal=int.parse(value.toString());
-                      setState(() {
-                        this.widget.client.due=this.widget.client.due-intVal;
-                        if(this.widget.client.due>0){
-                          this.widget.client.startDate=this.widget.client.startDate.add(Duration(days: getDuration(this.widget.client.startDate.month,this.widget.client.startDate.year,intVal)));
-                        }
-                        else if(this.widget.client.due<0)
-                        {
-                          this.widget.client.endDate=this.widget.client.endDate.add(Duration(days: getDuration(this.widget.client.startDate.month,this.widget.client.startDate.year,intVal)));
-                        }
-                        this.widget.client.notificationCount=0;
-                        updateClient(this.widget.client, this.widget.client.id);
-                        // widget.client!.due=widget.client!.due!-intVal>=0?widget.client!.due!-intVal:0;
-                        // this.widget.client!.startDate=this.widget.client!.startDate!.add(Duration(days: getDuration(this.widget.client!.startDate!.month,this.widget.client!.startDate!.year,intVal)));
-                        // updateClient(widget.client!, widget.client!.id!);
-                      });
+                      try
+                      {
+                        int intVal=int.parse(value.toString());
+                        setState(() {
+                          if(this.widget.client.due>intVal) {
+                            this.widget.client.startDate=DateTime(this.widget.client.startDate.year,this.widget.client.startDate.month+intVal,this.widget.client.startDate.day);
+                          }
+                          else{
+                            this.widget.client.startDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month-1,this.widget.client.endDate.day);
+                            this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+(intVal-this.widget.client.due),this.widget.client.endDate.day);
+                          }
+                          this.widget.client.due=this.widget.client.due-intVal;
+
+                          this.widget.client.notificationCount=0;
+                          updateClient(this.widget.client, this.widget.client.id);
+                        });
+                      }
+                      catch(E){
+                        globalShowInSnackBar(scaffoldMessengerKey, "Invalid Quantity!!");
+                      }
                     });
 
                   },),Text("Add Payment")],),
@@ -273,7 +272,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     onSaved: (value) {
                       widget.client.fathersName = value;
                     },
-                    validator: _validateName,
                   ),),]),
                 SizedBox(height: 15,),
                 Row(children:[
@@ -328,7 +326,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                               throw 'Could not launch $url';
                             }
                           }
-                          else globalShowInSnackBar(scaffoldKey, "Please enter the mobile no");
+                          else globalShowInSnackBar(scaffoldMessengerKey, "Please enter the mobile no");
                         },
                       ),
                       border: const OutlineInputBorder(),
@@ -465,7 +463,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      widget.client.weight = double.parse(value);
+                      if(value.isNotEmpty)widget.client.weight = double.parse(value);
                     },
                   ),),]),
                 SizedBox(height: 15,),
@@ -490,7 +488,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
                     onSaved: (value) {
-                      widget.client.height = double.parse(value);
+                      if(value.isNotEmpty)widget.client.height = double.parse(value);
                     },
                   ),),]),
                 SizedBox(height: 15,),
@@ -614,7 +612,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     widget.client.endDate=value;
                   },
                 ),),]),
-                SizedBox(height: 15,),
+                SizedBox(height: 100,),
               ],
             ),))
         ],
@@ -625,7 +623,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
           }, label: Text("Save"),icon: Icon(Icons.save,),),
 
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    ),key: scaffoldKey,);
+    ),key: scaffoldMessengerKey,);
   }
 
   @override

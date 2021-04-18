@@ -9,7 +9,6 @@ import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -18,10 +17,10 @@ import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
-import '../customColors.dart';
 import '../Widgets/registerNewClientWidget.dart';
 import 'SignInScreen.dart';
 import 'notificationsPage.dart';
+
 
 class ClientPage extends StatefulWidget {
   final RegisterModel register;
@@ -100,6 +99,7 @@ class _ClientPageState extends State<ClientPage> {
       })
     });
   }
+
 
   @override
   void initState() {
@@ -194,7 +194,6 @@ class _ClientPageState extends State<ClientPage> {
         ),
       ),
       appBar: AppBar(
-
         title: appBarTitle,
         leading: IconButton(onPressed: () { if(!_isSearching)scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
         actions: [
@@ -238,7 +237,7 @@ class _ClientPageState extends State<ClientPage> {
           }),
         ],),
       body: this.clients!=null?Column(children: <Widget>[
-        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
+        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
       ]):
         Container(
         width: double.infinity,
@@ -303,7 +302,12 @@ class _ClientPageState extends State<ClientPage> {
           ],
         )
     ),
-      floatingActionButton: RegisterNewClientWidget(this.newClientModel),
+      floatingActionButton:Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          RegisterNewClientWidget(this.newClientModel)
+        ],
+      ),
     ),key:scaffoldMessengerKey);
   }
 }

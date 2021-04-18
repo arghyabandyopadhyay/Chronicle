@@ -122,12 +122,19 @@ Future<List<DataModel>> getAllData() async {
 
 
 Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,String messageString) async {
+  DateTime nowTemp=DateTime.now();
+  DateTime now=DateTime(nowTemp.year,nowTemp.month,nowTemp.day);
   try {
     List<DataModel> datas=await getAllData();
     datas.forEach((dataElement) {
       dataElement.registers.forEach((registerElement)  {
         registerElement.clients.forEach((clientElement) async{
-          if(clientElement.endDate!=null&&dataElement.userDetails.first.token!=null){
+          if(clientElement.due<=-1&&DateTime(clientElement.startDate.year,clientElement.startDate.month+1,clientElement.startDate.day)==now){
+            clientElement.due=clientElement.due+1;
+            clientElement.startDate=now;
+            updateClient(clientElement, clientElement.id);
+          }
+          else if(clientElement.endDate!=null&&dataElement.userDetails.first.token!=null){
             int a=clientElement.endDate.difference(DateTime.now()).inDays;
             if((a>-3&&a<1)&&clientElement.due>=0)
             {

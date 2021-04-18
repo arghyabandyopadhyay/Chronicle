@@ -35,7 +35,7 @@ class ClientModel
         registrationId: json1['RegistrationId'],
         name: json1['Name'],
         fathersName: json1['FathersName'],
-        mobileNo: json1['MobileNo'],
+        mobileNo: json1['MobileNo']!=null?json1['MobileNo'].toString():null,
         education: json1['Education'],
         occupation: json1['Occupation'],
         address: json1['Address'],
@@ -47,7 +47,7 @@ class ClientModel
         dob: json1['Dob']!=null?DateTime.parse(json1['Dob']):null,
         height: json1['Height']!=null?double.parse(json1['Height'].toString()):null,
         weight: json1['Weight']!=null?double.parse(json1['Weight'].toString()):null,
-        due: json1['Due'],
+        due: json1['Weight']!=null?json1['Due']:0,
         notificationCount: json1['NotificationCount']!=null?json1['NotificationCount']:0
     );
   }

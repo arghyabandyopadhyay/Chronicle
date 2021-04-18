@@ -20,6 +20,7 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   List<ClientModel> clients;
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   bool _isSearching=false;
   List<ClientModel> searchResult = [];
   Icon icon = new Icon(
@@ -82,9 +83,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-
         title: appBarTitle,
         leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:Icons.arrow_back),),
         actions: [
@@ -104,7 +104,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           }),
         ],),
       body: this.clients!=null?Column(children: <Widget>[
-        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
+        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
       ]):
       Container(
           width: double.infinity,
@@ -172,6 +172,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
       // floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
       //   //clearAllAnimation
       // },),
-    );
+    ),key: scaffoldMessengerKey,);
   }
 }

@@ -1,12 +1,20 @@
 import 'package:chronicle/Models/clientModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/widgets.dart';
-
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import '../customColors.dart';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 
 class RegisterClientPage extends StatefulWidget {
   final Function(ClientModel) callback;
@@ -15,10 +23,11 @@ class RegisterClientPage extends StatefulWidget {
   _RegisterClientPageState createState() => _RegisterClientPageState();
 }
 class _RegisterClientPageState extends State<RegisterClientPage> {
-  final GlobalKey<ScaffoldMessengerState> _scaffoldKey = GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
   ClientModel clientData = ClientModel();
-
+  DateTime now,today;
   var phoneNumberTextField=TextEditingController();
+  var paymentNumberTextField=TextEditingController();
   var nameTextField=TextEditingController();
   var addressTextField=TextEditingController();
   var fathersNameTextField=TextEditingController();
@@ -30,44 +39,130 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   var weightTextField=TextEditingController();
   String sexDropDown;
   String casteDropDown;
-
+  String _filePath;
+  
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  //Functions
-  void showInSnackBar(String value) {
-    _scaffoldKey.currentState.hideCurrentSnackBar();
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text(value,textScaleFactor:1),
-    ));
+
+  Future<String> get localPath async {
+    final directory = await getExternalStorageDirectory();
+    return directory.path;
   }
+  fileLocalName(String type, String assetPath) async {
+    String dic = await localPath + "/filereader/files/";
+    return dic + "ClientUploadExcelFile"+ "." + type;
+  }
+  void getFilePath() async {
+    try {
+      FilePickerResult filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
+      String filePath=filePickerResult.paths[0];
+      if (filePath == '') {
+        return;
+      }
+      this._filePath = filePath;
+      var bytes = File(_filePath).readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      int i = 0;
+      List<dynamic> keys = [];
+      List<Map<String, dynamic>> json = [];
+      for (var table in excel.tables.keys) {
+        for (var row in excel.tables[table].rows) {
+          if (i == 0) {
+            keys = row;
+            i++;
+          } else {
+            Map<String, dynamic> temp = Map<String, dynamic>();
+            int j = 0;
+            String tk = '';
+            for (var key in keys) {
+              tk = key;
+              temp[tk] = (row[j].runtimeType==String)?row[j].toString():row[j];
+              j++;
+            }
+            json.add(temp);
+          }
+        }
+      }
+      json.forEach((jsonItem)
+      {
+        widget.callback(ClientModel.fromJson(jsonItem));
+      });
+      Navigator.of(context).pop();
+    } catch (e) {
+      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong");
+    }
+  }
+  fileExists(String type, String assetPath) async {
+    String fileName = await fileLocalName(type, assetPath);
+    if (await File(fileName).exists()) {
+      return true;
+    }
+    return false;
+  }
+  asset2Local(String type, String assetPath) async {
+    var path=await fileLocalName(type, assetPath);
+    File file = File(path);
+    if (await fileExists(type, assetPath)) {
+      await file.delete();
+    }
+    await file.create(recursive: true);
+    ByteData bd = await rootBundle.load(assetPath);
+    await file.writeAsBytes(bd.buffer.asUint8List(), flush: true);
+    await OpenFile.open(path);
+    return true;
+  }
+  //Functions
   Future<void> _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {// Start validating on every change.
     }
     else {
       form.save();
-      clientData.due= 0;
       clientData.sex=sexDropDown;
       clientData.caste=casteDropDown;
+      try{
+        if(clientData.startDate==null)clientData.startDate=today;
+        int months=int.parse(paymentNumberTextField.text);
+        clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+      }
+      catch(E){
+        print(E);
+        globalShowInSnackBar(scaffoldMessengerKey,"Please Enter No of Payments!!");
+      }
+      print(clientData.toJson());
       widget.callback(clientData);
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
     }
   }
   String _validateName(String value) {
-    if(value.isEmpty)nameTextField.text="";
+    if(value.isEmpty)return "required fields can't be left empty";
+    nameTextField.text=value;
     return null;
   }
   //Overrides
   @override
+  void initState() {
+    paymentNumberTextField.text="1";
+    now=DateTime.now();
+    today=DateTime(now.year,now.month,now.day);
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    const sizedBoxSpace = SizedBox(height: 24);
-    return Scaffold(
+    const sizedBoxSpace = SizedBox(height: 100);
+    return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-
         title: Text("Register Client",),
+        actions: [
+          IconButton(icon: Icon(Icons.upload_file), onPressed: (){
+            getFilePath();
+          }),
+          IconButton(icon: Icon(Icons.download_sharp), onPressed: (){
+            asset2Local("xlsx", "assets/clientList.xlsx");
+          }),
+        ],
       ),
-      key: _scaffoldKey,
       body: Form(
         key: _formKey,
         child: GestureDetector(
@@ -97,12 +192,50 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    labelText: "Registration Id",
+                    labelText: "Registration Id(Auto generated if left empty)",
                     contentPadding:
                     EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   ),
                   onSaved: (value) {
                     clientData.registrationId = value;
+                  },
+                ),),]),
+              SizedBox(height: 8,),
+              Row(children:[
+                CircleAvatar(
+                  radius: 25,
+                  child: Image.asset(
+                    'assets/payment.png',
+                    height: 30,
+                  ),
+                  backgroundColor: Colors.transparent,
+                ),Expanded(child: TextFormField(
+                  controller: paymentNumberTextField,
+                  textInputAction: TextInputAction.next,
+                  autovalidateMode: AutovalidateMode.always,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "No of Payments(in months)",
+                    contentPadding:
+                    EdgeInsets.only( left: 10.0, right: 10.0),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: (value){
+                    if(value.isEmpty)return "required fields can't be left empty";
+                    else if(value=="0") return "No of Payments cant be 0";
+                    else {
+                      int months=int.parse(value);
+                      clientData.due= (months-1)*-1;
+                      clientData.endDate = DateTime(now.year,now.month+months,now.day);
+                      return null;
+                    }
+                  },
+                  onSaved: (value) {
+                    int months=int.parse(value);
+                    print(months);
+                    clientData.due= (months-1)*-1;
+                    clientData.endDate = DateTime(now.year,now.month+months,now.day);
                   },
                 ),),]),
               SizedBox(height: 8,),
@@ -125,6 +258,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     contentPadding:
                     EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   ),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   onSaved: (value) {
                     clientData.name = value;
                   },
@@ -153,7 +287,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                   onSaved: (value) {
                     clientData.fathersName = value;
                   },
-                  validator: _validateName,
                 ),),]),
               SizedBox(height: 8,),
               Row(children:[
@@ -322,7 +455,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   ),
                   onSaved: (value) {
-                    clientData.weight = double.parse(value);
+                    if(value.isNotEmpty)clientData.weight = double.parse(value);
                   },
                 ),),]),
               SizedBox(height: 8,),
@@ -346,7 +479,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   ),
                   onSaved: (value) {
-                    clientData.height = double.parse(value);
+                    if(value.isNotEmpty)clientData.height = double.parse(value);
                   },
                 ),),]),
               SizedBox(height: 8,),
@@ -438,33 +571,17 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     suffixIcon: Icon(Icons.event_note),
                     labelText: 'Start Date',
                   ),
+                  initialValue: today,
                   mode: DateTimeFieldPickerMode.date,
-                  autovalidateMode: AutovalidateMode.always,
                   onDateSelected: (DateTime value) {
                     clientData.startDate=value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/date1.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(),
-                    errorStyle: TextStyle(),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.event_note),
-                    labelText: 'End Date',
-                  ),
-                  mode: DateTimeFieldPickerMode.date,
-                  autovalidateMode: AutovalidateMode.always,
-                  onDateSelected: (DateTime value) {
-                    clientData.endDate=value;
+                    try{
+                      int months=int.parse(paymentNumberTextField.text);
+                      clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+                    }
+                    catch(E){
+                      globalShowInSnackBar(scaffoldMessengerKey, "Please Enter No of Payments!!");
+                    }
                   },
                 ),),]),
               sizedBoxSpace,
@@ -479,6 +596,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       ),
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
-    );
+    ),key: scaffoldMessengerKey,);
   }
 }

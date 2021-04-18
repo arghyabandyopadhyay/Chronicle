@@ -215,6 +215,7 @@ class _ChronicleState extends State<Chronicle> {
       darkTheme: darkThemeData,
       themeMode: ThemeMode.system,
       home: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor:CustomColors.primaryColor ,
         body:FutureBuilder(
             future: Authentication.initializeFirebase(context: context),
