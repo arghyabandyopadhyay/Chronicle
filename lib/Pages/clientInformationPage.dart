@@ -186,12 +186,12 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         ActionChip(label: Text("Yes"), onPressed: (){
                           setState(() {
                             deleteDatabaseNode(widget.client.id);
-                            Navigator.of(context).pop();
+                            Navigator.of(_).pop();
                           });
                         }),
                         ActionChip(label: Text("No"), onPressed: (){
                           setState(() {
-                            Navigator.of(context).pop();
+                            Navigator.of(_).pop();
                           });
                         })
                       ],

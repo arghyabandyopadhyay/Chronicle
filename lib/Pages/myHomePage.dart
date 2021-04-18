@@ -27,7 +27,6 @@ class _MyHomePageState extends State<MyHomePage> {
   PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
-  String serverKey="AAAADvz3IsE:APA91bETielvzPZu6Z1qzpWIOSaTErxvtuSiKzW_qBh_v0LIC5nczWOC0kGSp1HyI2PVpxLr477RZ8tR8SM4zFEPaIk-_Ndj81VUQEhvP3YDTkwXOrogwvQg_vbUTcH8YnFF7nhneaUT";
   void newRegisterModel(RegisterModel register) {
     register.setId(addToRegister(register.name));
     this.setState(() {
@@ -195,20 +194,29 @@ class _MyHomePageState extends State<MyHomePage> {
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Name your Register"),
-          content: TextField(controller: textEditingController,),
+          content: TextField(controller: textEditingController,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(),
+              labelText: "Name of the Register",
+              contentPadding:
+              EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+            ),
+          ),
           actions: [ActionChip(label: Text("Add"), onPressed: (){
             if(textEditingController.text!=""){
               newRegisterModel(new RegisterModel(name: textEditingController.text));
               textEditingController.clear();
-              Navigator.of(context).pop();
+              Navigator.pop(_);
             }
             else{
               globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your register!!");
-              Navigator.of(context).pop();
+              Navigator.of(_).pop();
             }
           }),
             ActionChip(label: Text("Cancel"), onPressed: (){
-              Navigator.of(context).pop();
+              Navigator.of(_).pop();
             }),],
         ));
       },

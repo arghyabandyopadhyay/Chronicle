@@ -41,12 +41,12 @@ class _RegisterListState extends State<RegisterList> {
                       setState(() {
                         deleteDatabaseNode(GlobalClass.registerList[index].id);
                         GlobalClass.registerList.removeAt(index);
-                        Navigator.of(context).pop();
+                        Navigator.of(_).pop();
                       });
                     }),
                     ActionChip(label: Text("No"), onPressed: (){
                       setState(() {
-                        Navigator.of(context).pop();
+                        Navigator.of(_).pop();
                       });
                     })
                   ],

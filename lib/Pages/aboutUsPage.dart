@@ -49,7 +49,7 @@ class _AboutPageState extends State<AboutUsPage> {
                     child: ListTile(
                       dense: true,
                       title: Text("App Version"),
-                      subtitle: Text("2020.1.0"),
+                      subtitle: Text("2020.1"),
                     ),
                     decoration: BoxDecoration(
                         borderRadius:
@@ -80,10 +80,10 @@ class _AboutPageState extends State<AboutUsPage> {
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.call),
+        icon: Icon(Icons.mail),
         label: Text("Contact Us",),
         onPressed: ()async {
-          const url = 'tel:<+917074014228>';
+          const url = 'mailto:<chroniclebusinesssolutions@gmail.com>?subject=Contacting Chronicle';
           if (await canLaunch(url)) {
             await launch(url);
           } else {

@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:shimmer/shimmer.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
 import '../customColors.dart';
@@ -18,7 +19,7 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  List<ClientModel> clients = [];
+  List<ClientModel> clients;
   bool _isSearching=false;
   List<ClientModel> searchResult = [];
   Icon icon = new Icon(
@@ -102,9 +103,72 @@ class _NotificationsPageState extends State<NotificationsPage> {
             getNotifications();
           }),
         ],),
-      body: Column(children: <Widget>[
+      body: this.clients!=null?Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients)),
-      ]),
+      ]):
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: Colors.grey.withOpacity(0.5),
+                    enabled: true,
+                    child: ListView.builder(
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 48.0,
+                              height: 48.0,
+                              color: Colors.white,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: 40.0,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                      itemCount: 4,
+                    )
+                ),
+              ),
+            ],
+          )
+      ),
       // floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
       //   //clearAllAnimation
       // },),

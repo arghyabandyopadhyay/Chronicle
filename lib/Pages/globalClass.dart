@@ -8,4 +8,5 @@ class GlobalClass
   static UserModel userDetail;
   static User user;
   static List<RegisterModel> registerList;
+  static String lastRegister;
 }

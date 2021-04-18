@@ -42,15 +42,15 @@ class RegisterOptionBottomSheet extends StatelessWidget {
                 if(textEditingController.text!=""){
                   newRegisterModel(new RegisterModel(name: textEditingController.text));
                   textEditingController.clear();
-                  Navigator.of(context).pop();
+                  Navigator.of(_).pop();
                 }
                 else{
                   globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your register!!");
-                  Navigator.of(context).pop();
+                  Navigator.of(_).pop();
                 }
               }),
                 ActionChip(label: Text("Cancel"), onPressed: (){
-                  Navigator.of(context).pop();
+                  Navigator.of(_).pop();
                 }),],
             ));
           }),

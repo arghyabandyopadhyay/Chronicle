@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:shimmer/shimmer.dart';
 import 'Models/receivedNotificationModel.dart';
 import 'Modules/auth.dart';
 import 'Pages/SignInScreen.dart';
@@ -156,6 +155,8 @@ class _ChronicleState extends State<Chronicle> {
       navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
     });
   }
+
+
   @override
   void initState() {
     super.initState();
@@ -214,84 +215,172 @@ class _ChronicleState extends State<Chronicle> {
       darkTheme: darkThemeData,
       themeMode: ThemeMode.system,
       home: Scaffold(
-      body:FutureBuilder(
-          future: Authentication.initializeFirebase(context: context),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return IdBlockedPage();
+        backgroundColor:CustomColors.primaryColor ,
+        body:FutureBuilder(
+            future: Authentication.initializeFirebase(context: context),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return IdBlockedPage();
+              }
+              else if (snapshot.connectionState == ConnectionState.done) {
+                return SignInScreen();
+              }
+              // return Scaffold(
+              //     appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
+              //     body: Container(
+              //         width: double.infinity,
+              //         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              //         child: Column(
+              //           mainAxisSize: MainAxisSize.max,
+              //           children: <Widget>[
+              //             Expanded(
+              //               child: Shimmer.fromColors(
+              //                   baseColor: Colors.white,
+              //                   highlightColor: Colors.grey.withOpacity(0.5),
+              //                   enabled: true,
+              //                   child: ListView.builder(
+              //                     itemBuilder: (_, __) => Padding(
+              //                       padding: const EdgeInsets.only(bottom: 8.0),
+              //                       child: Row(
+              //                         crossAxisAlignment: CrossAxisAlignment.start,
+              //                         children: [
+              //                           Container(
+              //                             width: 48.0,
+              //                             height: 48.0,
+              //                             color: Colors.white,
+              //                           ),
+              //                           const Padding(
+              //                             padding: EdgeInsets.symmetric(horizontal: 8.0),
+              //                           ),
+              //                           Expanded(
+              //                             child: Column(
+              //                               crossAxisAlignment: CrossAxisAlignment.start,
+              //                               children: <Widget>[
+              //                                 Container(
+              //                                   width: double.infinity,
+              //                                   height: 8.0,
+              //                                   color: Colors.white,
+              //                                 ),
+              //                                 const Padding(
+              //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
+              //                                 ),
+              //                                 Container(
+              //                                   width: double.infinity,
+              //                                   height: 8.0,
+              //                                   color: Colors.white,
+              //                                 ),
+              //                                 const Padding(
+              //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
+              //                                 ),
+              //                                 Container(
+              //                                   width: 40.0,
+              //                                   height: 8.0,
+              //                                   color: Colors.white,
+              //                                 ),
+              //                               ],
+              //                             ),
+              //                           )
+              //                         ],
+              //                       ),
+              //                     ),
+              //                     itemCount: 4,
+              //                   )
+              //               ),
+              //             ),
+              //           ],
+              //         )
+              //     ));
+              return Container(height: 0,width: 0);
             }
-            else if (snapshot.connectionState == ConnectionState.done) {
-              return SignInScreen();
-            }
-            return Scaffold(
-                appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
-                body: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        Expanded(
-                          child: Shimmer.fromColors(
-                              baseColor: Colors.white,
-                              highlightColor: Colors.grey.withOpacity(0.5),
-                              enabled: true,
-                              child: ListView.builder(
-                                itemBuilder: (_, __) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 48.0,
-                                        height: 48.0,
-                                        color: Colors.white,
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Container(
-                                              width: double.infinity,
-                                              height: 8.0,
-                                              color: Colors.white,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                                            ),
-                                            Container(
-                                              width: double.infinity,
-                                              height: 8.0,
-                                              color: Colors.white,
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.symmetric(vertical: 2.0),
-                                            ),
-                                            Container(
-                                              width: 40.0,
-                                              height: 8.0,
-                                              color: Colors.white,
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                itemCount: 4,
-                              )
-                          ),
-                        ),
-                      ],
-                    )
-                ));
-          }
-          ),
+        ),
       )
     );
   }
 }
 
+//AnimatedSplashScreen(
+//           splash: Image.asset("assets/firebase_logo.png"),
+//           nextScreen: Scaffold(
+//             body:FutureBuilder(
+//                 future: Authentication.initializeFirebase(context: context),
+//                 builder: (context, snapshot) {
+//                   if (snapshot.hasError) {
+//                     return IdBlockedPage();
+//                   }
+//                   else if (snapshot.connectionState == ConnectionState.done) {
+//                     return SignInScreen();
+//                   }
+//                   return Scaffold(
+//                       appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
+//                       body: Container(
+//                           width: double.infinity,
+//                           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+//                           child: Column(
+//                             mainAxisSize: MainAxisSize.max,
+//                             children: <Widget>[
+//                               Expanded(
+//                                 child: Shimmer.fromColors(
+//                                     baseColor: Colors.white,
+//                                     highlightColor: Colors.grey.withOpacity(0.5),
+//                                     enabled: true,
+//                                     child: ListView.builder(
+//                                       itemBuilder: (_, __) => Padding(
+//                                         padding: const EdgeInsets.only(bottom: 8.0),
+//                                         child: Row(
+//                                           crossAxisAlignment: CrossAxisAlignment.start,
+//                                           children: [
+//                                             Container(
+//                                               width: 48.0,
+//                                               height: 48.0,
+//                                               color: Colors.white,
+//                                             ),
+//                                             const Padding(
+//                                               padding: EdgeInsets.symmetric(horizontal: 8.0),
+//                                             ),
+//                                             Expanded(
+//                                               child: Column(
+//                                                 crossAxisAlignment: CrossAxisAlignment.start,
+//                                                 children: <Widget>[
+//                                                   Container(
+//                                                     width: double.infinity,
+//                                                     height: 8.0,
+//                                                     color: Colors.white,
+//                                                   ),
+//                                                   const Padding(
+//                                                     padding: EdgeInsets.symmetric(vertical: 2.0),
+//                                                   ),
+//                                                   Container(
+//                                                     width: double.infinity,
+//                                                     height: 8.0,
+//                                                     color: Colors.white,
+//                                                   ),
+//                                                   const Padding(
+//                                                     padding: EdgeInsets.symmetric(vertical: 2.0),
+//                                                   ),
+//                                                   Container(
+//                                                     width: 40.0,
+//                                                     height: 8.0,
+//                                                     color: Colors.white,
+//                                                   ),
+//                                                 ],
+//                                               ),
+//                                             )
+//                                           ],
+//                                         ),
+//                                       ),
+//                                       itemCount: 4,
+//                                     )
+//                                 ),
+//                               ),
+//                             ],
+//                           )
+//                       ));
+//                 }
+//             ),
+//           ),
+//           splashTransition: SplashTransition.fadeTransition,
+//           pageTransitionType: PageTransitionType.rightToLeft,
+//           backgroundColor: CustomColors.primaryColor,
+//           animationDuration: Duration(milliseconds: 1000),
+//           splashIconSize: 300,
+//       )
