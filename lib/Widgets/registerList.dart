@@ -33,10 +33,6 @@ class _RegisterListState extends State<RegisterList> {
               GlobalClass.lastRegister=GlobalClass.registerList[index].id.key;
               setLastRegister(GlobalClass.registerList[index].id.key);
             },
-            onDoubleTap: (){
-              print(GlobalClass.lastRegister);
-              print(GlobalClass.lastRegister!=null&&GlobalClass.lastRegister==GlobalClass.registerList[index].id.key);
-            },
             onLongPress: (){
               showDialog(context: context, builder: (_)=>new AlertDialog(
                   title: Text("Confirm Delete"),
