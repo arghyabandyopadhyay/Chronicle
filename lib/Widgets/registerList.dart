@@ -30,7 +30,12 @@ class _RegisterListState extends State<RegisterList> {
           onTap: (){
               if(widget.isDialog)Navigator.of(context).pop();
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ClientPage(GlobalClass.registerList[index] )));
+              GlobalClass.lastRegister=GlobalClass.registerList[index].id.key;
               setLastRegister(GlobalClass.registerList[index].id.key);
+            },
+            onDoubleTap: (){
+              print(GlobalClass.lastRegister);
+              print(GlobalClass.lastRegister!=null&&GlobalClass.lastRegister==GlobalClass.registerList[index].id.key);
             },
             onLongPress: (){
               showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -40,6 +45,7 @@ class _RegisterListState extends State<RegisterList> {
                     ActionChip(label: Text("Yes"), onPressed: (){
                       setState(() {
                         deleteDatabaseNode(GlobalClass.registerList[index].id);
+                        if(GlobalClass.lastRegister!=null&&GlobalClass.lastRegister==GlobalClass.registerList[index].id.key)setLastRegister("");
                         GlobalClass.registerList.removeAt(index);
                         Navigator.of(_).pop();
                       });

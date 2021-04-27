@@ -21,8 +21,7 @@ class ClientModel
   double height;
   double weight;
   int due;
-  int notificationCount;
-  ClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due,this.notificationCount});
+  ClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due});
   void setId(DatabaseReference id)
   {
     this.id=id;
@@ -47,8 +46,7 @@ class ClientModel
         dob: json1['Dob']!=null?DateTime.parse(json1['Dob']):null,
         height: json1['Height']!=null?double.parse(json1['Height'].toString()):null,
         weight: json1['Weight']!=null?double.parse(json1['Weight'].toString()):null,
-        due: json1['Weight']!=null?json1['Due']:0,
-        notificationCount: json1['NotificationCount']!=null?json1['NotificationCount']:0
+        due: json1['Due']!=null?json1['Due']:0,
     );
   }
   Map<String,dynamic> toJson() =>
@@ -69,6 +67,5 @@ class ClientModel
         "Height":this.height,
         "Weight":this.weight,
         "Due":this.due,
-        "NotificationCount":this.notificationCount!=null?this.notificationCount:0,
       };
 }

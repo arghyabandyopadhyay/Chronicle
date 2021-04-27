@@ -2,8 +2,10 @@ import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
+import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
@@ -133,6 +135,7 @@ class _ClientPageState extends State<ClientPage> {
             }),
             DrawerActionModel(Icons.book, "Registers", ()async{
               setLastRegister("");
+              GlobalClass.lastRegister="";
               Navigator.pop(context);
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MyHomePage()));
             }),
@@ -236,10 +239,9 @@ class _ClientPageState extends State<ClientPage> {
             getClientModels();
           }),
         ],),
-      body: this.clients!=null?Column(children: <Widget>[
+      body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
-      ]):
-        Container(
+      ]): Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(

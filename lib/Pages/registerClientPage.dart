@@ -112,7 +112,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
     return true;
   }
   //Functions
-  Future<void> _handleSubmitted() async {
+  void _handleSubmitted() {
     final form = _formKey.currentState;
     if (!form.validate()) {// Start validating on every change.
     }
@@ -120,16 +120,10 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       form.save();
       clientData.sex=sexDropDown;
       clientData.caste=casteDropDown;
-      try{
-        if(clientData.startDate==null)clientData.startDate=today;
-        int months=int.parse(paymentNumberTextField.text);
-        clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
-      }
-      catch(E){
-        print(E);
-        globalShowInSnackBar(scaffoldMessengerKey,"Please Enter No of Payments!!");
-      }
-      print(clientData.toJson());
+      // if(clientData.startDate==null)clientData.startDate=today;
+      // int months=int.parse(paymentNumberTextField.text);
+      // months=months.abs();
+      // clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
       widget.callback(clientData);
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
@@ -137,7 +131,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   }
   String _validateName(String value) {
     if(value.isEmpty)return "required fields can't be left empty";
-    nameTextField.text=value;
     return null;
   }
   //Overrides
@@ -165,427 +158,489 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       ),
       body: Form(
         key: _formKey,
-        child: GestureDetector(
-          onTap: (){
-            FocusScopeNode currentFocus = FocusScope.of(context);
-            if (!currentFocus.hasPrimaryFocus) {
-              currentFocus.unfocus();
-            }
-          },
-          child: ListView(
-            shrinkWrap: true,
-            physics:BouncingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 5),
-            children: [
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/registrationId.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: registrationIdTextField,
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Registration Id(Auto generated if left empty)",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.registrationId = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/payment.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  controller: paymentNumberTextField,
-                  textInputAction: TextInputAction.next,
-                  autovalidateMode: AutovalidateMode.always,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "No of Payments(in months)",
-                    contentPadding:
-                    EdgeInsets.only( left: 10.0, right: 10.0),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value){
-                    if(value.isEmpty)return "required fields can't be left empty";
-                    else if(value=="0") return "No of Payments cant be 0";
-                    else {
-                      int months=int.parse(value);
-                      clientData.due= (months-1)*-1;
-                      clientData.endDate = DateTime(now.year,now.month+months,now.day);
-                      return null;
-                    }
-                  },
-                  onSaved: (value) {
-                    int months=int.parse(value);
-                    print(months);
-                    clientData.due= (months-1)*-1;
-                    clientData.endDate = DateTime(now.year,now.month+months,now.day);
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/name.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: nameTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Name",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  onSaved: (value) {
-                    clientData.name = value;
-                  },
-                  validator: _validateName,
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/dad.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: fathersNameTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Father's Name",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.fathersName = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/dob.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(),
-                    errorStyle: TextStyle(),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.event_note),
-                    labelText: 'DOB',
-                  ),
-                  mode: DateTimeFieldPickerMode.date,
-                  autovalidateMode: AutovalidateMode.always,
-                  onDateSelected: (DateTime value) {
-                    clientData.dob=value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/mobile.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  controller: phoneNumberTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Mobile",
-                    contentPadding:
-                    EdgeInsets.only( left: 10.0, right: 10.0),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  onSaved: (value) {
-                    clientData.mobileNo = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/address.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: addressTextField,
-                  textInputAction: TextInputAction.next,
-                  keyboardType:TextInputType.multiline,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Address",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.address = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/sex.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(4.0))
-                  ),
-                  child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                    hint: Container(child: Text("Sex:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
-                    iconSize: 24,
-                    value: sexDropDown,
-                    elevation: 16,
-                    style: TextStyle(),
-                    underline: Container(
-                      color: Colors.white,
+        child: SingleChildScrollView(
+          physics:BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: (){
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
+            },
+            child: Column(
+              children: [
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/registrationId.png',
+                      height: 30,
                     ),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        sexDropDown = newValue;
-                      });
-                    },
-                    items: <String>['Male', 'Female', 'Trans', 'Prefer not to say']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-                      );
-                    }).toList(),
-                  ),),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/caste.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  ),
-                  child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                    hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
-                    iconSize: 24,
-                    value: casteDropDown,
-                    elevation: 16,
-                    style: TextStyle(),
-                    underline: Container(
-                      color: Colors.white,
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: registrationIdTextField,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Registration Id(Auto generated if left empty)",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
-                    onChanged: (String newValue) {
-                      setState(() {
-                        casteDropDown = newValue;
-                      });
+                    onSaved: (value) {
+                      clientData.registrationId = value;
                     },
-                    items: <String>['General', 'OBC', 'SC/ST']
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-                      );
-                    }).toList(),
-                  ),),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/weight.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  controller: weightTextField,
-                  keyboardType:TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Weight(kg)",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    if(value.isNotEmpty)clientData.weight = double.parse(value);
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/height.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  controller: heightTextField,
-                  keyboardType:TextInputType.number,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Height(cm)",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    if(value.isNotEmpty)clientData.height = double.parse(value);
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/injuries.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: injuriesTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Injuries / Medical Problems",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.injuries = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/education.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: educationTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Education",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.education = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/occupation.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: occupationTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Occupation",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    clientData.occupation = value;
-                  },
-                ),),]),
-              SizedBox(height: 8,),
-              Row(children:[
-                CircleAvatar(
-                  radius: 25,
-                  child: Image.asset(
-                    'assets/date.png',
-                    height: 30,
-                  ),
-                  backgroundColor: Colors.transparent,
-                ),Expanded(child: DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(),
-                    errorStyle: TextStyle(),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.event_note),
-                    labelText: 'Start Date',
-                  ),
-                  initialValue: today,
-                  mode: DateTimeFieldPickerMode.date,
-                  onDateSelected: (DateTime value) {
-                    clientData.startDate=value;
-                    try{
-                      int months=int.parse(paymentNumberTextField.text);
-                      clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
-                    }
-                    catch(E){
-                      globalShowInSnackBar(scaffoldMessengerKey, "Please Enter No of Payments!!");
-                    }
-                  },
-                ),),]),
-              sizedBoxSpace,
-            ],
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/payment.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    controller: paymentNumberTextField,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.always,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "No of Payments(in months)",
+                      contentPadding:
+                      EdgeInsets.only( left: 10.0, right: 10.0),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value){
+                      if(value.isEmpty)return "required fields can't be left empty";
+                      else if(value=="0") return "No of Payments cant be 0!!";
+                      else {
+                        try{
+                          int months=int.parse(value);
+                          if(months<0){
+                            return "No of Payments cant be Negative!!";
+                          }
+                          else{
+                            return null;
+                          }
+                        }
+                        catch(E){
+                          return "Non numeric input not allowed.";
+                        }
+                      }
+                    },
+                    onSaved: (value) {
+                      try{
+                        int months=int.parse(value);
+                        months=months.abs();
+                        clientData.due= (months-1)*-1;
+                        if(clientData.startDate==null)clientData.startDate=today;
+                        clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+                      }
+                      catch(E){
+                        globalShowInSnackBar(scaffoldMessengerKey, "Non numeric input not allowed.");
+                      }
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/name.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: nameTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Name",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    validator: _validateName,
+                    onSaved: (value) {
+                      clientData.name = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/dad.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: fathersNameTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Father's Name",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      clientData.fathersName = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/dob.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DateTimeFormField(
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.event_note),
+                      labelText: 'DOB',
+                    ),
+                    mode: DateTimeFieldPickerMode.date,
+                    autovalidateMode: AutovalidateMode.always,
+                    onDateSelected: (DateTime value) {
+                      clientData.dob=value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/mobile.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    controller: phoneNumberTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Mobile",
+                      contentPadding:
+                      EdgeInsets.only( left: 10.0, right: 10.0),
+                    ),
+                    keyboardType: TextInputType.phone,
+                    onSaved: (value) {
+                      clientData.mobileNo = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/address.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: addressTextField,
+                    textInputAction: TextInputAction.next,
+                    keyboardType:TextInputType.multiline,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Address",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      clientData.address = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/sex.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DropdownButtonFormField(
+                      value: sexDropDown,
+                      icon: Icon(Icons.arrow_downward),
+                      decoration: InputDecoration(
+                        labelText: "Sex:",
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: <String>['Male', 'Female', 'Trans', 'Prefer not to say'].map((String value) {
+                        return new DropdownMenuItem<String>(
+                          value: value,
+                          child: new Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          sexDropDown = newValue;
+                        });
+                      },
+                    )
+                    // Container(
+              //       padding: EdgeInsets.symmetric(horizontal: 10),
+              //       alignment: Alignment.center,
+              //       decoration: BoxDecoration(
+              //           border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(4.0))
+              //       ),
+              //       child: ,
+                    // DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                    //   hint: Container(child: Text("Sex:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
+                    //   iconSize: 24,
+                    //   value: sexDropDown,
+                    //   elevation: 16,
+                    //   style: TextStyle(),
+                    //   underline: Container(
+                    //     color: Colors.white,
+                    //   ),
+                    //   onChanged: (String newValue) {
+                    //     setState(() {
+                    //       sexDropDown = newValue;
+                    //     });
+                    //   },
+                    //   items: <String>['Male', 'Female', 'Trans', 'Prefer not to say']
+                    //       .map<DropdownMenuItem<String>>((String value) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: value,
+                    //       child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
+                    //     );
+                    //   }).toList(),
+                    // ),
+                  // )
+                    ,),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/caste.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DropdownButtonFormField(
+                      value: casteDropDown,
+                      icon: Icon(Icons.arrow_downward),
+                      decoration: InputDecoration(
+                        labelText: "Caste:",
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                        border: const OutlineInputBorder(),
+                      ),
+                      items: <String>['General', 'OBC', 'SC/ST'].map((String value) {
+                        return new DropdownMenuItem<String>(
+                          value: value,
+                          child: new Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          casteDropDown = newValue;
+                        });
+                      },
+                    )
+                    // Container(
+              //       padding: EdgeInsets.symmetric(horizontal: 10),
+              //       alignment: Alignment.center,
+              //       decoration: BoxDecoration(
+              //         border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
+              //       ),
+              //       child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+              //         hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
+              //         iconSize: 24,
+              //         value: casteDropDown,
+              //         elevation: 16,
+              //         style: TextStyle(),
+              //         underline: Container(
+              //           color: Colors.white,
+              //         ),
+              //         onChanged: (String newValue) {
+              //           setState(() {
+              //             casteDropDown = newValue;
+              //           });
+              //         },
+              //         items: <String>['General', 'OBC', 'SC/ST']
+              //             .map<DropdownMenuItem<String>>((String value) {
+              //           return DropdownMenuItem<String>(
+              //             value: value,
+              //             child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
+              //           );
+              //         }).toList(),
+              //       ),)
+                ,),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/weight.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    controller: weightTextField,
+                    keyboardType:TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Weight(kg)",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      if(value.isNotEmpty)clientData.weight = double.parse(value);
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/height.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    controller: heightTextField,
+                    keyboardType:TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Height(cm)",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      if(value.isNotEmpty)clientData.height = double.parse(value);
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/injuries.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: injuriesTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Injuries / Medical Problems",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      clientData.injuries = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/education.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: educationTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Education",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      clientData.education = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/occupation.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    textCapitalization: TextCapitalization.words,
+                    controller: occupationTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Occupation",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      clientData.occupation = value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/date.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DateTimeFormField(
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.event_note),
+                      labelText: 'Start Date',
+                    ),
+                    initialValue: today,
+                    mode: DateTimeFieldPickerMode.date,
+                    onDateSelected: (DateTime value) {
+                      try{
+                        int months=int.parse(paymentNumberTextField.text);
+                        clientData.startDate=value;
+                        if(clientData.startDate==null)clientData.startDate=today;
+                        months=months.abs();
+                        clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+                      }
+                      catch(E){
+                        globalShowInSnackBar(scaffoldMessengerKey, "Please Enter No of Payments!!");
+                      }
+                    },
+                  ),),]),
+                sizedBoxSpace,
+              ],
+            ),
           ),
         ),
       ),

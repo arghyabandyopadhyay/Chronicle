@@ -49,7 +49,7 @@ class _AboutPageState extends State<AboutUsPage> {
                     child: ListTile(
                       dense: true,
                       title: Text("App Version"),
-                      subtitle: Text("2020.1"),
+                      subtitle: Text("2021.1"),
                     ),
                     decoration: BoxDecoration(
                         borderRadius:

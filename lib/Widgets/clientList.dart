@@ -25,6 +25,8 @@ class _ClientListState extends State<ClientList> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: BouncingScrollPhysics(),
+      padding: EdgeInsets.only(bottom: 100),
       itemCount: this.widget.listItems.length,
       itemBuilder: (context, index) {
         return Slidable(
@@ -88,7 +90,6 @@ class _ClientListState extends State<ClientList> {
                   {
                     this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+1,this.widget.listItems[index].endDate.day);;
                   }
-                  this.widget.listItems[index].notificationCount=0;
                   updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                 });
               },
@@ -121,7 +122,6 @@ class _ClientListState extends State<ClientList> {
                           // {
                           //   this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+intVal,this.widget.listItems[index].endDate.day);
                           // }
-                          this.widget.listItems[index].notificationCount=0;
                           updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                         });
                       }

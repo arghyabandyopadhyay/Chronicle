@@ -10,9 +10,9 @@
             android:gravity="center"
             android:src="@mipmap/launch_image" />
     </item> -->
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/chroniclemaxlogosplash1" />
-    </item>
+<!--    <item>-->
+<!--        <bitmap-->
+<!--            android:gravity="center"-->
+<!--            android:src="@drawable/chroniclemaxlogosplash1" />-->
+<!--    </item>-->
 </layer-list>

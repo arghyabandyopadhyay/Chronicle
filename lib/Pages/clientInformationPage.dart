@@ -19,6 +19,7 @@ class ClientInformationPage extends StatefulWidget {
 
 class _ClientInformationPageState extends State<ClientInformationPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=new GlobalKey<ScaffoldMessengerState>();
+  DateTime now,today;
   var phoneNumberTextField=TextEditingController();
   var nameTextField=TextEditingController();
   var dueTextField=TextEditingController();
@@ -30,6 +31,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   var registrationIdTextField=TextEditingController();
   var heightTextField=TextEditingController();
   var weightTextField=TextEditingController();
+  var paymentNumberTextField=TextEditingController();
   String sexDropDown;
   String casteDropDown;
   bool isLoading=false;
@@ -45,10 +47,55 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
     if (!form.validate()) {
     }
     else {
-      form.save();
+      if(paymentNumberTextField.text.isNotEmpty)
       showDialog(context: context,
           builder: (BuildContext context){
             return new AlertDialog(
+              title: Text("Confirm New Payment"),
+              content: Text("Are you sure to add new payment. Your old payments for ${widget.client.name} will be flushed?"),
+              actions: [
+                ActionChip(label: Text("Yes"), onPressed: (){
+                  Navigator.pop(context);
+                  form.save();
+                  showDialog(context: context,
+                      builder: (BuildContext context){
+                        return new AlertDialog(
+                          title: Text("Confirm Save"),
+                          content: Text("Are you sure to save changes?"),
+                          actions: [
+                            ActionChip(label: Text("Yes"), onPressed: (){
+                              Navigator.pop(context);
+                              setState(() {
+                                isLoading=true;
+                              });
+                              widget.client.sex=sexDropDown;
+                              widget.client.caste=casteDropDown;
+                              updateClient(widget.client,widget.client.id);
+                            }),
+                            ActionChip(label: Text("No"), onPressed: (){
+                              setState(() {
+                                Navigator.of(context).pop();
+                              });
+                            })
+                          ],
+                        );
+                      }
+                  );
+                }),
+                ActionChip(label: Text("No"), onPressed: (){
+                  setState(() {
+                    Navigator.of(context).pop();
+                  });
+                })
+              ],
+            );
+          }
+      );
+      else {
+        form.save();
+        showDialog(context: context,
+            builder: (BuildContext context){
+              return new AlertDialog(
                 title: Text("Confirm Save"),
                 content: Text("Are you sure to save changes?"),
                 actions: [
@@ -67,14 +114,18 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     });
                   })
                 ],
-            );
-          }
-      );
+              );
+            }
+        );
+      }
+
     }
   }
 
   @override
   void initState() {
+    now=DateTime.now();
+    today=DateTime(now.year,now.month,now.day);
     super.initState();
   }
   @override
@@ -94,7 +145,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       weightTextField.text=widget.client.weight!=null?widget.client.weight.toStringAsFixed(2):"";
       sexDropDown=widget.client.sex;
       casteDropDown=widget.client.caste;
-
       counter++;
     }
     return ScaffoldMessenger(child: Scaffold(
@@ -104,14 +154,19 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
         actions: [
           Center(child: Text(widget.client.due.abs().toString()+"  ",style: TextStyle(color: this.widget.client.due!=null&&this.widget.client.due==0?null:this.widget.client.due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold,fontSize: 30),),)        ],
       ),
-      body: Column(
-        children: [
-          Expanded(child: Form(
-            key:_formKey,
-            child: ListView(
-              shrinkWrap: true,
-              physics:BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 5),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          physics:BouncingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 5),
+          child: GestureDetector(
+            onTap: (){
+              FocusScopeNode currentFocus = FocusScope.of(context);
+              if (!currentFocus.hasPrimaryFocus) {
+                currentFocus.unfocus();
+              }
+            },
+            child: Column(
               children: [
                 Row(mainAxisAlignment:MainAxisAlignment.spaceAround, children: [
                   Column(children: [IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
@@ -147,7 +202,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       {
                         this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+1,this.widget.client.endDate.day);;
                       }
-                      this.widget.client.notificationCount=0;
                       updateClient(this.widget.client, this.widget.client.id);
                     });
                   }),Text("Add Due")],),
@@ -166,8 +220,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                             this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+(intVal-this.widget.client.due),this.widget.client.endDate.day);
                           }
                           this.widget.client.due=this.widget.client.due-intVal;
-
-                          this.widget.client.notificationCount=0;
                           updateClient(this.widget.client, this.widget.client.id);
                         });
                       }
@@ -213,11 +265,10 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     style: TextStyle(),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: "Registration Id",
+                      labelText: "Registration Id(Auto generated if left empty)",
                       contentPadding:
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
-                    enabled: false,
                     onSaved: (value) {
                       widget.client.registrationId = value;
                     },
@@ -365,7 +416,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       widget.client.address = value;
                     },
                   ),),]),
-                SizedBox(height: 15,),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -374,36 +425,28 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
-                  ),Expanded(child:
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(4.0))
+                  ),Expanded(child: DropdownButtonFormField(
+                    value: sexDropDown,
+                    icon: Icon(Icons.arrow_downward),
+                    decoration: InputDecoration(
+                      labelText: "Sex:",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                      border: const OutlineInputBorder(),
                     ),
-                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                      hint: Container(child: Text("Sex:"),width: MediaQuery.of(context).size.width-110),
-                      iconSize: 24,
-                      value: sexDropDown,
-                      elevation: 16,
-                      style: TextStyle(),
-                      underline: Container(
-                        color: Colors.white,
-                      ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          sexDropDown = newValue;
-                        });
-                      },
-                      items: <String>['Male', 'Female', 'Trans', 'Prefer not to say']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-                        );
-                      }).toList(),
-                    ),),),]),
-                SizedBox(height: 15,),
+                    items: <String>['Male', 'Female', 'Trans', 'Prefer not to say'].map((String value) {
+                      return new DropdownMenuItem<String>(
+                        value: value,
+                        child: new Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        sexDropDown = newValue;
+                      });
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -412,36 +455,28 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
-                  ),Expanded(child:
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  ),Expanded(child: DropdownButtonFormField(
+                    value: casteDropDown,
+                    icon: Icon(Icons.arrow_downward),
+                    decoration: InputDecoration(
+                      labelText: "Caste:",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                      border: const OutlineInputBorder(),
                     ),
-                    child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                      hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
-                      iconSize: 24,
-                      value: casteDropDown,
-                      elevation: 16,
-                      style: TextStyle(),
-                      underline: Container(
-                        color: Colors.white,
-                      ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          casteDropDown = newValue;
-                        });
-                      },
-                      items: <String>['General', 'OBC', 'SC/ST']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-                        );
-                      }).toList(),
-                    ),),),]),
-                SizedBox(height: 15,),
+                    items: <String>['General', 'OBC', 'SC/ST'].map((String value) {
+                      return new DropdownMenuItem<String>(
+                        value: value,
+                        child: new Text(value),
+                      );
+                    }).toList(),
+                    onChanged: (String newValue) {
+                      setState(() {
+                        casteDropDown = newValue;
+                      });
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -466,7 +501,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       if(value.isNotEmpty)widget.client.weight = double.parse(value);
                     },
                   ),),]),
-                SizedBox(height: 15,),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -491,7 +526,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       if(value.isNotEmpty)widget.client.height = double.parse(value);
                     },
                   ),),]),
-                SizedBox(height: 15,),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -526,20 +561,20 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     ),
                     backgroundColor: Colors.transparent,
                   ),Expanded(child:TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: educationTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Education",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    widget.client.education = value;
-                  },
-                ),),]),
+                    textCapitalization: TextCapitalization.words,
+                    controller: educationTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Education",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      widget.client.education = value;
+                    },
+                  ),),]),
                 SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
@@ -550,72 +585,138 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     ),
                     backgroundColor: Colors.transparent,
                   ),Expanded(child:TextFormField(
-                  textCapitalization: TextCapitalization.words,
-                  controller: occupationTextField,
-                  textInputAction: TextInputAction.next,
-                  style: TextStyle(),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: "Occupation",
-                    contentPadding:
-                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                  ),
-                  onSaved: (value) {
-                    widget.client.occupation = value;
-                  },
-                ),),]),
-                SizedBox(height: 8,),
-                Row(children:[
-              CircleAvatar(
-              radius: 25,
-              child: Image.asset(
-                'assets/date.png',
-                height: 30,
-              ),
-              backgroundColor: Colors.transparent,
-            ),Expanded(child:DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(),
-                    errorStyle: TextStyle(),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.event_note),
-                    labelText: 'Start Date',
-                  ),
-                  initialValue: widget.client.startDate,
-                  mode: DateTimeFieldPickerMode.date,
-                  autovalidateMode: AutovalidateMode.always,
-                  onDateSelected: (DateTime value) {
-                    widget.client.startDate=value;
-                  },
-                ),),]),
+                    textCapitalization: TextCapitalization.words,
+                    controller: occupationTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Occupation",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                    onSaved: (value) {
+                      widget.client.occupation = value;
+                    },
+                  ),),]),
                 SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
                     child: Image.asset(
-                      'assets/date1.png',
+                      'assets/payment.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    controller: paymentNumberTextField,
+                    textInputAction: TextInputAction.next,
+                    autovalidateMode: AutovalidateMode.always,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "No of Payments(in months)",
+                      helperText: "Old payments data will be flushed if this field is filled",
+                      contentPadding:
+                      EdgeInsets.only( left: 10.0, right: 10.0),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value){
+                      if(value.isEmpty)return null;
+                      else if(value=="0") return "No of Payments cant be 0!!";
+                      else {
+                        try{
+                          int months=int.parse(value);
+                          if(months<0){
+                            return "No of Payments cant be Negative!!";
+                          }
+                          else{
+                            return null;
+                          }
+                        }
+                        catch(E){
+                          return "Non numeric input not allowed.";
+                        }
+                      }
+                    },
+                    onSaved: (value) {
+                      try{
+                        if(value.isNotEmpty)
+                        {
+                          int months=int.parse(value);
+                          months=months.abs();
+                          widget.client.due= (months-1)*-1;
+                          if(widget.client.startDate==null)widget.client.startDate=today;
+                          widget.client.endDate = DateTime(widget.client.startDate.year,widget.client.startDate.month+months,widget.client.startDate.day);
+                        }
+                      }
+                      catch(E){
+                        globalShowInSnackBar(scaffoldMessengerKey, "Non numeric input not allowed.");
+                      }
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/date.png',
                       height: 30,
                     ),
                     backgroundColor: Colors.transparent,
                   ),Expanded(child:DateTimeFormField(
-                  decoration: const InputDecoration(
-                    hintStyle: TextStyle(),
-                    errorStyle: TextStyle(),
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.event_note),
-                    labelText: 'End Date',
-                  ),
-                  initialValue: widget.client.endDate,
-                  mode: DateTimeFieldPickerMode.date,
-                  autovalidateMode: AutovalidateMode.always,
-                  onDateSelected: (DateTime value) {
-                    widget.client.endDate=value;
-                  },
-                ),),]),
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.event_note),
+                      labelText: 'Start Date',
+                    ),
+                    initialValue: widget.client.startDate,
+                    mode: DateTimeFieldPickerMode.date,
+                    autovalidateMode: AutovalidateMode.always,
+                    onDateSelected: (DateTime value) {
+                      try{
+                        int months=int.parse(paymentNumberTextField.text);
+                        widget.client.startDate=value;
+                        if(widget.client.startDate==null)widget.client.startDate=today;
+                        months=months.abs();
+                        widget.client.endDate = DateTime(widget.client.startDate.year,widget.client.startDate.month+months,widget.client.startDate.day);
+                      }
+                      catch(E){
+                        globalShowInSnackBar(scaffoldMessengerKey, "Please Enter No of Payments!!");
+                      }
+                    },
+                  ),),]),
+                // SizedBox(height: 8,),
+                // Row(children:[
+                //   CircleAvatar(
+                //     radius: 25,
+                //     child: Image.asset(
+                //       'assets/date1.png',
+                //       height: 30,
+                //     ),
+                //     backgroundColor: Colors.transparent,
+                //   ),Expanded(child:DateTimeFormField(
+                //     decoration: const InputDecoration(
+                //       hintStyle: TextStyle(),
+                //       errorStyle: TextStyle(),
+                //       border: OutlineInputBorder(),
+                //       suffixIcon: Icon(Icons.event_note),
+                //       labelText: 'End Date',
+                //     ),
+                //     initialValue: widget.client.endDate,
+                //     mode: DateTimeFieldPickerMode.date,
+                //     autovalidateMode: AutovalidateMode.always,
+                //     onDateSelected: (DateTime value) {
+                //       widget.client.endDate=value;
+                //     },
+                //   ),),]),
                 SizedBox(height: 100,),
               ],
-            ),))
-        ],
+            ),
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: (){

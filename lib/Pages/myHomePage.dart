@@ -2,6 +2,7 @@ import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
+import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
@@ -124,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      body: GlobalClass.registerList!=null?Column(children: <Widget>[
+      body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: RegisterList(false)),
       ]):
       Container(

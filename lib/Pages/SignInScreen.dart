@@ -57,6 +57,7 @@ class _SignInScreenState extends State<SignInScreen> {
       await registerUserDetail().then((value)async=>{
         if(value!=null){
           await getLastRegister().then((lastRegister) async => {
+            GlobalClass.lastRegister=lastRegister,
             if(lastRegister==null||lastRegister=="")
               {
                 widget=MaterialApp(

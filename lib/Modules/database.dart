@@ -56,6 +56,7 @@ Future<List<ClientModel>> getAllClients(String registerId) async {
       clients.add(client);
     });
   }
+  clients.sort((a,b)=>a.name.compareTo(b.name));
   return clients;
 }
 Future<List<ClientModel>> getNotificationClients() async {
@@ -83,6 +84,7 @@ Future<List<RegisterModel>> getAllRegisters() async {
       registers.add(register);
     });
   }
+  registers.sort((a,b)=>a.name.compareTo(b.name));
   return registers;
 }
 

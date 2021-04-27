@@ -1,5 +1,6 @@
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/registerList.dart';
@@ -60,24 +61,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
           }),
         ],
       ),
-      // body: Column(
-      //   children: [
-      //     Expanded(child:ListView.builder(
-      //       physics: BouncingScrollPhysics(),
-      //       shrinkWrap: true,
-      //       itemCount: GlobalClass.registerList.length,
-      //       itemBuilder: (context, index) {
-      //         return ListTile(
-      //           title: Text(GlobalClass.registerList[index].name),
-      //           onTap: (){
-      //             globalShowInSnackBar(scaffoldMessengerKey,GlobalClass.registerList[index].name);
-      //           }
-      //         );
-      //       },
-      //     ),)
-      //   ],
-      // ),
-      body: Column(children: <Widget>[
+      body: GlobalClass.registerList==null||GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: RegisterList(true)),
       ]),
     ),key: scaffoldMessengerKey,);
