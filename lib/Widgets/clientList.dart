@@ -110,8 +110,13 @@ class _ClientListState extends State<ClientList> {
                             this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].startDate.year,this.widget.listItems[index].startDate.month+intVal,this.widget.listItems[index].startDate.day);
                           }
                           else{
-                            this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month-1,this.widget.listItems[index].endDate.day);
-                            this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+(intVal-this.widget.listItems[index].due),this.widget.listItems[index].endDate.day);
+                            if(this.widget.listItems[index].due<0){
+                              this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+intVal,this.widget.listItems[index].endDate.day);
+                            }
+                            else{
+                              this.widget.listItems[index].startDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month-1,this.widget.listItems[index].endDate.day);
+                              this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+(intVal-this.widget.listItems[index].due),this.widget.listItems[index].endDate.day);
+                            }
                           }
                           this.widget.listItems[index].due=this.widget.listItems[index].due-intVal;
 

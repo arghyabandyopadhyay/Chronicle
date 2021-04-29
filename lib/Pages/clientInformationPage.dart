@@ -216,8 +216,13 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                             this.widget.client.startDate=DateTime(this.widget.client.startDate.year,this.widget.client.startDate.month+intVal,this.widget.client.startDate.day);
                           }
                           else{
-                            this.widget.client.startDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month-1,this.widget.client.endDate.day);
-                            this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+(intVal-this.widget.client.due),this.widget.client.endDate.day);
+                            if(this.widget.client.due<0){
+                              this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+intVal,this.widget.client.endDate.day);
+                            }
+                            else{
+                              this.widget.client.startDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month-1,this.widget.client.endDate.day);
+                              this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+(intVal-this.widget.client.due),this.widget.client.endDate.day);
+                            }
                           }
                           this.widget.client.due=this.widget.client.due-intVal;
                           updateClient(this.widget.client, this.widget.client.id);
