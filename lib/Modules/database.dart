@@ -26,15 +26,19 @@ void deleteDatabaseNode(DatabaseReference id) {
   databaseReference.child(id.path.replaceAll("registers", "registers/").replaceAll("client", "client/")).remove();
 }
 Future<DatabaseReference> registerUserDetail() async {
-  DatabaseReference id=databaseReference.child('${GlobalClass.user.uid}/userDetails/').push();
+  DatabaseReference id;
   await getUserDetails().then((value) => {
     if(value==null){
+      id=databaseReference.child('${GlobalClass.user.uid}/userDetails/').push(),
       id.set(new UserModel(displayName: GlobalClass.user.displayName,email: GlobalClass.user.email,canAccess: 0,phoneNumber: GlobalClass.user.phoneNumber).toJson()),
     }
     else{
       if(value.canAccess==0)
       {
         id=null
+      }
+      else{
+        id=value.id
       }
     }
   });

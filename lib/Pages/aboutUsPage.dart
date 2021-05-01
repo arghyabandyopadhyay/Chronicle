@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../customColors.dart';
+import 'globalClass.dart';
 
 class AboutUsPage extends StatefulWidget {
   AboutUsPage({Key key,}) : super(key: key);
@@ -80,10 +81,10 @@ class _AboutPageState extends State<AboutUsPage> {
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.mail),
+        icon: Icon(Icons.contact_mail),
         label: Text("Contact Us",),
         onPressed: ()async {
-          const url = 'mailto:<chroniclebusinesssolutions@gmail.com>?subject=Contacting Chronicle';
+          String url = 'mailto:<chroniclebusinesssolutions@gmail.com>?subject=Contacting Chronicle ${GlobalClass.userDetail!=null?GlobalClass.userDetail.email:""}';
           if (await canLaunch(url)) {
             await launch(url);
           } else {

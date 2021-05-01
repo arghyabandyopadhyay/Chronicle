@@ -1,27 +1,17 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:chronicle/Models/DrawerActionModel.dart';
-import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
-import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/clientPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Pages/qrCodePage.dart';
-import 'package:chronicle/Pages/userInfoScreen.dart';
-import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:chronicle/Widgets/googleSignInButton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:qr_code_tools/qr_code_tools.dart';
-import 'package:shimmer/shimmer.dart';
-import '../Modules/auth.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
 import 'idBlockedPage.dart';
 import 'myHomePage.dart';
-import 'notificationsPage.dart';
 
 class SignInScreen extends StatefulWidget {
   @override

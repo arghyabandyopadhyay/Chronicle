@@ -59,10 +59,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 if(value!=null)
                   {
                     FirebaseMessaging.instance.getToken().then(setToken),
-                    Navigator.pushReplacement(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (context) => MyHomePage()))
+                    // Navigator.pushReplacement(
+                    //     context,
+                    //     CupertinoPageRoute(
+                    //         builder: (context) => MyHomePage()))
+                    Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
                   }
                 else{
                   Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
