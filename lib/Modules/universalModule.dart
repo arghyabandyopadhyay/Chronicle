@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/dataModel.dart';
-import 'package:chronicle/Pages/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -62,8 +61,8 @@ String constructFCMPayload(String token, ClientModel clientElement,String regist
     },
     'notification': {
       'title': clientElement.name,
-      'body': 'Subscription of ${clientElement.name} of Register ${register} ended on ${clientElement.endDate}',
-      'image':'https://i.ibb.co/c3rjd9r/ic-launcher.png'
+      'body': 'Subscription of ${clientElement.name} of Register $register ended on ${clientElement.endDate}',
+      // 'image':'https://i.ibb.co/c3rjd9r/ic-launcher.png'
     },
   }) ;
 }
@@ -135,14 +134,16 @@ Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMe
             updateClient(clientElement, clientElement.id);
           }
           else if(clientElement.endDate!=null&&dataElement.userDetails.first.token!=null){
-            int a=clientElement.endDate.difference(DateTime.now()).inDays;
-            if((a>-3&&a<1)&&clientElement.due>=0)
+            DateTime now=DateTime.now();
+            DateTime today=DateTime(now.year,now.month,now.day);
+            int a=clientElement.endDate.difference(today).inDays;
+            if((a>=-1&&a<=2)&&clientElement.due>=0)
             {
               await http.post(
                 Uri.parse('https://fcm.googleapis.com/fcm/send'),
                 headers: <String, String>{
                   'Content-Type': 'application/json; charset=UTF-8',
-                  'Authorization':'key=${messageString}'
+                  'Authorization':'key=$messageString'
                 },
                 body: constructFCMPayload(dataElement.userDetails.first.token,clientElement,registerElement.name),
               );
@@ -157,4 +158,13 @@ Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMe
 }
 void updateClientUniversal(ClientModel client, DatabaseReference id) {
   id.update(client.toJson());
+}
+
+void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
+{
+  FocusScopeNode currentFocus = FocusScope.of(context);
+  if (!currentFocus.hasPrimaryFocus) {
+    currentFocus.unfocus();
+  }
+  globalShowInSnackBar(scaffoldMessengerKey,"Changes have been saved");
 }

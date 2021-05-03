@@ -1,14 +1,13 @@
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/clientInformationPage.dart';
+import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../Models/clientModel.dart';
-import 'AddPaymentDialog.dart';
 
 class ClientList extends StatefulWidget {
   final List<ClientModel> listItems;
@@ -71,7 +70,7 @@ class _ClientListState extends State<ClientList> {
             children: [
               Text((this.widget.listItems[index].startDate!=null?this.widget.listItems[index].startDate.day.toString()+"-"+this.widget.listItems[index].startDate.month.toString()+"-"+this.widget.listItems[index].startDate.year.toString()+" to ":"")+((this.widget.listItems[index].endDate!=null)?this.widget.listItems[index].endDate.day.toString()+"-"+this.widget.listItems[index].endDate.month.toString()+"-"+this.widget.listItems[index].endDate.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
               Text("\u2706: "+(this.widget.listItems[index].mobileNo!=null?this.widget.listItems[index].mobileNo:"N/A")),
-              Text("${this.widget.listItems[index].due!=null&&this.widget.listItems[index].due<0?"Paid":"Due"}: "+this.widget.listItems[index].due.abs().toString(),style: TextStyle(color: this.widget.listItems[index].due!=null&&this.widget.listItems[index].due==0?null:this.widget.listItems[index].due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold),)
+              Text(this.widget.listItems[index].due==0?"Last Month":("${this.widget.listItems[index].due<0?"Paid":"Due"}: "+(this.widget.listItems[index].due.abs()+(this.widget.listItems[index].due<0?1:0)).toString()),style: TextStyle(color: this.widget.listItems[index].due<=0?this.widget.listItems[index].due==0?Colors.orangeAccent:Colors.green:Colors.red,fontWeight: FontWeight.bold),)
             ]
           ),
         ),
@@ -88,7 +87,7 @@ class _ClientListState extends State<ClientList> {
                   }
                   if(this.widget.listItems[index].due>=1)
                   {
-                    this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+1,this.widget.listItems[index].endDate.day);;
+                    this.widget.listItems[index].endDate=DateTime(this.widget.listItems[index].endDate.year,this.widget.listItems[index].endDate.month+1,this.widget.listItems[index].endDate.day);
                   }
                   updateClient(this.widget.listItems[index], this.widget.listItems[index].id);
                 });
@@ -156,13 +155,13 @@ class _ClientListState extends State<ClientList> {
               },
             ),
             IconSlideAction(
-              caption: 'Send Remainder',
+              caption: 'Send Reminder',
               icon: Icons.send,
               onTap: () async {
                 if(this.widget.listItems[index].mobileNo!=null&&this.widget.listItems[index].mobileNo!="")
                 {
-                  var url = "https://wa.me/+91${this.widget.listItems[index].mobileNo}?text=${this.widget.listItems[index].name}, Your subscription has come to an end"
-                      ", please clear your dues for further continuation of services.";
+                  var url = "https://wa.me/+91${this.widget.listItems[index].mobileNo}?text=${this.widget.listItems[index].name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                      ", please clear your dues for further continuation of services."}";
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {

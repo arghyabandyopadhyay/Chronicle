@@ -12,7 +12,8 @@ class UserModel
   int canAccess;
   int isOwner;
   String messageString;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner,this.messageString});
+  String reminderMessage;
+  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner,this.messageString,this.reminderMessage});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
         displayName: json1['DisplayName'],
@@ -22,7 +23,8 @@ class UserModel
         isOwner: json1['IsOwner']!=null?json1['IsOwner']:0,
         qrcodeDetail: json1['QrCodeDetail'],
         token: json1['Token'],
-        messageString:json1['MessageString']
+        messageString:json1['MessageString'],
+        reminderMessage:json1['ReminderMessage']
     );
   }
   void setId(DatabaseReference id)
@@ -39,6 +41,7 @@ class UserModel
         "PhoneNumber":this.phoneNumber,
         "CanAccess":this.canAccess,
         "QrCodeDetail":this.qrcodeDetail,
-        "Token":this.token
+        "Token":this.token,
+        "ReminderMessage":this.reminderMessage
       };
 }

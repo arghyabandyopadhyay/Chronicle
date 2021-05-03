@@ -1,17 +1,8 @@
-import 'package:chronicle/Models/dataModel.dart';
-import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:chronicle/Widgets/usersList.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:chronicle/Modules/database.dart';
-import '../Models/clientModel.dart';
-import '../Widgets/clientList.dart';
-import '../customColors.dart';
-import '../Widgets/registerNewClientWidget.dart';
 
 class ClientAccessEditPage extends StatefulWidget {
   ClientAccessEditPage();

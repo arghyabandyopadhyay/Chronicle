@@ -1,4 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Pages/clientPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
@@ -22,6 +23,7 @@ class _SignInScreenState extends State<SignInScreen> {
   PickedFile _imageFile;
   Future<Widget> getWidget()async{
     Widget widget;
+    List<RegisterModel> lastRegisterModels;
     // await registerUserDetail().then((value)async{
     //   if(value!=null)
     //     {
@@ -61,14 +63,22 @@ class _SignInScreenState extends State<SignInScreen> {
             else {
                 await getAllRegisters().then((registers) => {
                     GlobalClass.registerList = registers,
+                  lastRegisterModels=registers.where((element) => element.id.key==lastRegister).toList(),
                     // sendNotifications(scaffoldMessengerKey,GlobalClass.userDetail.messageString),
-                  widget=MaterialApp(
-                    title: 'Chronicle',
-                    debugShowCheckedModeBanner: false,
-                    theme: lightThemeData,
-                    darkTheme: darkThemeData,
-                    themeMode: ThemeMode.system,
-                    home: ClientPage(registers.where((element) => element.id.key==lastRegister).first))
+                  if(lastRegisterModels!=null&&lastRegisterModels.length>0)widget=MaterialApp(
+                      title: 'Chronicle',
+                      debugShowCheckedModeBanner: false,
+                      theme: lightThemeData,
+                      darkTheme: darkThemeData,
+                      themeMode: ThemeMode.system,
+                      home: ClientPage(lastRegisterModels.first))
+                  else widget=MaterialApp(
+                      title: 'Chronicle',
+                      debugShowCheckedModeBanner: false,
+                      theme: lightThemeData,
+                      darkTheme: darkThemeData,
+                      themeMode: ThemeMode.system,
+                      home: MyHomePage())
                 })
             }
           })

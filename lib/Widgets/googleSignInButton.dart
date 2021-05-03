@@ -11,7 +11,7 @@ import '../Modules/auth.dart';
 
 class GoogleSignInButton extends StatefulWidget {
 
-  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
   GoogleSignInButton({Key key,this.scaffoldMessengerKey}) : super(key: key);
   @override
   _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
@@ -59,11 +59,14 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                 if(value!=null)
                   {
                     FirebaseMessaging.instance.getToken().then(setToken),
-                    // Navigator.pushReplacement(
-                    //     context,
-                    //     CupertinoPageRoute(
-                    //         builder: (context) => MyHomePage()))
-                    Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
+                    if(GlobalClass.userDetail!=null&&GlobalClass.userDetail.canAccess==1){
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => MyHomePage()))
+                    }
+                    else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
+
                   }
                 else{
                   Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))

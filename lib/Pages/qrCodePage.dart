@@ -1,7 +1,4 @@
-
-
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -11,10 +8,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodePage extends StatefulWidget {
   String qrCode;
-  final User _user;
-
-  QrCodePage({Key key,this.qrCode,User user}): _user = user,
-        super(key: key);
+  QrCodePage({Key key,this.qrCode}):super(key: key);
 
   @override
   _QrCodePageState createState() => _QrCodePageState();
@@ -32,7 +26,6 @@ class _QrCodePageState extends State<QrCodePage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-
         title: Text("QR Code"),
       ),
       body: Center(
@@ -63,7 +56,6 @@ class _QrCodePageState extends State<QrCodePage> {
                 });
                 updateUserDetails(value, value.id);
               });
-
             });
 
           });

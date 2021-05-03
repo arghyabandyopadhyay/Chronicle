@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class RegisterOptionBottomSheet extends StatelessWidget {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
-  TextEditingController textEditingController=new TextEditingController();
+  final TextEditingController textEditingController=new TextEditingController();
   //list of options you want to show in the bottom sheet
   RegisterOptionBottomSheet({Key key}) : super(key: key);
   @override

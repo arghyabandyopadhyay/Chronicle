@@ -34,9 +34,9 @@ Future<DatabaseReference> registerUserDetail() async {
     }
     else{
       if(value.canAccess==0)
-      {
-        id=null
-      }
+        {
+          id=null
+        }
       else{
         id=value.id
       }
@@ -51,7 +51,7 @@ void updateClient(ClientModel client, DatabaseReference id) {
 
 Future<List<ClientModel>> getAllClients(String registerId) async {
 
-  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/${registerId}/client/').once();
+  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').once();
   List<ClientModel> clients = [];
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
@@ -68,8 +68,10 @@ Future<List<ClientModel>> getNotificationClients() async {
   List<ClientModel> clients = [];
   registers.forEach((registerElement)  {
     registerElement.clients.forEach((clientElement) async{
-      int a=clientElement.endDate.difference(DateTime.now()).inDays;
-      if((a>-3&&a<1)&&clientElement.due>=0)
+      DateTime now=DateTime.now();
+      DateTime today=DateTime(now.year,now.month,now.day);
+      int a=clientElement.endDate.difference(today).inDays;
+      if((a>=-1&&a<=2)&&clientElement.due>=0)
       {
         clients.add(clientElement);
       }

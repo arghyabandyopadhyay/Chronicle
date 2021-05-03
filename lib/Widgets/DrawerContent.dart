@@ -1,19 +1,17 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
-import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/aboutUsPage.dart';
 import 'package:chronicle/Pages/clientAccessEditPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/customColors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DrawerContent extends StatelessWidget {
   DrawerContent({Key key,this.drawerItems,this.scaffoldMessengerKey}) : super(key: key);
   final List<DrawerActionModel> drawerItems;
-  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

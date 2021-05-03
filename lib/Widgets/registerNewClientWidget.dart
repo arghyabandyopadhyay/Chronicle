@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../Models/clientModel.dart';
-import '../customColors.dart';
 
 class RegisterNewClientWidget extends StatefulWidget {
   final Function(ClientModel) callback;

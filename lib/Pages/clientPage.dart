@@ -241,7 +241,8 @@ class _ClientPageState extends State<ClientPage> {
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
-      ]): Container(
+      ]):
+      Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(

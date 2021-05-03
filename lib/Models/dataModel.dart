@@ -3,10 +3,8 @@ import 'dart:convert';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/Pages/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-import 'clientModel.dart';
 
 class DataModel {
   final List<RegisterModel> registers;

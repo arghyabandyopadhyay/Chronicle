@@ -4,14 +4,11 @@ import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart' show DragStartBehavior;
 import 'package:flutter/widgets.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import '../customColors.dart';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -120,12 +117,19 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       form.save();
       clientData.sex=sexDropDown;
       clientData.caste=casteDropDown;
-      // if(clientData.startDate==null)clientData.startDate=today;
-      // int months=int.parse(paymentNumberTextField.text);
-      // months=months.abs();
-      // clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+      // try{
+        // if(clientData.startDate==null)clientData.startDate=today;
+        // int months=int.parse(paymentNumberTextField.text);
+        // months=months.abs();
+        // clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
+        // print(clientData.toJson());
       widget.callback(clientData);
       Navigator.pop(context);
+      // }
+      // catch(E){
+      //   print(E);
+      //   globalShowInSnackBar(scaffoldMessengerKey,"Please Enter No of Payments!!");
+      // }
       FocusScope.of(context).unfocus();
     }
   }

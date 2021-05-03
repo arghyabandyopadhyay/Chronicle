@@ -1,19 +1,13 @@
-import 'package:chronicle/Models/registerModel.dart';
-import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chronicle/Modules/errorPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:shimmer/shimmer.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
-import '../customColors.dart';
-import '../Widgets/registerNewClientWidget.dart';
 
 class NotificationsPage extends StatefulWidget {
   static const String routeName = '/notificationPage';
-  NotificationsPage();
-
   @override
   _NotificationsPageState createState() => _NotificationsPageState();
 }
@@ -103,7 +97,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
             getNotifications();
           }),
         ],),
-      body: this.clients!=null?Column(children: <Widget>[
+      body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
       ]):
       Container(

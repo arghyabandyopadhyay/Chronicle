@@ -5,10 +5,10 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../customColors.dart';
+import 'globalClass.dart';
+
 
 class ClientInformationPage extends StatefulWidget {
   final ClientModel client;
@@ -71,6 +71,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                               widget.client.sex=sexDropDown;
                               widget.client.caste=casteDropDown;
                               updateClient(widget.client,widget.client.id);
+                              changesSavedModule(context,scaffoldMessengerKey);
                             }),
                             ActionChip(label: Text("No"), onPressed: (){
                               setState(() {
@@ -107,6 +108,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     widget.client.sex=sexDropDown;
                     widget.client.caste=casteDropDown;
                     updateClient(widget.client,widget.client.id);
+                    changesSavedModule(context,scaffoldMessengerKey);
                   }),
                   ActionChip(label: Text("No"), onPressed: (){
                     setState(() {
@@ -148,11 +150,10 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       counter++;
     }
     return ScaffoldMessenger(child: Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(widget.client.name!=null?widget.client.name:"Client Profile",),
         actions: [
-          Center(child: Text(widget.client.due.abs().toString()+"  ",style: TextStyle(color: this.widget.client.due!=null&&this.widget.client.due==0?null:this.widget.client.due>0?Colors.red:Colors.green,fontWeight: FontWeight.bold,fontSize: 30),),)        ],
+          Center(child: Text(this.widget.client.due==0?"Last Month  ":("${this.widget.client.due<0?"Paid":"Due"}: "+(this.widget.client.due.abs()+(this.widget.client.due<0?1:0)).toString()+"  "),style: TextStyle(color: this.widget.client.due<=0?this.widget.client.due==0?Colors.orangeAccent:Colors.green:Colors.red,fontWeight: FontWeight.bold),))],
       ),
       body: Form(
         key: _formKey,
@@ -183,8 +184,8 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   Column(children: [IconButton(icon: Icon(Icons.message,color: Colors.lightBlueAccent), onPressed: () async {
                     if(widget.client.mobileNo!=null&&widget.client.mobileNo!="")
                     {
-                      var url = "https://wa.me/+91${widget.client.mobileNo}?text=${widget.client.name}, Your subscription has come to an end"
-                          ", please clear your dues for further continuation of services.";
+                      var url = "https://wa.me/+91${this.widget.client.mobileNo}?text=${this.widget.client.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                          ", please clear your dues for further continuation of services."}";
                       if (await canLaunch(url)) {
                         await launch(url);
                       } else {
@@ -200,7 +201,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       }
                       if(this.widget.client.due>=1)
                       {
-                        this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+1,this.widget.client.endDate.day);;
+                        this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+1,this.widget.client.endDate.day);
                       }
                       updateClient(this.widget.client, this.widget.client.id);
                     });

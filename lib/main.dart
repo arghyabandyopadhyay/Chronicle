@@ -107,7 +107,7 @@ class _ChronicleState extends State<Chronicle> {
 
   Stream<String> _tokenStream;
 
-  Future<void> setToken(String token) {
+  void setToken(String token) {
     GlobalClass.applicationToken = token;
     if(GlobalClass.user!=null)getUserDetails().then((value) => {
       value.token=token,

@@ -1,17 +1,13 @@
-import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Pages/clientPage.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/customColors.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class RegisterList extends StatefulWidget {
-  bool isDialog;
+  final bool isDialog;
   RegisterList(this.isDialog);
   @override
   _RegisterListState createState() => _RegisterListState();

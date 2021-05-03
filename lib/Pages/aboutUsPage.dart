@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../customColors.dart';
 import 'globalClass.dart';
 
 class AboutUsPage extends StatefulWidget {
@@ -61,23 +60,23 @@ class _AboutPageState extends State<AboutUsPage> {
                   ),
                   SizedBox(height: 20,),
                   Container(
-            margin: EdgeInsets.symmetric(horizontal: 5),
-            alignment: Alignment.centerLeft,
-            child: ListTile(
-                dense: true,
-                title: Text("Powered By"),
-                subtitle: Text("Chronicle Business Solutions.")
-            ),
-            decoration: BoxDecoration(
-                borderRadius:
-                const BorderRadius.all(
-                    Radius.circular(5)),
-                border: Border.all(width: 0.2)
-            ),
-          )
+                    margin: EdgeInsets.symmetric(horizontal: 5),
+                    alignment: Alignment.centerLeft,
+                    child: ListTile(
+                        dense: true,
+                        title: Text("Powered By"),
+                        subtitle: Text("Chronicle Business Solutions.")
+                    ),
+                    decoration: BoxDecoration(
+                        borderRadius:
+                        const BorderRadius.all(
+                            Radius.circular(5)),
+                        border: Border.all(width: 0.2)
+                    ),
+                  )
 
-        ],
-      ))),
+                ],
+              ))),
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(

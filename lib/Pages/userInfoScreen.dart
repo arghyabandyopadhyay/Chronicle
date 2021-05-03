@@ -1,10 +1,7 @@
-
-
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -148,7 +145,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: CustomColors.firebaseGrey.withOpacity(0.8),
                     fontSize: 14,
                     letterSpacing: 0.2),
               ),
