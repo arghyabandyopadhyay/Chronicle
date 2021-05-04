@@ -1,4 +1,5 @@
 import 'package:chronicle/Models/clientModel.dart';
+import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -82,11 +83,13 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       }
       json.forEach((jsonItem)
       {
-        widget.callback(ClientModel.fromJson(jsonItem));
+        ExcelClientModel excelClientModel=ExcelClientModel.fromJson(jsonItem);
+        ClientModel temp=excelClientModel.toClientModel();
+        widget.callback(temp);
       });
       Navigator.of(context).pop();
     } catch (e) {
-      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong");
+      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!\n"+e.toString());
     }
   }
   fileExists(String type, String assetPath) async {

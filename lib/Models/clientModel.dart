@@ -32,7 +32,7 @@ class ClientModel
     String startDate=json1['StartDate'];
     String endDate=json1['EndDate'];
     String name=json1['Name'];
-    String mobile=json1['MobileNo']!=null?json1['MobileNo'].toString():null;
+    String mobile=json1['MobileNo'];
     String masterFilter=json1['MasterFilter']!=null?json1['MasterFilter']:((name+(mobile!=null?mobile:"")+(startDate!=null?startDate:"")+(endDate!=null?endDate:"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase());
     return ClientModel(
         registrationId: json1['RegistrationId'],
@@ -45,8 +45,8 @@ class ClientModel
         injuries: json1['Injuries'],
         sex: json1['Sex'],
         caste: json1['Caste'],
-        startDate: startDate!=null?DateTime.parse(startDate):null,
-        endDate: endDate!=null?DateTime.parse(endDate):null,
+        startDate: DateTime.parse(startDate),
+        endDate: DateTime.parse(endDate),
         dob: json1['Dob']!=null?DateTime.parse(json1['Dob']):null,
         height: json1['Height']!=null?double.parse(json1['Height'].toString()):null,
         weight: json1['Weight']!=null?double.parse(json1['Weight'].toString()):null,

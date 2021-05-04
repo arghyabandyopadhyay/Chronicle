@@ -41,7 +41,7 @@ class _ClientCardWidgetState extends State<ClientCardWidget> {
               Text((this.widget.item.registrationId!=null&&this.widget.item.registrationId!=""?this.widget.item.registrationId:this.widget.item.id.key),style: TextStyle(fontWeight: FontWeight.w300),)
             ]
         ),
-        subtitle: Text("\u2709: "+this.widget.item.address.toString(),style: TextStyle(fontWeight: FontWeight.bold),),
+        subtitle: this.widget.item.address!=null?Text("Address: "+this.widget.item.address,style: TextStyle(fontWeight: FontWeight.bold),):null,
         trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,

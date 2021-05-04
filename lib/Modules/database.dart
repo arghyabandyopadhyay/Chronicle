@@ -14,6 +14,29 @@ DatabaseReference registerUser(ClientModel client,String registerId)
   return id;
 }
 
+DatabaseReference registerUsers(List<ClientModel> client,String registerId)
+{
+//   Batch batch=Firestore.instance.batch();
+//   client.forEach((element) {
+//     var id=databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').push();
+//     batch.set(id,element.toJson());
+//     element.id=id;
+//   });
+// // Commit the batch
+//   batch.commit().then(() => {
+//     //save data show in snack bar
+//   });
+//
+//   databaseReference.runTransaction((MutableData transaction) async{
+//     client.forEach((element) {
+//
+//     });
+//     return transaction;
+//   });
+//
+//   return id;
+}
+
 DatabaseReference addToRegister(String name,)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registers/').push();

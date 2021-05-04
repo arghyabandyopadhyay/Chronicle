@@ -306,7 +306,6 @@ class _ClientPageState extends State<ClientPage> {
                             selectedList.forEach((element) {
                               String address = element.mobileNo;
                               String message = "${element.name}, ${textEditingController.text}";
-                              print(message);
                               if(address!=null&&address!="")
                                 sender.sendSms(new SmsMessage(address, message));
                             });
