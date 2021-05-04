@@ -2,9 +2,13 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sms/sms.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
+import 'clientInformationPage.dart';
+import 'globalClass.dart';
 
 class NotificationsPage extends StatefulWidget {
   static const String routeName = '/notificationPage';
@@ -14,6 +18,7 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   List<ClientModel> clients;
+  int _counter=0;
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   bool _isSearching=false;
   List<ClientModel> searchResult = [];
@@ -67,7 +72,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
       })
     });
   }
-
   @override
   void initState() {
     super.initState();
@@ -93,12 +97,97 @@ class _NotificationsPageState extends State<NotificationsPage> {
               else _handleSearchEnd();
             });
           }),
+          IconButton(
+            onPressed: () async {showDialog(context: context, builder: (_)=>new AlertDialog(
+              title: Text("Confirm Send"),
+              content: Text("Are you sure to send a reminder to all the clients?"),
+              actions: [
+                ActionChip(label: Text("Yes"), onPressed: (){
+                  setState(() {
+                    SmsSender sender = new SmsSender();
+                    clients.forEach((ClientModel element) {
+                      String address = element.mobileNo;
+                      if(address!=null&&address!="")
+                        sender.sendSms(new SmsMessage(address, "${element.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                            ", please clear your dues for further continuation of services."}"));
+                    });
+                    Navigator.of(_).pop();
+                  });
+                }),
+                ActionChip(label: Text("No"), onPressed: (){
+                  setState(() {
+                    Navigator.of(_).pop();
+                  });
+                })
+              ],
+            ));
+            },
+            icon: Icon(Icons.send),
+          ),
           IconButton(icon: Icon(Icons.refresh), onPressed: (){
             getNotifications();
           }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: ClientList(_isSearching?this.searchResult:this.clients,scaffoldMessengerKey)),
+        Expanded(child: _isSearching?Provider.value(
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: ClientList(listItems:this.searchResult,
+                scaffoldMessengerKey:scaffoldMessengerKey,
+                onTapList:(index){
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index])));
+                },
+                onLongPressed:(index) {},
+                onDoubleTapList:(index){
+                  showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${searchResult[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(searchResult[index].id);
+                          searchResult.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+            )):
+        Provider.value(
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
+                onTapList:(index){
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index])));
+                },
+                onLongPressed:(index) {},
+                onDoubleTapList:(index){
+                  showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${clients[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(clients[index].id);
+                          clients.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+            ))),
       ]):
       Container(
           width: double.infinity,

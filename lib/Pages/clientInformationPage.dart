@@ -1,14 +1,12 @@
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/customColors.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'globalClass.dart';
-
 
 class ClientInformationPage extends StatefulWidget {
   final ClientModel client;
@@ -49,22 +47,22 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
     else {
       if(paymentNumberTextField.text.isNotEmpty)
       showDialog(context: context,
-          builder: (BuildContext context){
+          builder: (BuildContext context1){
             return new AlertDialog(
               title: Text("Confirm New Payment"),
               content: Text("Are you sure to add new payment. Your old payments for ${widget.client.name} will be flushed?"),
               actions: [
                 ActionChip(label: Text("Yes"), onPressed: (){
-                  Navigator.pop(context);
+                  Navigator.pop(context1);
                   form.save();
                   showDialog(context: context,
-                      builder: (BuildContext context){
+                      builder: (BuildContext context2){
                         return new AlertDialog(
                           title: Text("Confirm Save"),
                           content: Text("Are you sure to save changes?"),
                           actions: [
                             ActionChip(label: Text("Yes"), onPressed: (){
-                              Navigator.pop(context);
+                              Navigator.pop(context2);
                               setState(() {
                                 isLoading=true;
                               });
@@ -75,7 +73,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                             }),
                             ActionChip(label: Text("No"), onPressed: (){
                               setState(() {
-                                Navigator.of(context).pop();
+                                Navigator.of(context2).pop();
                               });
                             })
                           ],
@@ -85,7 +83,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                 }),
                 ActionChip(label: Text("No"), onPressed: (){
                   setState(() {
-                    Navigator.of(context).pop();
+                    Navigator.of(context1).pop();
                   });
                 })
               ],
@@ -95,13 +93,13 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       else {
         form.save();
         showDialog(context: context,
-            builder: (BuildContext context){
+            builder: (BuildContext context1){
               return new AlertDialog(
                 title: Text("Confirm Save"),
                 content: Text("Are you sure to save changes?"),
                 actions: [
                   ActionChip(label: Text("Yes"), onPressed: (){
-                    Navigator.pop(context);
+                    Navigator.pop(context1);
                     setState(() {
                       isLoading=true;
                     });
@@ -112,7 +110,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                   }),
                   ActionChip(label: Text("No"), onPressed: (){
                     setState(() {
-                      Navigator.of(context).pop();
+                      Navigator.of(context1).pop();
                     });
                   })
                 ],
@@ -171,88 +169,19 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
               children: [
                 Row(mainAxisAlignment:MainAxisAlignment.spaceAround, children: [
                   Column(children: [IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
-                    if(widget.client.mobileNo!=null&&widget.client.mobileNo!="")
-                    {
-                      var url = 'tel:<${widget.client.mobileNo}>';
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      } else {
-                        throw 'Could not launch $url';
-                      }
-                    }
+                    callModule(widget.client);
                   },),Text("Call")],),
-                  Column(children: [IconButton(icon: Icon(Icons.message,color: Colors.lightBlueAccent), onPressed: () async {
-                    if(widget.client.mobileNo!=null&&widget.client.mobileNo!="")
-                    {
-                      var url = "https://wa.me/+91${this.widget.client.mobileNo}?text=${this.widget.client.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                          ", please clear your dues for further continuation of services."}";
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      } else {
-                        throw 'Could not launch $url';
-                      }
-                    }
-                  },),Text("Message")],),
+                  Column(children: [IconButton(icon: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen), onPressed: () async {
+                    whatsAppModule(widget.client, scaffoldMessengerKey);
+                  },),Text("WhatsApp")],),
                   if(this.widget.client.due>-1)Column(children: [IconButton(icon: Icon(Icons.more_time,color: Colors.red), onPressed: () async {
-                    setState(() {
-                      this.widget.client.due=this.widget.client.due+1;
-                      if(this.widget.client.due<=1){
-                        this.widget.client.startDate=DateTime(this.widget.client.startDate.year,this.widget.client.startDate.month+1,this.widget.client.startDate.day);
-                      }
-                      if(this.widget.client.due>=1)
-                      {
-                        this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+1,this.widget.client.endDate.day);
-                      }
-                      updateClient(this.widget.client, this.widget.client.id);
-                    });
+                    addDueModule(this.widget.client,this);
                   }),Text("Add Due")],),
                   Column(children: [IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
-                    showDialog(context: context, builder: (_) =>new AddQuantityDialog()
-                    ).then((value) {
-                      try
-                      {
-                        int intVal=int.parse(value.toString());
-                        setState(() {
-                          if(this.widget.client.due>intVal) {
-                            this.widget.client.startDate=DateTime(this.widget.client.startDate.year,this.widget.client.startDate.month+intVal,this.widget.client.startDate.day);
-                          }
-                          else{
-                            if(this.widget.client.due<0){
-                              this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+intVal,this.widget.client.endDate.day);
-                            }
-                            else{
-                              this.widget.client.startDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month-1,this.widget.client.endDate.day);
-                              this.widget.client.endDate=DateTime(this.widget.client.endDate.year,this.widget.client.endDate.month+(intVal-this.widget.client.due),this.widget.client.endDate.day);
-                            }
-                          }
-                          this.widget.client.due=this.widget.client.due-intVal;
-                          updateClient(this.widget.client, this.widget.client.id);
-                        });
-                      }
-                      catch(E){
-                        globalShowInSnackBar(scaffoldMessengerKey, "Invalid Quantity!!");
-                      }
-                    });
-
+                    addPaymentModule(this.widget.client,context,scaffoldMessengerKey,this);
                   },),Text("Add Payment")],),
                   Column(children: [IconButton(icon: Icon(Icons.delete,color: Colors.deepOrange), onPressed: (){
-                    showDialog(context: context, builder: (_)=>new AlertDialog(
-                      title: Text("Confirm Delete"),
-                      content: Text("Are you sure?"),
-                      actions: [
-                        ActionChip(label: Text("Yes"), onPressed: (){
-                          setState(() {
-                            deleteDatabaseNode(widget.client.id);
-                            Navigator.of(_).pop();
-                          });
-                        }),
-                        ActionChip(label: Text("No"), onPressed: (){
-                          setState(() {
-                            Navigator.of(_).pop();
-                          });
-                        })
-                      ],
-                    ));
+                    deleteModule(widget.client, context, this);
                   }),Text("Delete")],),
                 ],),
                 SizedBox(height: 20,),
@@ -694,30 +623,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       }
                     },
                   ),),]),
-                // SizedBox(height: 8,),
-                // Row(children:[
-                //   CircleAvatar(
-                //     radius: 25,
-                //     child: Image.asset(
-                //       'assets/date1.png',
-                //       height: 30,
-                //     ),
-                //     backgroundColor: Colors.transparent,
-                //   ),Expanded(child:DateTimeFormField(
-                //     decoration: const InputDecoration(
-                //       hintStyle: TextStyle(),
-                //       errorStyle: TextStyle(),
-                //       border: OutlineInputBorder(),
-                //       suffixIcon: Icon(Icons.event_note),
-                //       labelText: 'End Date',
-                //     ),
-                //     initialValue: widget.client.endDate,
-                //     mode: DateTimeFieldPickerMode.date,
-                //     autovalidateMode: AutovalidateMode.always,
-                //     onDateSelected: (DateTime value) {
-                //       widget.client.endDate=value;
-                //     },
-                //   ),),]),
                 SizedBox(height: 100,),
               ],
             ),

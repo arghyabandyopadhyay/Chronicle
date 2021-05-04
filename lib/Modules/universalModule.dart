@@ -2,55 +2,16 @@ import 'dart:convert';
 
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/dataModel.dart';
+import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sms/sms.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'database.dart';
 int _messageCount = 0;
-int getNoOfDays(int i,int j)
-{
-  if(i==1||i==3||i==5||i==7||i==8||i==10||i==12)return 31;
-  else if(i==2)return isLeapYear(j)?29:28;
-  else return 30;
-}
-
-int getDuration(int i,int j,int k)
-{
-  int duration=0;
-  for(int a=1;a<=k;a++)
-    {
-      int noOfDays=getNoOfDays(i,j);
-      duration=duration+noOfDays;
-      i++;
-      if(i==1)j++;
-    }
-  return duration;
-}
-bool isLeapYear(int year){
-  if(year%4==0)
-  {
-    if(year%100==0)
-    {
-      if(year%400==0)
-      {
-        return true;
-      }
-      else
-      {
-        return false;
-      }
-    }
-    else
-    {
-      return true;
-    }
-  }
-  else
-  {
-    return false;
-  }
-}
 String constructFCMPayload(String token, ClientModel clientElement,String register) {
   _messageCount++;
   return jsonEncode({
@@ -61,7 +22,7 @@ String constructFCMPayload(String token, ClientModel clientElement,String regist
     },
     'notification': {
       'title': clientElement.name,
-      'body': 'Subscription of ${clientElement.name} of Register $register ended on ${clientElement.endDate}',
+      'body': 'Subscription of ${clientElement.name} of Register $register ends on ${clientElement.endDate.day}',
       // 'image':'https://i.ibb.co/c3rjd9r/ic-launcher.png'
     },
   }) ;
@@ -156,10 +117,104 @@ Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMe
     globalShowInSnackBar(scaffoldMessengerKey,e);
   }
 }
-void updateClientUniversal(ClientModel client, DatabaseReference id) {
-  id.update(client.toJson());
+addDueModule(ClientModel clientData, state){
+  state.setState(() {
+    clientData.due=clientData.due+1;
+    if(clientData.due<=1){
+      clientData.startDate=DateTime(clientData.startDate.year,clientData.startDate.month+1,clientData.startDate.day);
+    }
+    if(clientData.due>=1)
+    {
+      clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+1,clientData.endDate.day);
+    }
+    updateClient(clientData, clientData.id);
+  });
 }
-
+callModule(ClientModel clientData)async{
+  if(clientData.mobileNo!=null&&clientData.mobileNo!="")
+  {
+    var url = 'tel:<${clientData.mobileNo}>';
+    if (await canLaunch(url)) {
+    await launch(url);
+    } else {
+    throw 'Could not launch $url';
+    }
+  }
+}
+whatsAppModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
+  if(clientData.mobileNo!=null&&clientData.mobileNo!="")
+  {
+    var url = "https://wa.me/+91${clientData.mobileNo}?text=${clientData.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+        ", please clear your dues for further continuation of services."}";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+  else globalShowInSnackBar(scaffoldMessengerKey,"Please Enter Mobile No");
+}
+smsModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
+  if(clientData.mobileNo!=null&&clientData.mobileNo!="")
+  {
+    SmsSender sender = new SmsSender();
+    String address = clientData.mobileNo;
+    String message = "${clientData.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+        ", please clear your dues for further continuation of services."}";
+    if(address!=null&&address!="") {
+      sender.sendSms(new SmsMessage(address, message)).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
+    }
+  }
+  else globalShowInSnackBar(scaffoldMessengerKey,"No Mobile no present!!");
+}
+deleteModule(ClientModel clientData,BuildContext context,state)async{
+  showDialog(context: context, builder: (_)=>new AlertDialog(
+    title: Text("Confirm Delete"),
+    content: Text("Are you sure?"),
+    actions: [
+      ActionChip(label: Text("Yes"), onPressed: (){
+        state.setState(() {
+          deleteDatabaseNode(clientData.id);
+          Navigator.of(_).pop();
+          Navigator.of(context).pop();
+        });
+      }),
+      ActionChip(label: Text("No"), onPressed: (){
+        state.setState(() {
+          Navigator.of(_).pop();
+        });
+      })
+    ],
+  ));
+}
+addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey, state,){
+  showDialog(context: context, builder: (_) =>new AddQuantityDialog()
+  ).then((value) {
+    try
+    {
+      int intVal=int.parse(value.toString());
+      state.setState(() {
+        if(clientData.due>intVal) {
+          clientData.startDate=DateTime(clientData.startDate.year,clientData.startDate.month+intVal,clientData.startDate.day);
+        }
+        else{
+          if(clientData.due<0){
+            clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+intVal,clientData.endDate.day);
+          }
+          else{
+            clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month-1,clientData.endDate.day);
+            clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
+          }
+        }
+        clientData.due=clientData.due-intVal;
+        updateClient(clientData, clientData.id);
+      });
+    }
+    catch(E){
+      globalShowInSnackBar(scaffoldMessengerKey, "Invalid Quantity!!");
+    }
+  });
+}
 void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
 {
   FocusScopeNode currentFocus = FocusScope.of(context);

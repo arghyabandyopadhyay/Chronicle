@@ -49,10 +49,10 @@ class _SettingsPageState extends State<SettingsPage> {
           if(!snapshot.hasError)
           {
             return ListView(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.only(left: 20,right: 20,top: 10),
               children: [
                 Container(
-                    height: 100,
+                    height: 150,
                     child: TextFormField(
                       keyboardType: TextInputType.multiline,
                       maxLines: null,

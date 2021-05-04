@@ -46,11 +46,11 @@ Future<DatabaseReference> registerUserDetail() async {
 }
 
 void updateClient(ClientModel client, DatabaseReference id) {
+  client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
   id.update(client.toJson());
 }
 
 Future<List<ClientModel>> getAllClients(String registerId) async {
-
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').once();
   List<ClientModel> clients = [];
   if (dataSnapshot.value != null) {

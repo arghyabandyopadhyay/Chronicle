@@ -7,6 +7,7 @@ class CustomColors{
   static const Color firebaseYellow = Color(0XFFFFCA28);
   static const Color firebaseOrange = Color(0XFFF57C00);
   static const Color primaryColor = Color(0XFF00203f);
+  static const Color whatsAppGreen = Color(0XFF4FCE5D);
 }
 
 var lightThemeData=ThemeData(
