@@ -1,5 +1,5 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
-import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/errorPage.dart';
@@ -8,6 +8,7 @@ import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
+import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
@@ -29,7 +30,7 @@ import 'notificationsPage.dart';
 
 
 class ClientPage extends StatefulWidget {
-  final RegisterModel register;
+  final RegisterIndexModel register;
 
   ClientPage(this.register);
 
@@ -92,13 +93,13 @@ class _ClientPageState extends State<ClientPage> {
   }
   void newClientModel(ClientModel client) {
     client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
-    client.setId(registerUser(client,widget.register.id.key.replaceAll("registers", "")));
+    client.setId(registerUser(client,widget.register.uid));
     this.setState(() {
       clients.add(client);
     });
   }
   void getClientModels() {
-    getAllClients(widget.register.id.key.replaceAll("registers", "")).then((clients) => {
+    getAllClients(widget.register.uid).then((clients) => {
       this.setState(() {
         this.clients = clients;
         _counter++;
@@ -153,9 +154,17 @@ class _ClientPageState extends State<ClientPage> {
             int totalDues=0;
             int totalPaid=0;
             int totalLastMonths=0;
+            int totalPaidClients=0;
+            int totalDuedClients=0;
             clients.forEach((element) {
-              if(element.due>0)totalDues=totalDues+element.due;
-              else if(element.due<0) totalPaid=totalPaid+element.due.abs()+1;
+              if(element.due>0){
+                totalDues=totalDues+element.due;
+                totalDuedClients=totalDuedClients+1;
+              }
+              else if(element.due<0) {
+                totalPaid=totalPaid+element.due.abs()+1;
+                totalPaidClients=totalPaidClients+1;
+              }
               else totalLastMonths++;
             });
             showDialog(context: context, builder: (_)=>AlertDialog(
@@ -207,31 +216,99 @@ class _ClientPageState extends State<ClientPage> {
                     ],
                   ),
                 ),
-                Container(
-                  height: 50,
-                  padding: EdgeInsets.all(10),
-                  child:Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Total Last Months:",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
-                      ),
-                      Expanded(child: Text(totalLastMonths.toString(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
-                        textAlign: TextAlign.end,
-                      ))
-                    ],
-                  ),
-                ),
                   SizedBox(height: 10,),
-                  Center(child: Text("*The data is in Months."),)
-                ],),height: 250,),
+                  Center(child: Text("*The data is in Months."),),
+                  Container(
+                    height: 50,
+                    padding: EdgeInsets.all(10),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Due Clients:",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                        ),
+                        Expanded(child: Text(totalDuedClients.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                          textAlign: TextAlign.end,
+                        ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    padding: EdgeInsets.all(10),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Paid Clients:",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                        ),
+                        Expanded(child: Text(totalPaidClients.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                          textAlign: TextAlign.end,
+                        ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    padding: EdgeInsets.all(10),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Last Months:",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                        ),
+                        Expanded(child: Text(totalLastMonths.toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                          textAlign: TextAlign.end,
+                        ))
+                      ],
+                    ),
+                  ),
+                  Container(
+                    height: 50,
+                    padding: EdgeInsets.all(10),
+                    child:Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Total Clients:",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                        ),
+                        Expanded(child: Text((totalLastMonths+totalDuedClients+totalPaidClients).toString(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 17.0,),
+                          textAlign: TextAlign.end,
+                        ))
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Center(child: Text("*The data is in no of clients."),),
+                ],),height: 500,),
               actions: [
                 ActionChip(label: Text("Close"), onPressed: (){
                   Navigator.of(_).pop();
@@ -466,6 +543,10 @@ class _ClientPageState extends State<ClientPage> {
                   );
                 },
               ));
+            }),
+            DrawerActionModel(Icons.settings, "Settings", ()async{
+              Navigator.pop(context);
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
             }),
           ],
         ),

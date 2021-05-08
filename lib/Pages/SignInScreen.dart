@@ -1,5 +1,5 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Pages/clientPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
@@ -23,7 +23,8 @@ class _SignInScreenState extends State<SignInScreen> {
   PickedFile _imageFile;
   Future<Widget> getWidget()async{
     Widget widget;
-    List<RegisterModel> lastRegisterModels;
+    List<RegisterIndexModel> lastRegisterModels;
+    // initiateDatabase();
     // await registerUserDetail().then((value)async{
     //   if(value!=null)
     //     {
@@ -61,7 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     home: MyHomePage())
               }
             else {
-                await getAllRegisters().then((registers) => {
+                await getAllRegisterIndex().then((registers) => {
                     GlobalClass.registerList = registers,
                   lastRegisterModels=registers.where((element) => element.id.key==lastRegister).toList(),
                     // sendNotifications(scaffoldMessengerKey,GlobalClass.userDetail.messageString),

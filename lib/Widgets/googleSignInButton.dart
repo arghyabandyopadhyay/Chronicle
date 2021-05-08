@@ -53,6 +53,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
 
           setState(() {
             if(user!=null){
+              // initiateDatabase();
               GlobalClass.user=user;
               registerUserDetail().then((value) => {
               _isSigningIn = false,

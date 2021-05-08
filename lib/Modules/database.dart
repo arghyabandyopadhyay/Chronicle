@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:chronicle/Models/chronicleUserModel.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,34 +9,15 @@ import '../Models/clientModel.dart';
 import '../Models/userModel.dart';
 FirebaseDatabase database=FirebaseDatabase.instance;
 final databaseReference=database.reference();
+// void initiateDatabase(){
+//   database.setPersistenceEnabled(true);
+//   database.setPersistenceCacheSizeBytes(100000000);
+// }
 DatabaseReference registerUser(ClientModel client,String registerId)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').push();
   id.set(client.toJson());
   return id;
-}
-
-DatabaseReference registerUsers(List<ClientModel> client,String registerId)
-{
-//   Batch batch=Firestore.instance.batch();
-//   client.forEach((element) {
-//     var id=databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').push();
-//     batch.set(id,element.toJson());
-//     element.id=id;
-//   });
-// // Commit the batch
-//   batch.commit().then(() => {
-//     //save data show in snack bar
-//   });
-//
-//   databaseReference.runTransaction((MutableData transaction) async{
-//     client.forEach((element) {
-//
-//     });
-//     return transaction;
-//   });
-//
-//   return id;
 }
 
 DatabaseReference addToRegister(String name,)
@@ -43,6 +26,12 @@ DatabaseReference addToRegister(String name,)
   id.set({
     "Name":name,
   });
+  return id;
+}
+DatabaseReference addToRegisterIndex(RegisterIndexModel registerIndexModel)
+{
+  var id=databaseReference.child('${GlobalClass.user.uid}/registerIndex/').push();
+  id.set(registerIndexModel.toJson());
   return id;
 }
 void deleteDatabaseNode(DatabaseReference id) {
@@ -102,7 +91,6 @@ Future<List<ClientModel>> getNotificationClients() async {
   });
   return clients;
 }
-
 Future<List<RegisterModel>> getAllRegisters() async {
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers').once();
   List<RegisterModel> registers = [];
@@ -117,8 +105,24 @@ Future<List<RegisterModel>> getAllRegisters() async {
   return registers;
 }
 
+Future<List<RegisterIndexModel>> getAllRegisterIndex() async {
+  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registerIndex').once();
+  List<RegisterIndexModel> registers = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      RegisterIndexModel register = RegisterIndexModel.fromJson(jsonDecode(jsonEncode(value)),key);
+      register.setId(databaseReference.child('${GlobalClass.user.uid}/registerIndex' + key));
+      registers.add(register);
+    });
+  }
+  registers.sort((a,b)=>a.name.compareTo(b.name));
+  return registers;
+}
+
 Future<UserModel> getUserDetails() async {
-  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/userDetails/').once();
+  DatabaseReference userDetailReference=databaseReference.child('${GlobalClass.user.uid}/userDetails/');
+  // userDetailReference.keepSynced(true);
+  DataSnapshot dataSnapshot = await userDetailReference.once();
   UserModel userDetail;
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
@@ -134,4 +138,31 @@ Future<UserModel> getUserDetails() async {
 
 void updateUserDetails(UserModel user, DatabaseReference id) {
   id.update(user.toJson());
+}
+
+//Owner Specific code
+
+DatabaseReference chronicleUserRegistration(ChronicleUserModel user)
+{
+  var id=databaseReference.child('Ge7TkACCKwcGHm4IAldBHalY41a2/chronicleUsers/').push();
+  id.set(user.toJson());
+  return id;
+}
+void updateChronicleUserDetails(ChronicleUserModel user, DatabaseReference id) async{
+  id.update(user.toJson());
+  UserModel userDetails=await getChronicleUserDetails(user.uid);
+  userDetails.canAccess=user.canAccess;
+  updateUserDetails(userDetails, userDetails.id);
+}
+
+Future<UserModel> getChronicleUserDetails(String uid) async {
+  DataSnapshot dataSnapshot = await databaseReference.child('$uid/userDetails/').once();
+  UserModel userDetail;
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)));
+      userDetail.setId(databaseReference.child('$uid/userDetails/'+key));
+    });
+  }
+  return userDetail;
 }

@@ -1,3 +1,4 @@
+import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
@@ -15,7 +16,9 @@ class RegisterOptionBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     void newRegisterModel(RegisterModel register) {
       register.setId(addToRegister(register.name));
-        GlobalClass.registerList.add(register);
+      RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key.replaceAll("registers", ""),name: register.name);
+      registerIndex.setId(addToRegisterIndex(registerIndex));
+      GlobalClass.registerList.add(registerIndex);
     }
     return ScaffoldMessenger(child: Scaffold(
       appBar:AppBar(

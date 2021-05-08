@@ -1,3 +1,4 @@
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Models/clientModel.dart';
@@ -46,7 +47,7 @@ class _ClientCardWidgetState extends State<ClientCardWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text((this.widget.item.startDate!=null?this.widget.item.startDate.day.toString()+"-"+this.widget.item.startDate.month.toString()+"-"+this.widget.item.startDate.year.toString()+" to ":"")+((this.widget.item.endDate!=null)?this.widget.item.endDate.day.toString()+"-"+this.widget.item.endDate.month.toString()+"-"+this.widget.item.endDate.year.toString():""),style: TextStyle(fontWeight: FontWeight.w900),),
+              Text((this.widget.item.startDate!=null?(getMonth(this.widget.item.startDate.month)+this.widget.item.startDate.day.toString()+","+this.widget.item.startDate.year.toString()+" to "):"")+((this.widget.item.endDate!=null)?(getMonth(this.widget.item.endDate.month)+this.widget.item.endDate.day.toString()+","+this.widget.item.endDate.year.toString()):""),style: TextStyle(fontWeight: FontWeight.w900),),
               Text("\u2706: "+(this.widget.item.mobileNo!=null?this.widget.item.mobileNo:"N/A")),
               Text(this.widget.item.due==0?"Last Month":("${this.widget.item.due<0?"Paid":"Due"}: "+(this.widget.item.due.abs()+(this.widget.item.due<0?1:0)).toString()),style: TextStyle(color: this.widget.item.due<=0?this.widget.item.due==0?Colors.orangeAccent:Colors.green:Colors.red,fontWeight: FontWeight.bold),)
             ]

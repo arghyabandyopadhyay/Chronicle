@@ -252,7 +252,7 @@ class Authentication{
   }
 
   static Future<void> signOut({BuildContext context}) async {
-    setLastRegister(null);
+    setLastRegister("");
     final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {

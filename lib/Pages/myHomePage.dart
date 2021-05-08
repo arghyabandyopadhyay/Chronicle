@@ -1,4 +1,5 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
@@ -6,6 +7,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
+import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:chronicle/Widgets/registerList.dart';
@@ -30,8 +32,10 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   void newRegisterModel(RegisterModel register) {
     register.setId(addToRegister(register.name));
+    RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key.replaceAll("registers", ""),name: register.name);
+    registerIndex.setId(addToRegisterIndex(registerIndex));
     this.setState(() {
-      GlobalClass.registerList.add(register);
+      GlobalClass.registerList.add(registerIndex);
     });
   }
   void updateRegisterModel() {
@@ -40,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getRegisters() {
-      getAllRegisters().then((registers) => {
+      getAllRegisterIndex().then((registers) => {
       setState(() {
         GlobalClass.registerList = registers;
       }),
@@ -121,6 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
               ));
+            }),
+            DrawerActionModel(Icons.settings, "Settings", ()async{
+              Navigator.pop(context);
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
             }),
           ],
         ),

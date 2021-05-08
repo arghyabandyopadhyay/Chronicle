@@ -1,4 +1,5 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Modules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/aboutUsPage.dart';
 import 'package:chronicle/Pages/clientAccessEditPage.dart';
@@ -85,14 +86,6 @@ class DrawerContent extends StatelessWidget {
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutUsPage()));
               },
             ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
-              onTap: ()async{
-                Navigator.pop(context);
-                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
-              },
-            ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
               leading: Icon(Icons.send),
               title: Text("Dispatch Notification"),
@@ -107,7 +100,7 @@ class DrawerContent extends StatelessWidget {
                 Navigator.of(context).pop();
                 Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
               },
-            )
+            ),
           ]
       ),
     );

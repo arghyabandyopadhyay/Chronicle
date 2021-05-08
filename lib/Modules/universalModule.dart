@@ -1,53 +1,50 @@
-import 'dart:convert';
-
 import 'package:chronicle/Models/clientModel.dart';
-import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:sms/sms.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'database.dart';
-int _messageCount = 0;
-String constructFCMPayload(String token, ClientModel clientElement,String register) {
-  _messageCount++;
-  return jsonEncode({
-    'to': token,
-    'data': {
-      'via': 'Chronicle',
-      'count': _messageCount.toString(),
-    },
-    'notification': {
-      'title': clientElement.name,
-      'body': 'Subscription of ${clientElement.name} of Register $register ends on ${clientElement.endDate.day}',
-      // 'image':'https://i.ibb.co/c3rjd9r/ic-launcher.png'
-    },
-  }) ;
-}
 
 void globalShowInSnackBar(GlobalKey<ScaffoldMessengerState> messengerState,String content)
 {
   messengerState.currentState.hideCurrentSnackBar();
   messengerState.currentState.showSnackBar(new SnackBar(content: Text(content)));
 }
-
-
-Future<List<DataModel>> getAllData() async {
-  DataSnapshot dataSnapshot = await databaseReference.child(databaseReference.root().path).once();
-  List<DataModel> datas = [];
-  if (dataSnapshot.value != null) {
-    dataSnapshot.value.forEach((key, value) {
-      DataModel data = DataModel.fromJson(jsonDecode(jsonEncode(value)),key);
-      data.setId(databaseReference.child(databaseReference.root().path+key));
-      datas.add(data);
-    });
+String getMonth(int month)
+{
+  String monthString;
+  switch (month) {
+    case 1:  monthString = "Jan ";
+    break;
+    case 2:  monthString = "Feb ";
+    break;
+    case 3:  monthString = "Mar ";
+    break;
+    case 4:  monthString = "Apr ";
+    break;
+    case 5:  monthString = "May ";
+    break;
+    case 6:  monthString = "Jun ";
+    break;
+    case 7:  monthString = "Jul ";
+    break;
+    case 8:  monthString = "Aug ";
+    break;
+    case 9:  monthString = "Sep ";
+    break;
+    case 10: monthString = "Oct ";
+    break;
+    case 11: monthString = "Nov ";
+    break;
+    case 12: monthString = "Dec ";
+    break;
+    default: monthString = "$month";
+    break;
   }
-  return datas;
+  return monthString;
 }
-
 // Future<void> sendNotifications(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,String messageString) async {
 //   if (GlobalClass.applicationToken == null) {
 //     globalShowInSnackBar(scaffoldMessengerKey,'Unable to send FCM message, no token exists.');
@@ -80,43 +77,6 @@ Future<List<DataModel>> getAllData() async {
 //   }
 // }
 
-
-Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,String messageString) async {
-  DateTime nowTemp=DateTime.now();
-  DateTime now=DateTime(nowTemp.year,nowTemp.month,nowTemp.day);
-  try {
-    List<DataModel> datas=await getAllData();
-    datas.forEach((dataElement) {
-      dataElement.registers.forEach((registerElement)  {
-        registerElement.clients.forEach((clientElement) async{
-          if(clientElement.due<=-1&&DateTime(clientElement.startDate.year,clientElement.startDate.month+1,clientElement.startDate.day)==now){
-            clientElement.due=clientElement.due+1;
-            clientElement.startDate=now;
-            updateClient(clientElement, clientElement.id);
-          }
-          else if(clientElement.endDate!=null&&dataElement.userDetails.first.token!=null){
-            DateTime now=DateTime.now();
-            DateTime today=DateTime(now.year,now.month,now.day);
-            int a=clientElement.endDate.difference(today).inDays;
-            if((a>=-1&&a<=2)&&clientElement.due>=0)
-            {
-              await http.post(
-                Uri.parse('https://fcm.googleapis.com/fcm/send'),
-                headers: <String, String>{
-                  'Content-Type': 'application/json; charset=UTF-8',
-                  'Authorization':'key=$messageString'
-                },
-                body: constructFCMPayload(dataElement.userDetails.first.token,clientElement,registerElement.name),
-              );
-            }
-          }
-        });
-      });
-    });
-  } catch (e) {
-    globalShowInSnackBar(scaffoldMessengerKey,e);
-  }
-}
 addDueModule(ClientModel clientData, state){
   state.setState(() {
     clientData.due=clientData.due+1;
@@ -166,6 +126,14 @@ smsModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMesse
     }
   }
   else globalShowInSnackBar(scaffoldMessengerKey,"No Mobile no present!!");
+}
+registerAppModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
+  var url = "mailto:<chroniclebusinesssolutions@gmail.com>?subject=Register Chronicle ${GlobalClass.user.email}&body= Respected Sir, \nPlease register my account. My token is ${GlobalClass.user.uid}";
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    globalShowInSnackBar(scaffoldMessengerKey,"Access Denied for sending email!!");
+  }
 }
 deleteModule(ClientModel clientData,BuildContext context,state)async{
   showDialog(context: context, builder: (_)=>new AlertDialog(

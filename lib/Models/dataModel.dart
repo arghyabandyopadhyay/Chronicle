@@ -13,28 +13,28 @@ class DataModel {
 
   DataModel({this.registers, this.userDetails});
 
-  factory DataModel.fromJson(Map<String, dynamic> json1,String idKey) {
+  factory DataModel.fromJson(Map<String, dynamic> json1,String uid) {
     List<RegisterModel> getRegisters(Map<String, dynamic> jsonList){
       List<RegisterModel> registerList = [];
       if (jsonList!= null) {
         jsonList.keys.forEach((key) {
           RegisterModel register = RegisterModel.fromJson(jsonDecode(jsonEncode(jsonList[key])),key);
-          register.setId(databaseReference.child('$idKey/registers/' + key));
+          register.setId(databaseReference.child('$uid/registers/' + key));
           registerList.add(register);
         });
       }
       return registerList;
     }
     List<UserModel> getUserDetailsList(Map<String, dynamic> jsonList){
-      List<UserModel> registerList = [];
+      List<UserModel> userList = [];
       if (jsonList!= null) {
         jsonList.keys.forEach((key) {
-          UserModel register = UserModel.fromJson(jsonDecode(jsonEncode(jsonList[key])));
-          register.setId(databaseReference.child('$idKey/userDetails/' + key));
-          registerList.add(register);
+          UserModel user = UserModel.fromJson(jsonDecode(jsonEncode(jsonList[key])));
+          user.setId(databaseReference.child('$uid/userDetails/' + key));
+          userList.add(user);
         });
       }
-      return registerList;
+      return userList;
     }
     return DataModel(
       registers: getRegisters(jsonDecode(jsonEncode(json1['registers']))),
