@@ -1,5 +1,5 @@
 import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Pages/idBlockedPage.dart';
+import 'package:chronicle/Pages/errorDisplayPage.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -66,11 +66,11 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                           CupertinoPageRoute(
                               builder: (context) => MyHomePage()))
                     }
-                    else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
+                    else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
 
                   }
                 else{
-                  Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>IdBlockedPage()))
+                  Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
                 }
               });}
           });

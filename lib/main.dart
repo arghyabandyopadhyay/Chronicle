@@ -8,7 +8,7 @@ import 'Models/receivedNotificationModel.dart';
 import 'Modules/auth.dart';
 import 'Pages/SignInScreen.dart';
 import 'Pages/globalClass.dart';
-import 'Pages/idBlockedPage.dart';
+import 'Pages/errorDisplayPage.dart';
 import 'customColors.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
@@ -104,7 +104,6 @@ class _ChronicleState extends State<Chronicle> {
   bool _requested = false;
   bool _fetching = false;
   NotificationSettings _settings;
-
   Stream<String> _tokenStream;
 
   void setToken(String token) {
@@ -221,7 +220,7 @@ class _ChronicleState extends State<Chronicle> {
             future: Authentication.initializeFirebase(context: context),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return IdBlockedPage();
+                return ErrorDisplayPage(appBarText: "Error 404",asset: "errorHasOccured.jpg",message: 'Please contact System Administrator',);
               }
               else if (snapshot.connectionState == ConnectionState.done) {
                 return SignInScreen();

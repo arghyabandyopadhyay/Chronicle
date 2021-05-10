@@ -13,7 +13,7 @@ class ErrorPageNoInternet extends StatelessWidget {
         children: <Widget>[
           Image.asset("assets/NoInternetError.webp"),
           SizedBox(height: 10,),
-          Text("No Internet Connection!!", textAlign: TextAlign.center,textScaleFactor: 1,style: TextStyle(fontSize: 17),)
+          Text("Please connect to the Internet!!", textAlign: TextAlign.center,textScaleFactor: 1,style: TextStyle(fontSize: 17),)
         ],
       ) ),
     );

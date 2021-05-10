@@ -16,7 +16,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     void newRegisterModel(RegisterModel register) {
       register.setId(addToRegister(register.name));
-      RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key.replaceAll("registers", ""),name: register.name);
+      RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
       registerIndex.setId(addToRegisterIndex(registerIndex));
       GlobalClass.registerList.add(registerIndex);
     }

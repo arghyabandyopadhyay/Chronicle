@@ -12,6 +12,8 @@ import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
+import 'package:chronicle/customColors.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -42,6 +44,7 @@ class _ClientPageState extends State<ClientPage> {
   List<ClientModel> clients;
   List<ClientModel> selectedList=[];
   int _counter=0;
+  bool _isLoading;
   PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
@@ -103,6 +106,19 @@ class _ClientPageState extends State<ClientPage> {
       this.setState(() {
         this.clients = clients;
         _counter++;
+        _isLoading=false;
+        this.appBarTitle = GestureDetector(child: Container(
+          child: RichText(
+            text: TextSpan(
+              children: [
+                WidgetSpan(child: Text(widget.register.name)),
+                WidgetSpan(
+                    child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
+                ),
+              ],
+            ),
+          ),),
+          onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet());},);
       })
     });
   }
@@ -147,10 +163,39 @@ class _ClientPageState extends State<ClientPage> {
               }
             });
           }),
-          IconButton(icon: Icon(Icons.refresh), onPressed: (){
-            getClientModels();
+          IconButton(icon: Icon(Icons.refresh), onPressed: () async {
+            try{
+              Connectivity connectivity=Connectivity();
+              await connectivity.checkConnectivity().then((value)async => {
+                if(value!=ConnectivityResult.none)
+                  {
+                    if(!_isLoading){
+                      setState(() {
+                        _isLoading=true;
+                      }),
+                      getClientModels(),
+                    }
+                    else{
+                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
+                    }
+                  }
+                else{
+                  setState(() {
+                    _isLoading=false;
+                  }),
+                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
+                }
+              });
+            }
+            catch(E)
+            {
+              setState(() {
+                _isLoading=false;
+              });
+              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+            }
           }),
-          IconButton(icon: Icon(Icons.info), onPressed: (){
+          IconButton(icon: Icon(Icons.info_outline), onPressed: (){
             int totalDues=0;
             int totalPaid=0;
             int totalLastMonths=0;
@@ -457,14 +502,17 @@ class _ClientPageState extends State<ClientPage> {
   @override
   void initState() {
     super.initState();
+    _isLoading = false;
     getClientModels();
     appBarTitle=GestureDetector(child: Container(
       child: RichText(
+        textAlign: TextAlign.center,
         text: TextSpan(
           children: [
             WidgetSpan(child: Text(widget.register.name)),
+            WidgetSpan(child: SizedBox(width: 4)),
             WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
+                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3,bottom: 2),)
             ),
           ],
         ),
@@ -655,6 +703,7 @@ class _ClientPageState extends State<ClientPage> {
             ));
           }
         ))),
+        if(_isLoading)Container(color:Colors.black87,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)]),),
       ]):
       Container(
         width: double.infinity,

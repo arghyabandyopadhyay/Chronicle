@@ -37,6 +37,7 @@ class _RegisterListState extends State<RegisterList> {
                     ActionChip(label: Text("Yes"), onPressed: (){
                       setState(() {
                         deleteDatabaseNode(GlobalClass.registerList[index].id);
+                        deleteDatabaseNode(getDatabaseReference("registers/${GlobalClass.registerList[index].uid}"));
                         if(GlobalClass.lastRegister!=null&&GlobalClass.lastRegister==GlobalClass.registerList[index].id.key)setLastRegister("");
                         GlobalClass.registerList.removeAt(index);
                         Navigator.of(_).pop();

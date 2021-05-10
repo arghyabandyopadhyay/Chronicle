@@ -1,13 +1,17 @@
-import 'package:chronicle/Models/chronicleUserModel.dart';
+import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
-import 'package:chronicle/Modules/ownerModule.dart';
+import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/chronicleUsersList.dart';
+import 'package:chronicle/OwnerModules/chronicleUsersList.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../customColors.dart';
+import 'ownerDatabaseModule.dart';
 
 class ClientAccessEditPage extends StatefulWidget {
   @override
@@ -17,6 +21,7 @@ class ClientAccessEditPage extends StatefulWidget {
 class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   List<ChronicleUserModel> clients;
   bool _isSearching=false;
+  bool _isLoading;
   List<ChronicleUserModel> searchResult = [];
   TextEditingController textEditingController=new TextEditingController();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
@@ -73,6 +78,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
     getAllChronicleClients().then((clients) => {
       this.setState(() {
         this.clients = clients;
+        _isLoading=false;
       })
     });
   }
@@ -80,10 +86,10 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   @override
   void initState() {
     super.initState();
+    _isLoading=false;
     getData();
     appBarTitle=Text("Users");
   }
-
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
@@ -102,12 +108,42 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
               else _handleSearchEnd();
             });
           }),
-          IconButton(icon: Icon(Icons.refresh), onPressed: (){
-            getData();
+          IconButton(icon: Icon(Icons.refresh), onPressed: ()async{
+            try{
+              Connectivity connectivity=Connectivity();
+              await connectivity.checkConnectivity().then((value)async => {
+                if(value!=ConnectivityResult.none)
+                  {
+                    if(!_isLoading){
+                      setState(() {
+                        _isLoading=true;
+                      }),
+                      getData(),
+                    }
+                    else{
+                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
+                    }
+                  }
+                else{
+                  setState(() {
+                    _isLoading=false;
+                  }),
+                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
+                }
+              });
+            }
+            catch(E)
+            {
+              setState(() {
+                _isLoading=false;
+              });
+              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+            }
           }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients)),
+        if(_isLoading)Container(color:Colors.black87,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)]),),
       ]):
       Container(
           width: double.infinity,

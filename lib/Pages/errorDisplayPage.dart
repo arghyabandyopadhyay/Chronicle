@@ -11,15 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
-class IdBlockedPage extends StatefulWidget {
-  final User user;
-  IdBlockedPage({Key key,this.user}):super(key: key);
+class ErrorDisplayPage extends StatefulWidget {
+  final String asset;
+  final String message;
+  final String appBarText;
+  ErrorDisplayPage({Key key,this.asset,this.message,this.appBarText}):super(key: key);
 
   @override
-  _IdBlockedPageState createState() => _IdBlockedPageState();
+  _ErrorDisplayPageState createState() => _ErrorDisplayPageState();
 }
 
-class _IdBlockedPageState extends State<IdBlockedPage> {
+class _ErrorDisplayPageState extends State<ErrorDisplayPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=new GlobalKey();
 
   @override
@@ -30,10 +32,7 @@ class _IdBlockedPageState extends State<IdBlockedPage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
         appBar: AppBar(
-          title: Text("Id Blocked"),
-          actions: [IconButton(icon: Icon(Icons.payment,), onPressed: (){
-            globalShowInSnackBar(scaffoldMessengerKey, "New feature coming soon!!");
-          }),],
+          title: Text(widget.appBarText),
         ),
         drawer: Drawer(
           child: DrawerContent(
@@ -66,42 +65,24 @@ class _IdBlockedPageState extends State<IdBlockedPage> {
             ],
           ),
         ),
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(
-              left: 16.0,
-              right: 16.0,
-              bottom: 20.0,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Flexible(
-                  child: Image.asset(
-                    'assets/idBlocked.jpg',
-                    // height: 400,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  'Please contact System Administrator',
-                  style: TextStyle(fontSize: 25),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
+        body: Center(child:Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Image.asset('assets/${widget.asset}'),
+            SizedBox(height: 10,),
+            Text(widget.message, textAlign: TextAlign.center,textScaleFactor: 1,style: TextStyle(fontSize: 25),)
+          ],
+        ) ),
         floatingActionButton: Row(
           mainAxisAlignment:MainAxisAlignment.end,children: [
-          FloatingActionButton.extended(
+          if(widget.appBarText=="Id Blocked")FloatingActionButton.extended(
             heroTag:"contact_usButton",
             onPressed: ()async {
               String url = 'mailto:<chroniclebusinesssolutions@gmail.com>?subject=ID Blocked ${GlobalClass.userDetail!=null?GlobalClass.userDetail.email:""}';
               if (await canLaunch(url)) {
                 await launch(url);
               } else {
-                throw 'Could not launch $url';
+                globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
               }
             },
             icon: Icon(Icons.contact_mail), label: Text("Contact Us"),

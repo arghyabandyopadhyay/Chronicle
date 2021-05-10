@@ -33,6 +33,32 @@ class ExcelClientModel
         return null;
       }
     }
+    String getFormattedMobileNo(String value)
+    {
+      value=value.replaceAll(" ", "");
+      RegExp mobileNoRegex = new RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+      if (value.length == 0) {
+        return value;
+      }
+      else if (mobileNoRegex.hasMatch(value)) {
+        if(value.length==10){
+          return value.substring(0,5)+" "+value.substring(5);
+        }
+        else if(value.length==11){
+          return value.substring(1,6)+" "+value.substring(6);
+        }
+        else if(value.length==12){
+          return value.substring(2,7)+" "+value.substring(7);
+        }
+        else if(value.length==13){
+          return value.substring(3,8)+" "+value.substring(8);
+        }
+        else return "";
+      }
+      else{
+        return "";
+      }
+    }
     int months=json1['NoOfPayments']!=null?json1['NoOfPayments']:0;
     DateTime startDate;
     if(json1['StartDate(DDMMYYYY)']!=null)
@@ -43,7 +69,7 @@ class ExcelClientModel
     }
     DateTime endDate = DateTime(startDate.year,startDate.month+months,startDate.day);
     String name=json1['Name']!=null?json1['Name'].toString():"";
-    String mobile=json1['MobileNo']!=null?json1['MobileNo'].toString():null;
+    String mobile=json1['MobileNo']!=null?getFormattedMobileNo(json1['MobileNo'].toString()):null;
     return ExcelClientModel(
         registrationId: json1['RegistrationId']!=null?json1['RegistrationId'].toString():null,
         name: name,

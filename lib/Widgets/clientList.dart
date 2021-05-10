@@ -98,7 +98,7 @@ class _ClientListState extends State<ClientList> {
                     caption: 'Call',
                     icon: Icons.call,
                     onTap: () async {
-                      callModule(this.widget.listItems[index]);
+                      callModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
                     },
                   ),
                   IconSlideAction(

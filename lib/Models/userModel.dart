@@ -12,9 +12,10 @@ class UserModel
   int canAccess;
   int isOwner;
   String messageString;
+  String repo;
   String reminderMessage;
   int isAppRegistered;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered});
+  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.token,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered,this.repo});
   factory UserModel.fromJson(Map<String, dynamic> json1) {
     return UserModel(
         displayName: json1['DisplayName'],
@@ -25,6 +26,7 @@ class UserModel
         qrcodeDetail: json1['QrCodeDetail'],
         token: json1['Token'],
         messageString:json1['MessageString'],
+        repo:json1['Repo'],
         reminderMessage:json1['ReminderMessage'],
         isAppRegistered: json1['IsAppRegistered']!=null?json1['IsAppRegistered']:0
     );

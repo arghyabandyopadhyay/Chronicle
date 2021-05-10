@@ -1,4 +1,6 @@
 import 'package:chronicle/Modules/errorPage.dart';
+import 'package:chronicle/Modules/universalModule.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -7,6 +9,7 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sms/sms.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
+import '../customColors.dart';
 import 'clientInformationPage.dart';
 import 'globalClass.dart';
 
@@ -25,6 +28,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Icon icon = new Icon(
     Icons.search,
   );
+  bool _isLoading;
   //Controller
   final TextEditingController _searchController = new TextEditingController();
   //Widgets
@@ -45,7 +49,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
         Icons.search,
       );
       this.appBarTitle = Text("Notifications",
-        textScaleFactor: 1,
       );
       _isSearching = false;
       _searchController.clear();
@@ -60,21 +63,21 @@ class _NotificationsPageState extends State<NotificationsPage> {
       });
     }
   }
-  void updateClientModel() {
-    this.setState(() {
-    });
-  }
 
   void getNotifications() {
-    getNotificationClients().then((clients) => {
+    getNotificationClients(context).then((clients) => {
       this.setState(() {
         this.clients = clients;
+        _counter++;
+        _isLoading=false;
+        this.appBarTitle = Text("Notifications",);
       })
     });
   }
   @override
   void initState() {
     super.initState();
+    _isLoading = false;
     getNotifications();
     appBarTitle=Text("Notifications");
   }
@@ -124,8 +127,37 @@ class _NotificationsPageState extends State<NotificationsPage> {
             },
             icon: Icon(Icons.send),
           ),
-          IconButton(icon: Icon(Icons.refresh), onPressed: (){
-            getNotifications();
+          IconButton(icon: Icon(Icons.refresh), onPressed: () async {
+            try{
+              Connectivity connectivity=Connectivity();
+              await connectivity.checkConnectivity().then((value)async => {
+                if(value!=ConnectivityResult.none)
+                  {
+                    if(!_isLoading){
+                      setState(() {
+                        _isLoading=true;
+                      }),
+                      getNotifications(),
+                    }
+                    else{
+                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
+                    }
+                  }
+                else{
+                  setState(() {
+                    _isLoading=false;
+                  }),
+                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
+                }
+              });
+            }
+            catch(E)
+            {
+              setState(() {
+                _isLoading=false;
+              });
+              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+            }
           }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
@@ -188,6 +220,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ));
                 }
             ))),
+        if(_isLoading)Container(color:Colors.black87,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)]),),
       ]):
       Container(
           width: double.infinity,

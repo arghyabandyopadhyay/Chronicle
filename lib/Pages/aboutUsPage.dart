@@ -1,3 +1,4 @@
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,9 +13,10 @@ class AboutUsPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutUsPage> {
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(key: scaffoldMessengerKey,child: Scaffold(
       appBar: AppBar(
         title:Text("About Us"),
 
@@ -87,10 +89,10 @@ class _AboutPageState extends State<AboutUsPage> {
           if (await canLaunch(url)) {
             await launch(url);
           } else {
-            throw 'Could not launch $url';
+            globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
           }
         },
       ),
-    );
+    ));
   }
 }

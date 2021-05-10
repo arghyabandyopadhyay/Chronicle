@@ -32,7 +32,7 @@ class _MyHomePageState extends State<MyHomePage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   void newRegisterModel(RegisterModel register) {
     register.setId(addToRegister(register.name));
-    RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key.replaceAll("registers", ""),name: register.name);
+    RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
     registerIndex.setId(addToRegisterIndex(registerIndex));
     this.setState(() {
       GlobalClass.registerList.add(registerIndex);

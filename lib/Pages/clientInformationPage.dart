@@ -1,3 +1,4 @@
+import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -5,6 +6,7 @@ import 'package:chronicle/customColors.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,6 +39,15 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   int counter=0;
   String _validateName(String value) {
     if(value.isEmpty)nameTextField.text="";
+    return null;
+  }
+  final IndNumberTextInputFormatter _phoneNumberFormatter =IndNumberTextInputFormatter();
+  String _validatePhoneNumber(String value) {
+    final phoneExp = RegExp(r'^\d\d\d\d\d\ \d\d\d\d\d$');
+    if (value.isNotEmpty&&!phoneExp.hasMatch(value)) {
+      return "Wrong Mobile No.!";
+    }
+    else if(value.isEmpty)phoneNumberTextField.text="";
     return null;
   }
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -169,7 +180,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
               children: [
                 Row(mainAxisAlignment:MainAxisAlignment.spaceAround, children: [
                   Column(children: [IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
-                    callModule(widget.client);
+                    callModule(widget.client,scaffoldMessengerKey);
                   },),Text("Call")],),
                   Column(children: [IconButton(icon: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen), onPressed: () async {
                     whatsAppModule(widget.client, scaffoldMessengerKey);
@@ -309,7 +320,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                             if (await canLaunch(url)) {
                               await launch(url);
                             } else {
-                              throw 'Could not launch $url';
+                              globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
                             }
                           }
                           else globalShowInSnackBar(scaffoldMessengerKey, "Please enter the mobile no");
@@ -324,6 +335,12 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     onSaved: (value) {
                       widget.client.mobileNo = value;
                     },
+                    validator: _validatePhoneNumber,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      // Fit the validating format.
+                      _phoneNumberFormatter,
+                    ],
                   ),),]),
                 SizedBox(height: 15,),
                 Row(children:[

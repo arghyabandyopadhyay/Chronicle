@@ -1,7 +1,10 @@
-import 'package:chronicle/Models/chronicleUserModel.dart';
+import 'package:chronicle/OwnerModules/chronicleUserDetails.dart';
+import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'ownerDatabaseModule.dart';
 
 class ChronicleUsersList extends StatefulWidget {
   final List<ChronicleUserModel> listItems;
@@ -17,6 +20,9 @@ class _ChronicleUsersListState extends State<ChronicleUsersList> {
       itemCount: this.widget.listItems.length,
       itemBuilder: (context, index) {
         return ListTile(
+          onTap: (){
+            Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>ChronicleUserDetailsPage(user: widget.listItems[index],)));
+          },
           title: Text(this.widget.listItems[index].displayName,style: TextStyle(fontWeight: FontWeight.w900),),
           subtitle: Text(this.widget.listItems[index].email,style: TextStyle(fontWeight: FontWeight.w300),),
           trailing: IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.clear,color: Colors.red,):Icon(Icons.done,color: Colors.green,),onPressed: (){

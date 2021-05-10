@@ -1,3 +1,4 @@
+import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
@@ -38,7 +39,15 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
   String sexDropDown;
   String casteDropDown;
   String _filePath;
-  
+  final IndNumberTextInputFormatter _phoneNumberFormatter =IndNumberTextInputFormatter();
+  String _validatePhoneNumber(String value) {
+    final phoneExp = RegExp(r'^\d\d\d\d\d\ \d\d\d\d\d$');
+    if (value.isNotEmpty&&!phoneExp.hasMatch(value)) {
+      return "Wrong Mobile No.!";
+    }
+    else if(value.isEmpty)phoneNumberTextField.text="";
+    return null;
+  }
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -347,6 +356,12 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                     onSaved: (value) {
                       clientData.mobileNo = value;
                     },
+                    validator: _validatePhoneNumber,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      // Fit the validating format.
+                      _phoneNumberFormatter,
+                    ],
                   ),),]),
                 SizedBox(height: 8,),
                 Row(children:[

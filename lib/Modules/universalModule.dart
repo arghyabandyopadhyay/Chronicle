@@ -90,14 +90,14 @@ addDueModule(ClientModel clientData, state){
     updateClient(clientData, clientData.id);
   });
 }
-callModule(ClientModel clientData)async{
+callModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
   if(clientData.mobileNo!=null&&clientData.mobileNo!="")
   {
     var url = 'tel:<${clientData.mobileNo}>';
     if (await canLaunch(url)) {
     await launch(url);
     } else {
-    throw 'Could not launch $url';
+    globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
     }
   }
 }
@@ -109,7 +109,7 @@ whatsAppModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffold
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw 'Could not launch $url';
+      globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
     }
   }
   else globalShowInSnackBar(scaffoldMessengerKey,"Please Enter Mobile No");
