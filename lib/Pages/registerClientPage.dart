@@ -98,7 +98,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       });
       Navigator.of(context).pop();
     } catch (e) {
-      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!\n"+e.toString());
+      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!");
     }
   }
   fileExists(String type, String assetPath) async {

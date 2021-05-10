@@ -21,7 +21,6 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
-  PickedFile _imageFile;
 
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   Route _routeToSignInScreen() {
@@ -47,7 +46,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   void initState() {
     super.initState();
   }
-  dynamic _pickImageError;
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child:Scaffold(
@@ -70,7 +68,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   imageQuality: 30,
                 );
                 setState(() {
-                  _imageFile = pickedFile;
                   QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                     _data = value;
                     userModel.qrcodeDetail=_data;

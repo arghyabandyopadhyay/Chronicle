@@ -27,7 +27,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   void newRegisterModel(RegisterModel register) {
@@ -88,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     imageQuality: 30,
                   );
                   setState(() {
-                    _imageFile = pickedFile;
                     QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                       _data = value;
                       userModel.qrcodeDetail=_data;
@@ -134,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: RegisterList(false)),
+        Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey)),
       ]):
       Container(
           width: double.infinity,

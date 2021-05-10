@@ -1,5 +1,4 @@
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Models/clientModel.dart';
 

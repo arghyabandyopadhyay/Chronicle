@@ -33,7 +33,6 @@ class _RegisterNewClientWidgetState extends State<RegisterNewClientWidget> {
     return FloatingActionButton(
       heroTag: "registerClients2",
       child: Icon(Icons.person_add),
-      splashColor: Colors.blue,
       tooltip: "Register Clients",
       onPressed: (){
         Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>RegisterClientPage(callback:this.click)));

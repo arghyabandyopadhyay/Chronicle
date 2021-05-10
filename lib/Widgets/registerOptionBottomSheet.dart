@@ -1,3 +1,4 @@
+import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -8,21 +9,23 @@ import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class RegisterOptionBottomSheet extends StatelessWidget {
+  final bool isAddToRegister;
+  final List<ClientModel> selectedClients;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   final TextEditingController textEditingController=new TextEditingController();
   //list of options you want to show in the bottom sheet
-  RegisterOptionBottomSheet({Key key}) : super(key: key);
+  RegisterOptionBottomSheet({Key key, this.isAddToRegister,this.selectedClients}) : super(key: key);
+  void newRegisterModel(RegisterModel register) {
+    register.setId(addToRegister(register.name));
+    RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
+    registerIndex.setId(addToRegisterIndex(registerIndex));
+    GlobalClass.registerList.add(registerIndex);
+  }
   @override
   Widget build(BuildContext context) {
-    void newRegisterModel(RegisterModel register) {
-      register.setId(addToRegister(register.name));
-      RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
-      registerIndex.setId(addToRegisterIndex(registerIndex));
-      GlobalClass.registerList.add(registerIndex);
-    }
     return ScaffoldMessenger(child: Scaffold(
       appBar:AppBar(
-        title: Text("Registers"),
+        title: Text(this.isAddToRegister?"Add To Registers":"Registers"),
         leading: IconButton(
           icon: Icon(Icons.book),
           onPressed: (){},
@@ -65,7 +68,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
         ],
       ),
       body: GlobalClass.registerList==null||GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: RegisterList(true)),
+        Expanded(child: RegisterList(true,this.isAddToRegister,this.selectedClients,scaffoldMessengerKey)),
       ]),
     ),key: scaffoldMessengerKey,);
 

@@ -53,6 +53,27 @@ class ClientModel
         masterFilter:masterFilter
     );
   }
+  ClientModel copyClient(){
+    return new ClientModel(
+        registrationId: this.registrationId,
+        name: this.name,
+        fathersName: this.fathersName,
+        mobileNo: this.mobileNo,
+        education: this.education,
+        occupation: this.occupation,
+        address: this.address,
+        injuries: this.injuries,
+        sex: this.sex,
+        caste: this.caste,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        dob: this.dob,
+        height: this.height,
+        weight: this.weight,
+        due: this.due,
+        masterFilter: this.masterFilter
+    );
+  }
   Map<String,dynamic> toJson() =>
       {
         "RegistrationId":this.registrationId,

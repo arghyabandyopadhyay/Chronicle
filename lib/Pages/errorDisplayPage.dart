@@ -5,7 +5,6 @@ import 'package:chronicle/Pages/SignInScreen.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';

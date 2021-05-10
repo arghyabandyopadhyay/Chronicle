@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
@@ -81,6 +80,25 @@ Future<List<ClientModel>> getAllClients(String registerId) async {
   }
   clients.sort((a,b)=>a.name.compareTo(b.name));
   return clients;
+}
+copyClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
+  selectedList.forEach((client) {
+    ClientModel newClient=client.copyClient();
+    newClient.setId(registerUser(newClient,toRegister.uid));
+  });
+}
+moveClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
+  selectedList.forEach((client) {
+    print(client.toJson());
+    ClientModel newClient=client.copyClient();
+    newClient.setId(registerUser(newClient,toRegister.uid));
+  });
+  deleteClientsModule(selectedList);
+}
+deleteClientsModule(List<ClientModel> selectedList){
+  selectedList.forEach((element) {
+    deleteDatabaseNode(element.id);
+  });
 }
 Future<List<ClientModel>> getNotificationClients(BuildContext context) async{
   await Authentication.initializeFirebase();

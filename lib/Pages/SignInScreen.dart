@@ -8,7 +8,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
@@ -21,7 +20,6 @@ class SignInScreen extends StatefulWidget {
 }
 class _SignInScreenState extends State<SignInScreen> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
-  PickedFile _imageFile;
   Future<Widget> getWidget()async{
     Widget widget;
     List<RegisterIndexModel> lastRegisterModels;

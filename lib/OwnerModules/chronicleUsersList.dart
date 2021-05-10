@@ -1,6 +1,5 @@
 import 'package:chronicle/OwnerModules/chronicleUserDetails.dart';
 import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
-import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

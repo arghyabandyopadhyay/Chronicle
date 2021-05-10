@@ -1,10 +1,8 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
-import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/aboutUsPage.dart';
 import 'package:chronicle/OwnerModules/clientAccessEditPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

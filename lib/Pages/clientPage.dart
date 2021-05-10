@@ -45,7 +45,6 @@ class _ClientPageState extends State<ClientPage> {
   List<ClientModel> selectedList=[];
   int _counter=0;
   bool _isLoading;
-  PickedFile _imageFile;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   bool _isSearching=false;
@@ -71,16 +70,18 @@ class _ClientPageState extends State<ClientPage> {
       );
       this.appBarTitle = GestureDetector(child: Container(
         child: RichText(
+          textAlign: TextAlign.center,
           text: TextSpan(
             children: [
               WidgetSpan(child: Text(widget.register.name)),
+
               WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
+                  child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
               ),
             ],
           ),
         ),),
-        onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet());},);
+        onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
       _isSearching = false;
       _searchController.clear();
     });
@@ -109,16 +110,18 @@ class _ClientPageState extends State<ClientPage> {
         _isLoading=false;
         this.appBarTitle = GestureDetector(child: Container(
           child: RichText(
+            textAlign: TextAlign.center,
             text: TextSpan(
               children: [
                 WidgetSpan(child: Text(widget.register.name)),
+
                 WidgetSpan(
-                    child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3),)
+                    child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
                 ),
               ],
             ),
           ),),
-          onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet());},);
+          onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
       })
     });
   }
@@ -164,36 +167,7 @@ class _ClientPageState extends State<ClientPage> {
             });
           }),
           IconButton(icon: Icon(Icons.refresh), onPressed: () async {
-            try{
-              Connectivity connectivity=Connectivity();
-              await connectivity.checkConnectivity().then((value)async => {
-                if(value!=ConnectivityResult.none)
-                  {
-                    if(!_isLoading){
-                      setState(() {
-                        _isLoading=true;
-                      }),
-                      getClientModels(),
-                    }
-                    else{
-                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
-                    }
-                  }
-                else{
-                  setState(() {
-                    _isLoading=false;
-                  }),
-                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
-                }
-              });
-            }
-            catch(E)
-            {
-              setState(() {
-                _isLoading=false;
-              });
-              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
-            }
+            refreshData();
           }),
           IconButton(icon: Icon(Icons.info_outline), onPressed: (){
             int totalDues=0;
@@ -394,73 +368,18 @@ class _ClientPageState extends State<ClientPage> {
           ),
           IconButton(
             onPressed: () async {
-              showDialog(context: context, builder: (_)=>new AlertDialog(
-                title: Text("Type the message you want to send"),
-                content: Container(
-                    height: 150,
-                    child:TextFormField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: null,
-                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                    maxLength: 200,
-                    controller: textEditingController,
-                    textInputAction: TextInputAction.newline,
-                    style: TextStyle(),
-                    expands: true,
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: "Message",
-                      prefixText: "[Client Name,]",
-                      helperText: "Type the message you want to be sent to the selected Clients",
-                      contentPadding:EdgeInsets.all(10.0),
-                    ),
-                )),
-                actions: [ActionChip(label: Text("Send"), onPressed: (){
-                  if(textEditingController.text!=""){
-                    Navigator.of(_).pop();
-                    showDialog(context: context, builder: (_)=>new AlertDialog(
-                      title: Text("Confirm Send"),
-                      content: Text("Are you sure to send the message to all the selected clients?"),
-                      actions: [
-                        ActionChip(label: Text("Yes"), onPressed: (){
-                          setState(() {
-                            SmsSender sender = new SmsSender();
-                            selectedList.forEach((element) {
-                              String address = element.mobileNo;
-                              String message = "${element.name}, ${textEditingController.text}";
-                              if(address!=null&&address!="")
-                                sender.sendSms(new SmsMessage(address, message));
-                            });
-                            globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
-                            for(ClientModel a in selectedList)
-                            {
-                              a.isSelected=false;
-                            }
-                            selectedList.clear();
-                            textEditingController.clear();
-                            Navigator.of(_).pop();
-                          });
-                        }),
-                        ActionChip(label: Text("No"), onPressed: (){
-                          setState(() {
-                            textEditingController.clear();
-                            Navigator.of(_).pop();
-                          });
-                        })
-                      ],
-                    ));
-                  }
-                  else{
-                    globalShowInSnackBar(scaffoldMessengerKey, "You can't send null message to your clients.");
-                    Navigator.of(_).pop();
-                  }
-                }),
-                  ActionChip(label: Text("Cancel"), onPressed: (){
-                    Navigator.of(_).pop();
-                  }),],
-              ));
+              showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: true,selectedClients:this.selectedList)).then((value) =>
+              {
+                  refreshData(),
+                  for(ClientModel a in selectedList)
+                  {
+                    a.isSelected=false,
+                  },
+                  if(_isSearching)_handleSearchEnd(),
+                  selectedList.clear()
+              });
             },
-            icon: Icon(Icons.send),
+            icon: Icon(Icons.add_box_outlined),
           ),
           IconButton(
             onPressed: () async {
@@ -498,6 +417,38 @@ class _ClientPageState extends State<ClientPage> {
         ],
       );
   }
+  void refreshData() async{
+    try{
+      Connectivity connectivity=Connectivity();
+      await connectivity.checkConnectivity().then((value)async => {
+        if(value!=ConnectivityResult.none)
+          {
+            if(!_isLoading){
+              setState(() {
+                _isLoading=true;
+              }),
+              getClientModels(),
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
+            }
+          }
+        else{
+          setState(() {
+            _isLoading=false;
+          }),
+          globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
+        }
+      });
+    }
+    catch(E)
+    {
+      setState(() {
+        _isLoading=false;
+      });
+      globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+    }
+  }
 
   @override
   void initState() {
@@ -510,14 +461,13 @@ class _ClientPageState extends State<ClientPage> {
         text: TextSpan(
           children: [
             WidgetSpan(child: Text(widget.register.name)),
-            WidgetSpan(child: SizedBox(width: 4)),
             WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded,size: 20,),padding: EdgeInsets.only(left: 3,bottom: 2),)
+                child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
             ),
           ],
         ),
       ),),
-      onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet());},);
+      onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
   }
 
   @override
@@ -554,7 +504,6 @@ class _ClientPageState extends State<ClientPage> {
                     imageQuality: 30,
                   );
                   setState(() {
-                    _imageFile = pickedFile;
                     QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                       _data = value;
                       userModel.qrcodeDetail=_data;
@@ -608,7 +557,7 @@ class _ClientPageState extends State<ClientPage> {
             child: ClientList(listItems:this.searchResult,
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
-                if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index])));
+                if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index]))).then((value) => refreshData());
                 else {
                   setState(() {
                     searchResult[index].isSelected=!searchResult[index].isSelected;
@@ -658,7 +607,7 @@ class _ClientPageState extends State<ClientPage> {
           updateShouldNotify: (oldValue, newValue) => true,
           child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
               onTapList:(index){
-              if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index])));
+              if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index]))).then((value) => refreshData());
               else {
                 setState(() {
                   clients[index].isSelected=!clients[index].isSelected;
@@ -768,7 +717,78 @@ class _ClientPageState extends State<ClientPage> {
           ],
         )
     ),
-      floatingActionButton:RegisterNewClientWidget(this.newClientModel),
+      floatingActionButton:(selectedList.length < 1)?
+      RegisterNewClientWidget(this.newClientModel):
+      FloatingActionButton(onPressed: () async {
+        showDialog(context: context, builder: (_)=>new AlertDialog(
+          title: Text("Type the message you want to send"),
+          content: Container(
+              height: 150,
+              child:TextFormField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                maxLength: 200,
+                controller: textEditingController,
+                textInputAction: TextInputAction.newline,
+                style: TextStyle(),
+                expands: true,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: "Message",
+                  prefixText: "[Client Name,]",
+                  helperText: "Type the message you want to be sent to the selected Clients",
+                  contentPadding:EdgeInsets.all(10.0),
+                ),
+              )),
+          actions: [ActionChip(label: Text("Send"), onPressed: (){
+            if(textEditingController.text!=""){
+              Navigator.of(_).pop();
+              showDialog(context: context, builder: (_)=>new AlertDialog(
+                title: Text("Confirm Send"),
+                content: Text("Are you sure to send the message to all the selected clients?"),
+                actions: [
+                  ActionChip(label: Text("Yes"), onPressed: (){
+                    setState(() {
+                      SmsSender sender = new SmsSender();
+                      selectedList.forEach((element) {
+                        String address = element.mobileNo;
+                        String message = "${element.name}, ${textEditingController.text}";
+                        if(address!=null&&address!="")
+                          sender.sendSms(new SmsMessage(address, message));
+                      });
+                      globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
+                      for(ClientModel a in selectedList)
+                      {
+                        a.isSelected=false;
+                      }
+                      selectedList.clear();
+                      textEditingController.clear();
+                      Navigator.of(_).pop();
+                    });
+                  }),
+                  ActionChip(label: Text("No"), onPressed: (){
+                    setState(() {
+                      textEditingController.clear();
+                      Navigator.of(_).pop();
+                    });
+                  })
+                ],
+              ));
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "You can't send null message to your clients.");
+              Navigator.of(_).pop();
+            }
+          }),
+            ActionChip(label: Text("Cancel"), onPressed: (){
+              Navigator.of(_).pop();
+            }),],
+        ));
+      },
+        child: Icon(Icons.send),
+        tooltip: "Send Message",
+      ),
     ),key:scaffoldMessengerKey);
   }
 }

@@ -101,8 +101,6 @@ class Chronicle extends StatefulWidget {
 }
 class _ChronicleState extends State<Chronicle> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
-  bool _requested = false;
-  bool _fetching = false;
   NotificationSettings _settings;
   Stream<String> _tokenStream;
 
