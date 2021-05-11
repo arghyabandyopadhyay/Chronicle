@@ -20,6 +20,10 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool showNotifications=false;
   TextEditingController reminderMessageText=new TextEditingController();
+  TextEditingController smsApiText=new TextEditingController();
+  TextEditingController smsUserIdText=new TextEditingController();
+  TextEditingController smsAccessTokenText=new TextEditingController();
+  TextEditingController smsMobileNoText=new TextEditingController();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   //Controller
   @override
@@ -29,11 +33,19 @@ class _SettingsPageState extends State<SettingsPage> {
   }
   Future<bool> _loadSettings() async {
     reminderMessageText.text=GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end, please clear your dues for further continuation of services.";
+    smsApiText.text=GlobalClass.userDetail.smsApiUrl!=null?GlobalClass.userDetail.smsApiUrl:"";
+    smsUserIdText.text=GlobalClass.userDetail.smsUserId!=null?GlobalClass.userDetail.smsUserId:"";
+    smsAccessTokenText.text=GlobalClass.userDetail.smsAccessToken!=null?GlobalClass.userDetail.smsAccessToken:"";
+    smsMobileNoText.text=GlobalClass.userDetail.smsMobileNo!=null?GlobalClass.userDetail.smsMobileNo:"";
     showNotifications=await getShowNotificationValue();
     return true;
   }
   void handleSubmitted(){
-    GlobalClass.userDetail.reminderMessage=reminderMessageText.text.isNotEmpty?reminderMessageText.text:"";
+    GlobalClass.userDetail.reminderMessage=reminderMessageText.text;
+    GlobalClass.userDetail.smsApiUrl=smsApiText.text;
+    GlobalClass.userDetail.smsUserId=smsUserIdText.text;
+    GlobalClass.userDetail.smsAccessToken=smsAccessTokenText.text;
+    GlobalClass.userDetail.smsMobileNo=smsMobileNoText.text;
     if(reminderMessageText.text.isNotEmpty)updateUserDetails(GlobalClass.userDetail, GlobalClass.userDetail.id);
     changesSavedModule(context,scaffoldMessengerKey);
   }
@@ -69,7 +81,65 @@ class _SettingsPageState extends State<SettingsPage> {
                         contentPadding:
                         EdgeInsets.all(10.0),
                       ),
-                    ))
+                    )),
+                SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  controller: smsApiText,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Sms Api",
+                    helperText: "Please type the Api url for your sms gateway.",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                ),
+                SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  controller: smsMobileNoText,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Sms Gateway MobileNo",
+                    helperText: "Please type the mobile no(along with the country code eg:+91) for your sms gateway.",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                ),
+                SizedBox(height: 10,),
+                Text("All the credentials are stored in an encrypted manner."),
+                SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  controller: smsUserIdText,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Sms UserId",
+                    helperText: "Enter the Sms user id.\n*All the credentials are stored in an encrypted manner.",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                ),
+                SizedBox(height: 10,),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  controller: smsAccessTokenText,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Sms Password",
+                    helperText: "Enter the password provided by your sms gateway service provider.\n*All the credentials are stored in an encrypted manner.",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                ),
               ],
             );
           }

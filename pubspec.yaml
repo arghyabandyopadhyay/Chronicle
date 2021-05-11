@@ -57,6 +57,8 @@ dependencies:
   sms: ^0.2.4
   font_awesome_flutter: ^9.0.0
   connectivity: ^3.0.3
+  contacts_service: ^0.6.1
+  permission_handler: ^7.1.0
 
 dev_dependencies:
   flutter_test:

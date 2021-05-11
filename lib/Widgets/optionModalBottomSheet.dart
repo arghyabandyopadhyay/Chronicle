@@ -3,8 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 class OptionModalBottomSheet extends StatelessWidget {
   final String appBarText;
+  final IconData appBarIcon;
   final List<ModalOptionModel> list;
-  const OptionModalBottomSheet({Key key, this.list,this.appBarText}) : super(key: key);
+  const OptionModalBottomSheet({Key key, this.list,this.appBarText,this.appBarIcon}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -12,7 +13,7 @@ class OptionModalBottomSheet extends StatelessWidget {
         elevation: 0,
         title: Text(this.appBarText),
         leading: IconButton(
-          icon: Icon(Icons.add_circle),
+          icon: Icon(this.appBarIcon),
           onPressed: (){},
         ),
         actions: <Widget>[

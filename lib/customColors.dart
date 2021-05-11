@@ -37,8 +37,8 @@ var lightThemeData=ThemeData(
       subtitle1: TextStyle(color: CustomColors.primaryColor),
       caption: TextStyle(color: CustomColors.primaryColor),
     ),
-    primaryColorDark: Colors.white,
-    primaryColorLight: CustomColors.primaryColor,
+    primaryColorDark: CustomColors.primaryColor,
+    primaryColorLight: Colors.white,
     scaffoldBackgroundColor: Colors.white,
     dialogBackgroundColor: Colors.white,
     floatingActionButtonTheme: FloatingActionButtonThemeData(

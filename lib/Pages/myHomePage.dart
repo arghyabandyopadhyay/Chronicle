@@ -19,6 +19,7 @@ import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:shimmer/shimmer.dart';
 import 'SignInScreen.dart';
 import 'globalClass.dart';
+import 'Contacts/contactListPage.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage();
@@ -70,6 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
             DrawerActionModel(Icons.notifications, "Notifications", ()async{
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
+            }),
+            DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
+              Navigator.pop(context);
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage(isBottomSheet: false,)));
             }),
             DrawerActionModel(Icons.qr_code, "QR code", ()async{
               Navigator.pop(context);

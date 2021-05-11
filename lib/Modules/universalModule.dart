@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
@@ -11,6 +14,12 @@ void globalShowInSnackBar(GlobalKey<ScaffoldMessengerState> messengerState,Strin
 {
   messengerState.currentState.hideCurrentSnackBar();
   messengerState.currentState.showSnackBar(new SnackBar(content: Text(content)));
+}
+String encrypt(String password){
+  String encryptedPassword = "";
+  Uint8List encode = utf8.encode(password);
+  encryptedPassword = base64Encode(encode);
+  return encryptedPassword;
 }
 String getMonth(int month)
 {
@@ -182,6 +191,32 @@ addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldM
       globalShowInSnackBar(scaffoldMessengerKey, "Invalid Quantity!!");
     }
   });
+}
+String getFormattedMobileNo(String value)
+{
+  value=value.replaceAll(" ", "");
+  RegExp mobileNoRegex = new RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
+  if (value.length == 0) {
+    return value;
+  }
+  else if (mobileNoRegex.hasMatch(value)) {
+    if(value.length==10){
+      return value.substring(0,5)+" "+value.substring(5);
+    }
+    else if(value.length==11){
+      return value.substring(1,6)+" "+value.substring(6);
+    }
+    else if(value.length==12){
+      return value.substring(2,7)+" "+value.substring(7);
+    }
+    else if(value.length==13){
+      return value.substring(3,8)+" "+value.substring(8);
+    }
+    else return "";
+  }
+  else{
+    return "";
+  }
 }
 void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
 {

@@ -38,6 +38,7 @@ class _RegisterListState extends State<RegisterList> {
                 else{
                   showModalBottomSheet(context: context, builder: (_)=>
                       OptionModalBottomSheet(
+                        appBarIcon: Icons.add_circle,
                         appBarText: "Adding To Register",
                         list: [
                           ModalOptionModel(

@@ -6,19 +6,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'globalClass.dart';
 
-class AboutUsPage extends StatefulWidget {
-  AboutUsPage({Key key,}) : super(key: key);
+class AboutsPage extends StatefulWidget {
+  AboutsPage({Key key,}) : super(key: key);
   @override
-  _AboutPageState createState() => _AboutPageState();
+  _AboutsPageState createState() => _AboutsPageState();
 }
 
-class _AboutPageState extends State<AboutUsPage> {
+class _AboutsPageState extends State<AboutsPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(key: scaffoldMessengerKey,child: Scaffold(
       appBar: AppBar(
-        title:Text("About Us"),
+        title:Text("Abouts"),
 
       ),
       body: SafeArea(

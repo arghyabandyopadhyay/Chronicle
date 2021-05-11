@@ -2,6 +2,8 @@ import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/Contacts/contactListPage.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +166,45 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       appBar: AppBar(
         title: Text("Register Client",),
         actions: [
+          IconButton(icon: Icon(Icons.perm_contact_cal_outlined), onPressed: (){
+            Contact contact;
+            showModalBottomSheet(context: context, builder: (_)=>ContactListPage(isBottomSheet: true,)).then((value) =>
+            {
+              if(value!=null){
+                contact=value,
+                phoneNumberTextField.text=contact.phones!=null?getFormattedMobileNo(contact.phones.first.value):"",
+                nameTextField.text=contact.displayName!=null?contact.displayName:"",
+                addressTextField.text="",
+                fathersNameTextField.text="",
+                educationTextField.text="",
+                occupationTextField.text=contact.jobTitle!=null?contact.jobTitle:"",
+                injuriesTextField.text="",
+                registrationIdTextField.text="",
+                heightTextField.text="",
+                weightTextField.text="",
+                sexDropDown=null,
+                casteDropDown=null,
+              }
+            });
+            // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage())).then((value) =>
+            // {
+            //   if(value!=null){
+            //     contact=value,
+            //     phoneNumberTextField.text=contact.phones!=null?contact.phones.first.value:"",
+            //     nameTextField.text=contact.displayName!=null?contact.displayName:"",
+            //     addressTextField.text="",
+            //     fathersNameTextField.text="",
+            //     educationTextField.text="",
+            //     occupationTextField.text=contact.jobTitle!=null?contact.jobTitle:"",
+            //     injuriesTextField.text="",
+            //     registrationIdTextField.text="",
+            //     heightTextField.text="",
+            //     weightTextField.text="",
+            //     sexDropDown=null,
+            //     casteDropDown=null,
+            //   }
+            // });
+          }),
           IconButton(icon: Icon(Icons.upload_file), onPressed: (){
             getFilePath();
           }),
@@ -418,36 +459,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                         });
                       },
                     )
-                    // Container(
-              //       padding: EdgeInsets.symmetric(horizontal: 10),
-              //       alignment: Alignment.center,
-              //       decoration: BoxDecoration(
-              //           border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(4.0))
-              //       ),
-              //       child: ,
-                    // DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-                    //   hint: Container(child: Text("Sex:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
-                    //   iconSize: 24,
-                    //   value: sexDropDown,
-                    //   elevation: 16,
-                    //   style: TextStyle(),
-                    //   underline: Container(
-                    //     color: Colors.white,
-                    //   ),
-                    //   onChanged: (String newValue) {
-                    //     setState(() {
-                    //       sexDropDown = newValue;
-                    //     });
-                    //   },
-                    //   items: <String>['Male', 'Female', 'Trans', 'Prefer not to say']
-                    //       .map<DropdownMenuItem<String>>((String value) {
-                    //     return DropdownMenuItem<String>(
-                    //       value: value,
-                    //       child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-                    //     );
-                    //   }).toList(),
-                    // ),
-                  // )
                     ,),]),
                 SizedBox(height: 8,),
                 Row(children:[
@@ -479,34 +490,6 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                         });
                       },
                     )
-                    // Container(
-              //       padding: EdgeInsets.symmetric(horizontal: 10),
-              //       alignment: Alignment.center,
-              //       decoration: BoxDecoration(
-              //         border: Border.all(width: 0.7), borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              //       ),
-              //       child: DropdownButton<String>(dropdownColor: Theme.of(context).scaffoldBackgroundColor,
-              //         hint: Container(child: Text("Caste:",style:TextStyle()),width: MediaQuery.of(context).size.width-110),
-              //         iconSize: 24,
-              //         value: casteDropDown,
-              //         elevation: 16,
-              //         style: TextStyle(),
-              //         underline: Container(
-              //           color: Colors.white,
-              //         ),
-              //         onChanged: (String newValue) {
-              //           setState(() {
-              //             casteDropDown = newValue;
-              //           });
-              //         },
-              //         items: <String>['General', 'OBC', 'SC/ST']
-              //             .map<DropdownMenuItem<String>>((String value) {
-              //           return DropdownMenuItem<String>(
-              //             value: value,
-              //             child: Text(value,style: TextStyle(color: Theme.of(context).textTheme.headline1.color),),
-              //           );
-              //         }).toList(),
-              //       ),)
                 ,),]),
                 SizedBox(height: 8,),
                 Row(children:[

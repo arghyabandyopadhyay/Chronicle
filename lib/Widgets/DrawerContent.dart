@@ -78,10 +78,10 @@ class DrawerContent extends StatelessWidget {
             ),
             ListTile(
               leading: Icon(Icons.info),
-              title: Text("About Us"),
+              title: Text("Abouts"),
               onTap: ()async{
               Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutUsPage()));
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutsPage()));
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(

@@ -24,7 +24,7 @@ class _ChronicleUsersListState extends State<ChronicleUsersList> {
           },
           title: Text(this.widget.listItems[index].displayName,style: TextStyle(fontWeight: FontWeight.w900),),
           subtitle: Text(this.widget.listItems[index].email,style: TextStyle(fontWeight: FontWeight.w300),),
-          trailing: IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.clear,color: Colors.red,):Icon(Icons.done,color: Colors.green,),onPressed: (){
+          trailing: IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.desktop_access_disabled_outlined,color: Colors.red,):Icon(Icons.how_to_reg_outlined,color: Colors.green,),onPressed: (){
             setState(() {
               this.widget.listItems[index].canAccess=(this.widget.listItems[index].canAccess+1)%2;
               updateChronicleUserDetails(this.widget.listItems[index], this.widget.listItems[index].id);

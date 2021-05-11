@@ -3,11 +3,13 @@ import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/customColors.dart';
+import 'package:contacts_service/contacts_service.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ClientInformationPage extends StatefulWidget {
@@ -646,15 +648,65 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: Row(
+        mainAxisAlignment:MainAxisAlignment.end,children: [
+        FloatingActionButton.extended(heroTag:"addToContact",
+          onPressed: () async {
+            PermissionStatus permissionStatus = await _getContactPermission();
+            if (permissionStatus == PermissionStatus.granted) {
+              if(phoneNumberTextField.text.isNotEmpty&&nameTextField.text.isNotEmpty){
+                try{
+                  Contact contact = Contact();
+                  PostalAddress address = PostalAddress(label: "Home");
+                  contact.givenName = nameTextField.text;
+                  contact.middleName = "";
+                  contact.familyName = "";
+                  contact.prefix = "";
+                  contact.suffix = "";
+                  contact.phones = [Item(label: "mobile", value: phoneNumberTextField.text)];
+                  contact.emails = null;
+                  contact.company = "";
+                  contact.company = "";
+                  contact.jobTitle = occupationTextField.text;
+                  address.street = addressTextField.text;
+                  address.city = "";
+                  address.region = "";
+                  address.postcode = "";
+                  address.country = "";
+                  contact.postalAddresses = [address];
+                  ContactsService.addContact(contact);
+                }
+                catch(E)
+                {
+                  globalShowInSnackBar(scaffoldMessengerKey,"Something went wrong!!");
+                }
+              }
+              else globalShowInSnackBar(scaffoldMessengerKey,"Name and the mobile no cannot be empty");
+            } else {
+              _handleInvalidPermissions(permissionStatus);
+            }
+
+          }, label: Text("Add To Contacts"),
+          icon: Icon(Icons.contacts_outlined),),
+        SizedBox(width: 10,),
+        FloatingActionButton.extended(
+          heroTag: "Save_Button",
           onPressed: (){
             _handleSubmitted();
-          }, label: Text("Save"),icon: Icon(Icons.save,),),
-
+          }, label: Text("Save"),icon: Icon(Icons.save,),)],),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     ),key: scaffoldMessengerKey,);
   }
-
+  Future<PermissionStatus> _getContactPermission() async {
+    return await Permission.contacts.request();
+  }
+  void _handleInvalidPermissions(PermissionStatus permissionStatus) {
+    if (permissionStatus == PermissionStatus.denied) {
+      globalShowInSnackBar(scaffoldMessengerKey, "Access Denied by the user!!");
+    } else if (permissionStatus == PermissionStatus.restricted) {
+      globalShowInSnackBar(scaffoldMessengerKey, "Location data is not available on device");
+    }
+  }
   @override
   void dispose() {
     super.dispose();

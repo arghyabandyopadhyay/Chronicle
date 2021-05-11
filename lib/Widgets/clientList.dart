@@ -1,4 +1,7 @@
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Widgets/clientCardWidget.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +11,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../Models/clientModel.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
+
+import 'optionModalBottomSheet.dart';
 
 class ClientList extends StatefulWidget {
   final List<ClientModel> listItems;
@@ -103,9 +108,73 @@ class _ClientListState extends State<ClientList> {
                   ),
                   IconSlideAction(
                     caption: 'SMS',
-                    icon: Icons.message,
+                    icon: Icons.send,
                     onTap: () async {
-                      smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                      showModalBottomSheet(context: context, builder: (_)=>
+                          OptionModalBottomSheet(
+                            appBarIcon: Icons.send,
+                            appBarText: "How to send the reminder",
+                            list: [
+                              ModalOptionModel(
+                                  particulars: "Send Sms using Default Sim",
+                                  icon: Icons.sim_card_outlined,
+                                  onTap: (){
+                                    Navigator.of(_).pop();
+                                    showDialog(context: context, builder: (_)=>new AlertDialog(
+                                      title: Text("Confirm Send"),
+                                      content: Text("Are you sure to send a reminder to all the clients?"),
+                                      actions: [
+                                        ActionChip(label: Text("Yes"), onPressed: (){
+                                          smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                                          Navigator.of(_).pop();
+                                        }),
+                                        ActionChip(label: Text("No"), onPressed: (){
+                                          Navigator.of(_).pop();
+                                        })
+                                      ],
+                                    ));
+
+                                  }),
+                              ModalOptionModel(
+                                  particulars: "Send Sms using Sms Gateway",
+                                  icon: FontAwesomeIcons.server,
+                                  onTap: (){
+                                    if(GlobalClass.userDetail.smsAccessToken!=null
+                                        &&GlobalClass.userDetail.smsApiUrl!=null
+                                        &&GlobalClass.userDetail.smsUserId!=null
+                                        &&GlobalClass.userDetail.smsMobileNo!=null
+                                        &&GlobalClass.userDetail.smsAccessToken!=""
+                                        &&GlobalClass.userDetail.smsApiUrl!=""
+                                        &&GlobalClass.userDetail.smsUserId!=""
+                                        &&GlobalClass.userDetail.smsMobileNo!=""
+                                    ){
+                                      Navigator.of(_).pop();
+                                      showDialog(context: context, builder: (_)=>new AlertDialog(
+                                        title: Text("Confirm Send"),
+                                        content: Text("Are you sure to send the message to all the selected clients?"),
+                                        actions: [
+                                          ActionChip(label: Text("Yes"), onPressed: (){
+                                            try{
+                                              postForBulkMessage([widget.listItems[index]],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                                  ", please clear your dues for further continuation of services."}");
+                                              globalShowInSnackBar(widget.scaffoldMessengerKey,"Message Sent!!");
+                                            }
+                                            catch(E){
+                                              globalShowInSnackBar(widget.scaffoldMessengerKey,"Something Went Wrong!!");
+                                            }
+                                            Navigator.of(_).pop();
+                                          }),
+                                          ActionChip(label: Text("No"), onPressed: (){
+                                            Navigator.of(_).pop();
+                                          })
+                                        ],
+                                      ));
+                                    }
+                                    else{
+                                      globalShowInSnackBar(widget.scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
+                                      Navigator.of(_).pop();
+                                    }
+                                  }),],));
                     },
                   ),
                   IconSlideAction(

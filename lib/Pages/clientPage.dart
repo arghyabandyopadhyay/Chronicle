@@ -1,10 +1,12 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/userModel.dart';
+import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/Contacts/contactListPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/myHomePage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
@@ -76,7 +78,7 @@ class _ClientPageState extends State<ClientPage> {
               WidgetSpan(child: Text(widget.register.name)),
 
               WidgetSpan(
-                  child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
+                  child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
               ),
             ],
           ),
@@ -116,7 +118,7 @@ class _ClientPageState extends State<ClientPage> {
                 WidgetSpan(child: Text(widget.register.name)),
 
                 WidgetSpan(
-                    child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
+                    child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
                 ),
               ],
             ),
@@ -462,7 +464,7 @@ class _ClientPageState extends State<ClientPage> {
           children: [
             WidgetSpan(child: Text(widget.register.name)),
             WidgetSpan(
-                child: Padding(child: Icon(Icons.arrow_drop_down),padding: EdgeInsets.only(left: 3,bottom: 2),)
+                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
             ),
           ],
         ),
@@ -487,6 +489,10 @@ class _ClientPageState extends State<ClientPage> {
               GlobalClass.lastRegister="";
               Navigator.pop(context);
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MyHomePage()));
+            }),
+            DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
+              Navigator.pop(context);
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage(isBottomSheet: false,)));
             }),
             DrawerActionModel(Icons.qr_code, "QR code", ()async{
               Navigator.pop(context);
@@ -741,7 +747,7 @@ class _ClientPageState extends State<ClientPage> {
                   contentPadding:EdgeInsets.all(10.0),
                 ),
               )),
-          actions: [ActionChip(label: Text("Send"), onPressed: (){
+          actions: [ActionChip(label: Text("Send Sms using Default Sim"), onPressed: (){
             if(textEditingController.text!=""){
               Navigator.of(_).pop();
               showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -781,12 +787,65 @@ class _ClientPageState extends State<ClientPage> {
               Navigator.of(_).pop();
             }
           }),
+            ActionChip(label: Text("Send Sms using Sms Gateway"), onPressed: (){
+              if(GlobalClass.userDetail.smsAccessToken!=null
+                  &&GlobalClass.userDetail.smsApiUrl!=null
+                  &&GlobalClass.userDetail.smsUserId!=null
+                  &&GlobalClass.userDetail.smsMobileNo!=null
+                  &&GlobalClass.userDetail.smsAccessToken!=""
+                  &&GlobalClass.userDetail.smsApiUrl!=""
+                  &&GlobalClass.userDetail.smsUserId!=""
+                  &&GlobalClass.userDetail.smsMobileNo!=""
+              ){
+                if(textEditingController.text!=""){
+                  Navigator.of(_).pop();
+                  showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Send"),
+                    content: Text("Are you sure to send the message to all the selected clients?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          try{
+                            postForBulkMessage(selectedList,textEditingController.text);
+                            globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
+                          }
+                          catch(E){
+                            globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong!!");
+                          }
+                          for(ClientModel a in selectedList)
+                          {
+                            a.isSelected=false;
+                          }
+                          selectedList.clear();
+                          textEditingController.clear();
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          textEditingController.clear();
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+                else{
+                  globalShowInSnackBar(scaffoldMessengerKey, "You can't send null message to your clients.");
+                  Navigator.of(_).pop();
+                }
+              }
+              else{
+                globalShowInSnackBar(scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
+                Navigator.of(_).pop();
+              }
+            }),
             ActionChip(label: Text("Cancel"), onPressed: (){
               Navigator.of(_).pop();
             }),],
         ));
       },
-        child: Icon(Icons.send),
+        child: Icon(Icons.message_outlined),
         tooltip: "Send Message",
       ),
     ),key:scaffoldMessengerKey);
