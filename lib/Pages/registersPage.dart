@@ -17,17 +17,17 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:shimmer/shimmer.dart';
+import 'Contacts/contactListPage.dart';
 import 'SignInScreen.dart';
 import 'globalClass.dart';
-import 'Contacts/contactListPage.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage();
+class RegistersPage extends StatefulWidget {
+  RegistersPage();
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _RegistersPageState createState() => _RegistersPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _RegistersPageState extends State<RegistersPage> {
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   void newRegisterModel(RegisterModel register) {
@@ -72,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
             }),
+
             DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage(isBottomSheet: false,)));

@@ -1,6 +1,6 @@
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
-import 'package:chronicle/Pages/myHomePage.dart';
+import 'package:chronicle/Pages/registersPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -64,7 +64,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                       Navigator.pushReplacement(
                           context,
                           CupertinoPageRoute(
-                              builder: (context) => MyHomePage()))
+                              builder: (context) => RegistersPage()))
                     }
                     else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
 

@@ -4,7 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 
 class RegisterIndexModel {
   final String uid;
-  final String name;
+  String name;
   DatabaseReference id;
 
   RegisterIndexModel({this.uid, this.name});

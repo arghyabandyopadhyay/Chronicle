@@ -4,5 +4,6 @@ class ModalOptionModel {
   final String particulars;
   final Function onTap;
   final IconData icon;
-  ModalOptionModel({this.particulars, this.onTap,this.icon});
+  final Color iconColor;
+  ModalOptionModel({this.particulars, this.onTap,this.icon,this.iconColor});
 }

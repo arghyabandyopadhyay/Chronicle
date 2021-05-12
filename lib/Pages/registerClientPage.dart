@@ -1,6 +1,7 @@
 import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
+import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/Contacts/contactListPage.dart';
 import 'package:contacts_service/contacts_service.dart';
@@ -15,6 +16,8 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:typed_data';
+
+import '../customColors.dart';
 
 
 class RegisterClientPage extends StatefulWidget {
@@ -166,7 +169,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
       appBar: AppBar(
         title: Text("Register Client",),
         actions: [
-          IconButton(icon: Icon(Icons.perm_contact_cal_outlined), onPressed: (){
+          IconButton(icon:Icon(Icons.perm_contact_cal_outlined),onPressed: (){
             Contact contact;
             showModalBottomSheet(context: context, builder: (_)=>ContactListPage(isBottomSheet: true,)).then((value) =>
             {
@@ -186,31 +189,25 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                 casteDropDown=null,
               }
             });
-            // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage())).then((value) =>
-            // {
-            //   if(value!=null){
-            //     contact=value,
-            //     phoneNumberTextField.text=contact.phones!=null?contact.phones.first.value:"",
-            //     nameTextField.text=contact.displayName!=null?contact.displayName:"",
-            //     addressTextField.text="",
-            //     fathersNameTextField.text="",
-            //     educationTextField.text="",
-            //     occupationTextField.text=contact.jobTitle!=null?contact.jobTitle:"",
-            //     injuriesTextField.text="",
-            //     registrationIdTextField.text="",
-            //     heightTextField.text="",
-            //     weightTextField.text="",
-            //     sexDropDown=null,
-            //     casteDropDown=null,
-            //   }
-            // });
-          }),
-          IconButton(icon: Icon(Icons.upload_file), onPressed: (){
-            getFilePath();
-          }),
-          IconButton(icon: Icon(Icons.download_sharp), onPressed: (){
-            asset2Local("xlsx", "assets/clientList.xlsx");
-          }),
+          },),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                ModalOptionModel(particulars: "Upload Client list",icon:Icons.upload_file,iconColor: CustomColors.uploadIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  getFilePath();
+                }),
+                ModalOptionModel(particulars: "Download Template",icon: Icons.download_sharp,iconColor: CustomColors.downloadIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  asset2Local("xlsx", "assets/clientList.xlsx");
+                })].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
         ],
       ),
       body: Form(

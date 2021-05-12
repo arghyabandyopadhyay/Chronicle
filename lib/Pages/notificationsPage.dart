@@ -98,72 +98,38 @@ class _NotificationsPageState extends State<NotificationsPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(cursorColor:Colors.white,autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();
             });
           }),
-          IconButton(
-            onPressed: () async {
-              showModalBottomSheet(context: context, builder: (_)=>
-                  OptionModalBottomSheet(
-                    appBarIcon: Icons.send,
-                    appBarText: "How to send the reminder",
-                    list: [
-                      ModalOptionModel(
-                          particulars: "Send Sms using Default Sim",
-                          icon: Icons.sim_card_outlined,
-                          onTap: (){
-                            Navigator.of(_).pop();
-                            showDialog(context: context, builder: (_)=>new AlertDialog(
-                              title: Text("Confirm Send"),
-                              content: Text("Are you sure to send a reminder to all the clients?"),
-                              actions: [
-                                ActionChip(label: Text("Yes"), onPressed: (){
-                                  SmsSender sender = new SmsSender();
-                                  clients.forEach((ClientModel element) {
-                                    String address = element.mobileNo;
-                                    if(address!=null&&address!="")
-                                      sender.sendSms(new SmsMessage(address, "${element.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                          ", please clear your dues for further continuation of services."}"));
-                                  });
-                                  Navigator.of(_).pop();
-                                }),
-                                ActionChip(label: Text("No"), onPressed: (){
-                                  Navigator.of(_).pop();
-                                })
-                              ],
-                            ));
-
-                          }),
-                      ModalOptionModel(
-                          particulars: "Send Sms using Sms Gateway",
-                          icon: FontAwesomeIcons.server,
-                          onTap: (){
-                            if(GlobalClass.userDetail.smsAccessToken!=null
-                                &&GlobalClass.userDetail.smsApiUrl!=null
-                                &&GlobalClass.userDetail.smsUserId!=null
-                                &&GlobalClass.userDetail.smsMobileNo!=null
-                                &&GlobalClass.userDetail.smsAccessToken!=""
-                                &&GlobalClass.userDetail.smsApiUrl!=""
-                                &&GlobalClass.userDetail.smsUserId!=""
-                                &&GlobalClass.userDetail.smsMobileNo!=""
-                            ){
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [ModalOptionModel(particulars: "Send Reminder",icon: Icons.send,iconColor: CustomColors.sendIconColor, onTap: ()async {
+                Navigator.pop(popupContext);
+                showModalBottomSheet(context: context, builder: (_)=>
+                    OptionModalBottomSheet(
+                      appBarIcon: Icons.send,
+                      appBarText: "How to send the reminder",
+                      list: [
+                        ModalOptionModel(
+                            particulars: "Send Sms using Default Sim",
+                            icon: Icons.sim_card_outlined,
+                            onTap: (){
                               Navigator.of(_).pop();
                               showDialog(context: context, builder: (_)=>new AlertDialog(
                                 title: Text("Confirm Send"),
-                                content: Text("Are you sure to send the message to all the selected clients?"),
+                                content: Text("Are you sure to send a reminder to all the clients?"),
                                 actions: [
                                   ActionChip(label: Text("Yes"), onPressed: (){
-                                    try{
-                                      postForBulkMessage(clients,"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                          ", please clear your dues for further continuation of services."}");
-                                      globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
-                                    }
-                                    catch(E){
-                                      globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong!!");
-                                    }
+                                    SmsSender sender = new SmsSender();
+                                    clients.forEach((ClientModel element) {
+                                      String address = element.mobileNo;
+                                      if(address!=null&&address!="")
+                                        sender.sendSms(new SmsMessage(address, "${element.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                            ", please clear your dues for further continuation of services."}"));
+                                    });
                                     Navigator.of(_).pop();
                                   }),
                                   ActionChip(label: Text("No"), onPressed: (){
@@ -171,47 +137,90 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                   })
                                 ],
                               ));
-                            }
-                            else{
-                              globalShowInSnackBar(scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
-                              Navigator.of(_).pop();
-                            }
-                          }),],));
-            },
-            icon: Icon(Icons.send),
-          ),
-          IconButton(icon: Icon(Icons.refresh), onPressed: () async {
-            try{
-              Connectivity connectivity=Connectivity();
-              await connectivity.checkConnectivity().then((value)async => {
-                if(value!=ConnectivityResult.none)
-                  {
-                    if(!_isLoading){
-                      setState(() {
-                        _isLoading=true;
-                      }),
-                      getNotifications(),
-                    }
-                    else{
-                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
-                    }
+
+                            }),
+                        ModalOptionModel(
+                            particulars: "Send Sms using Sms Gateway",
+                            icon: FontAwesomeIcons.server,
+                            onTap: (){
+                              if(GlobalClass.userDetail.smsAccessToken!=null
+                                  &&GlobalClass.userDetail.smsApiUrl!=null
+                                  &&GlobalClass.userDetail.smsUserId!=null
+                                  &&GlobalClass.userDetail.smsMobileNo!=null
+                                  &&GlobalClass.userDetail.smsAccessToken!=""
+                                  &&GlobalClass.userDetail.smsApiUrl!=""
+                                  &&GlobalClass.userDetail.smsUserId!=""
+                                  &&GlobalClass.userDetail.smsMobileNo!=""
+                              ){
+                                Navigator.of(_).pop();
+                                showDialog(context: context, builder: (_)=>new AlertDialog(
+                                  title: Text("Confirm Send"),
+                                  content: Text("Are you sure to send a reminder to all the clients?"),
+                                  actions: [
+                                    ActionChip(label: Text("Yes"), onPressed: (){
+                                      try{
+                                        postForBulkMessage(clients,"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                            ", please clear your dues for further continuation of services."}");
+                                        globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
+                                      }
+                                      catch(E){
+                                        globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong!!");
+                                      }
+                                      Navigator.of(_).pop();
+                                    }),
+                                    ActionChip(label: Text("No"), onPressed: (){
+                                      Navigator.of(_).pop();
+                                    })
+                                  ],
+                                ));
+                              }
+                              else{
+                                globalShowInSnackBar(scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
+                                Navigator.of(_).pop();
+                              }
+                            }),],));
+              }),
+                ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  try{
+                    Connectivity connectivity=Connectivity();
+                    await connectivity.checkConnectivity().then((value)async => {
+                      if(value!=ConnectivityResult.none)
+                        {
+                          if(!_isLoading){
+                            setState(() {
+                              _isLoading=true;
+                            }),
+                            getNotifications(),
+                          }
+                          else{
+                            globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
+                          }
+                        }
+                      else{
+                        setState(() {
+                          _isLoading=false;
+                        }),
+                        globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
+                      }
+                    });
                   }
-                else{
-                  setState(() {
-                    _isLoading=false;
-                  }),
-                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
-                }
-              });
-            }
-            catch(E)
-            {
-              setState(() {
-                _isLoading=false;
-              });
-              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
-            }
-          }),
+                  catch(E)
+                  {
+                    setState(() {
+                      _isLoading=false;
+                    });
+                    globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+                  }
+                }),
+                ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: _isSearching?Provider.value(
@@ -273,7 +282,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ));
                 }
             ))),
-        if(_isLoading)Container(color:Colors.black87,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)]),),
+        if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(
           width: double.infinity,

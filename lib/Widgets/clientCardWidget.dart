@@ -2,6 +2,8 @@ import 'package:chronicle/Modules/universalModule.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Models/clientModel.dart';
 
+import '../customColors.dart';
+
 
 class ClientCardWidget extends StatefulWidget {
   final Key key;
@@ -55,7 +57,7 @@ class _ClientCardWidgetState extends State<ClientCardWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
         Expanded(child: Text((this.widget.item.address!=null&&this.widget.item.address!="")?("Address: "+this.widget.item.address):"",style: TextStyle(fontWeight: FontWeight.bold),),),
-          Text(this.widget.item.due==0?"Last Month":("${this.widget.item.due<0?"Paid":"Due"}: "+(this.widget.item.due.abs()+(this.widget.item.due<0?1:0)).toString()),style: TextStyle(color: this.widget.item.due<=0?this.widget.item.due==0?Colors.orangeAccent:Colors.green:Colors.red,fontWeight: FontWeight.bold))
+          Text(this.widget.item.due==0?"Last Month":("${this.widget.item.due<0?"Paid":"Due"}: "+(this.widget.item.due.abs()+(this.widget.item.due<0?1:0)).toString()),style: TextStyle(color: this.widget.item.due<=0?this.widget.item.due==0?CustomColors.lastMonthTextColor:CustomColors.paidTextColor:CustomColors.dueTextColor,fontWeight: FontWeight.bold))
         ],)
       ],),),)
     );

@@ -147,7 +147,7 @@ registerAppModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
 deleteModule(ClientModel clientData,BuildContext context,state)async{
   showDialog(context: context, builder: (_)=>new AlertDialog(
     title: Text("Confirm Delete"),
-    content: Text("Are you sure?"),
+    content: Text("Are you sure to delete ${clientData.name}?\n The change is irreversible."),
     actions: [
       ActionChip(label: Text("Yes"), onPressed: (){
         state.setState(() {

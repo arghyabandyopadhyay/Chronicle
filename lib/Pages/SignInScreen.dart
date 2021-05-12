@@ -12,7 +12,7 @@ import 'package:page_transition/page_transition.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
 import 'errorDisplayPage.dart';
-import 'myHomePage.dart';
+import 'registersPage.dart';
 
 class SignInScreen extends StatefulWidget {
   @override
@@ -42,7 +42,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: MyHomePage())
+                          home: RegistersPage())
                     }
                   else {
                     await getAllRegisterIndex().then((registers) => {
@@ -62,7 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: MyHomePage())
+                          home: RegistersPage())
                     })
                   }
                 })
@@ -158,7 +158,7 @@ class _SignInScreenState extends State<SignInScreen> {
     //                 theme: lightThemeData,
     //                 darkTheme: darkThemeData,
     //                 themeMode: ThemeMode.system,
-    //                 home: MyHomePage())
+    //                 home: RegistersPage())
     //           }
     //         else {
     //             await getAllRegisterIndex().then((registers) => {
@@ -178,7 +178,7 @@ class _SignInScreenState extends State<SignInScreen> {
     //                   theme: lightThemeData,
     //                   darkTheme: darkThemeData,
     //                   themeMode: ThemeMode.system,
-    //                   home: MyHomePage())
+    //                   home: RegistersPage())
     //             })
     //         }
     //       })

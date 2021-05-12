@@ -8,7 +8,7 @@ import 'clientModel.dart';
 
 class RegisterModel {
   final List<ClientModel> clients;
-  final String name;
+  String name;
   DatabaseReference id;
 
   RegisterModel({this.clients, this.name});

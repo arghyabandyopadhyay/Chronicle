@@ -8,6 +8,27 @@ class CustomColors{
   static const Color firebaseOrange = Color(0XFFF57C00);
   static const Color primaryColor = Color(0XFF00203f);
   static const Color whatsAppGreen = Color(0XFF4FCE5D);
+  static const Color editIconColor = Colors.orange;
+  static const Color sortIconColor = Colors.blue;
+  static const Color refreshIconColor = Colors.green;
+  static const Color infoIconColor = Colors.blue;
+  static const Color callIconColor = Colors.orangeAccent;
+  static const Color addToContactIconColor = Colors.blue;
+  static const Color sendIconColor = Colors.blueGrey;
+  static const Color addDueIconColor = Colors.red;
+  static const Color addPaymentIconColor = Colors.green;
+  static const Color deleteIconColor = Colors.deepOrange;
+  static const Color uploadIconColor = Colors.blue;
+  static const Color downloadIconColor = Colors.indigo;
+
+
+
+
+  static const Color lastMonthTextColor = Colors.orangeAccent;
+  static const Color paidTextColor = Colors.green;
+  static const Color dueTextColor = Colors.red;
+  static const Color loadingBottomStrapColor = Colors.black87;
+  static const Color loadingBottomStrapTextColor = Colors.white;
 }
 
 var lightThemeData=ThemeData(
@@ -69,16 +90,3 @@ var darkThemeData=ThemeData(
         foregroundColor: CustomColors.primaryColor
     )
 );
-// var darkThemeData=ThemeData(
-//     accentColor: Colors.black,
-//     primaryColor:Color(0XFF2C384A),
-//     brightness: Brightness.dark,
-//     primaryColorDark: Color(0XFF2C384A),
-//     primaryColorLight: Colors.white,
-//     scaffoldBackgroundColor: Color(0XFF2C384A),
-//     dialogBackgroundColor: Color(0XFF2C384A),
-//     floatingActionButtonTheme: FloatingActionButtonThemeData(
-//         backgroundColor: Colors.black,
-//         foregroundColor: Colors.white
-//     )
-// );

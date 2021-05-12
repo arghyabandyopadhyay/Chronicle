@@ -1,8 +1,10 @@
 import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/customColors.dart';
+import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +13,9 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '../customColors.dart';
+import 'globalClass.dart';
 
 class ClientInformationPage extends StatefulWidget {
   final ClientModel client;
@@ -164,7 +169,143 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       appBar: AppBar(
         title: Text(widget.client.name!=null?widget.client.name:"Client Profile",),
         actions: [
-          Center(child: Text(this.widget.client.due==0?"Last Month  ":("${this.widget.client.due<0?"Paid":"Due"}: "+(this.widget.client.due.abs()+(this.widget.client.due<0?1:0)).toString()+"  "),style: TextStyle(color: this.widget.client.due<=0?this.widget.client.due==0?Colors.orangeAccent:Colors.green:Colors.red,fontWeight: FontWeight.bold),))],
+          Center(child: Text(this.widget.client.due==0?"Last Month  ":("${this.widget.client.due<0?"Paid":"Due"}: "+(this.widget.client.due.abs()+(this.widget.client.due<0?1:0)).toString()+"  "),style: TextStyle(color: this.widget.client.due<=0?this.widget.client.due==0?CustomColors.lastMonthTextColor:CustomColors.paidTextColor:CustomColors.dueTextColor,fontWeight: FontWeight.bold),)),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                ModalOptionModel(particulars: "Call",icon: Icons.call,iconColor:CustomColors.callIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  callModule(widget.client,scaffoldMessengerKey);
+                }),
+                ModalOptionModel(particulars: "Add to Contacts",icon: Icons.contacts_outlined,iconColor:CustomColors.addToContactIconColor,onTap: ()async{
+                  Navigator.pop(popupContext);
+                  PermissionStatus permissionStatus = await _getContactPermission();
+                  if (permissionStatus == PermissionStatus.granted) {
+                    if(phoneNumberTextField.text.isNotEmpty&&nameTextField.text.isNotEmpty){
+                      try{
+                        Contact contact = Contact();
+                        PostalAddress address = PostalAddress(label: "Home");
+                        contact.givenName = nameTextField.text;
+                        contact.middleName = "";
+                        contact.familyName = "";
+                        contact.prefix = "";
+                        contact.suffix = "";
+                        contact.phones = [Item(label: "mobile", value: phoneNumberTextField.text)];
+                        contact.emails = null;
+                        contact.company = "";
+                        contact.company = "";
+                        contact.jobTitle = occupationTextField.text;
+                        address.street = addressTextField.text;
+                        address.city = "";
+                        address.region = "";
+                        address.postcode = "";
+                        address.country = "";
+                        contact.postalAddresses = [address];
+                        ContactsService.addContact(contact);
+                        globalShowInSnackBar(scaffoldMessengerKey,"${widget.client.name} added to your contacts!!");
+                      }
+                      catch(E)
+                      {
+                        globalShowInSnackBar(scaffoldMessengerKey,"Something went wrong!!");
+                      }
+                    }
+                    else globalShowInSnackBar(scaffoldMessengerKey,"Name and the mobile no cannot be empty");
+                  } else {
+                    _handleInvalidPermissions(permissionStatus);
+                  }
+                }),
+                ModalOptionModel(particulars: "Sms Reminder",icon: Icons.send,iconColor:CustomColors.sendIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  showModalBottomSheet(context: context, builder: (_)=>
+                      OptionModalBottomSheet(
+                        appBarIcon: Icons.send,
+                        appBarText: "How to send the reminder",
+                        list: [
+                          ModalOptionModel(
+                              particulars: "Send Sms using Default Sim",
+                              icon: Icons.sim_card_outlined,
+                              onTap: (){
+                                Navigator.of(_).pop();
+                                showDialog(context: context, builder: (_)=>new AlertDialog(
+                                  title: Text("Confirm Send"),
+                                  content: Text("Are you sure to send a reminder to ${widget.client.name}?"),
+                                  actions: [
+                                    ActionChip(label: Text("Yes"), onPressed: (){
+                                      smsModule(this.widget.client,scaffoldMessengerKey);
+                                      Navigator.of(_).pop();
+                                    }),
+                                    ActionChip(label: Text("No"), onPressed: (){
+                                      Navigator.of(_).pop();
+                                    })
+                                  ],
+                                ));
+                              }),
+                          ModalOptionModel(
+                              particulars: "Send Sms using Sms Gateway",
+                              icon: FontAwesomeIcons.server,
+                              onTap: (){
+                                if(GlobalClass.userDetail.smsAccessToken!=null
+                                    &&GlobalClass.userDetail.smsApiUrl!=null
+                                    &&GlobalClass.userDetail.smsUserId!=null
+                                    &&GlobalClass.userDetail.smsMobileNo!=null
+                                    &&GlobalClass.userDetail.smsAccessToken!=""
+                                    &&GlobalClass.userDetail.smsApiUrl!=""
+                                    &&GlobalClass.userDetail.smsUserId!=""
+                                    &&GlobalClass.userDetail.smsMobileNo!=""
+                                ){
+                                  Navigator.of(_).pop();
+                                  showDialog(context: context, builder: (_)=>new AlertDialog(
+                                    title: Text("Confirm Send"),
+                                    content: Text("Are you sure to send a reminder to ${widget.client.name}?"),
+                                    actions: [
+                                      ActionChip(label: Text("Yes"), onPressed: (){
+                                        try{
+                                          postForBulkMessage([widget.client],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                              ", please clear your dues for further continuation of services."}");
+                                          globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
+                                        }
+                                        catch(E){
+                                          globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong!!");
+                                        }
+                                        Navigator.of(_).pop();
+                                      }),
+                                      ActionChip(label: Text("No"), onPressed: (){
+                                        Navigator.of(_).pop();
+                                      })
+                                    ],
+                                  ));
+                                }
+                                else{
+                                  globalShowInSnackBar(scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
+                                  Navigator.of(_).pop();
+                                }
+                              }),],));
+                }),
+                ModalOptionModel(particulars: "WhatsApp",icon:FontAwesomeIcons.whatsappSquare,iconColor:CustomColors.whatsAppGreen, onTap: () async {
+                  Navigator.pop(popupContext);
+                  whatsAppModule(widget.client, scaffoldMessengerKey);
+                }),
+                if(this.widget.client.due>-1)ModalOptionModel(particulars: "Add Due",iconColor:CustomColors.addDueIconColor,icon: Icons.more_time,onTap: (){
+                  Navigator.pop(popupContext);
+                  addDueModule(this.widget.client,this);
+                }),
+                ModalOptionModel(particulars: "Add Payment",icon: Icons.payment,iconColor:CustomColors.addPaymentIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  addPaymentModule(this.widget.client,context,scaffoldMessengerKey,this);
+                }),
+                ModalOptionModel(particulars: "Delete",icon: Icons.delete,iconColor:CustomColors.deleteIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  deleteModule(widget.client, context, this);
+                }),
+                ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor,),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: Form(
         key: _formKey,
@@ -180,24 +321,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
             },
             child: Column(
               children: [
-                Row(mainAxisAlignment:MainAxisAlignment.spaceAround, children: [
-                  Column(children: [IconButton(icon: Icon(Icons.call,color: Colors.orangeAccent), onPressed: () async {
-                    callModule(widget.client,scaffoldMessengerKey);
-                  },),Text("Call")],),
-                  Column(children: [IconButton(icon: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen), onPressed: () async {
-                    whatsAppModule(widget.client, scaffoldMessengerKey);
-                  },),Text("WhatsApp")],),
-                  if(this.widget.client.due>-1)Column(children: [IconButton(icon: Icon(Icons.more_time,color: Colors.red), onPressed: () async {
-                    addDueModule(this.widget.client,this);
-                  }),Text("Add Due")],),
-                  Column(children: [IconButton(icon: Icon(Icons.payment,color: Colors.green), onPressed: () {
-                    addPaymentModule(this.widget.client,context,scaffoldMessengerKey,this);
-                  },),Text("Add Payment")],),
-                  Column(children: [IconButton(icon: Icon(Icons.delete,color: Colors.deepOrange), onPressed: (){
-                    deleteModule(widget.client, context, this);
-                  }),Text("Delete")],),
-                ],),
-                SizedBox(height: 20,),
+                SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
                     radius: 25,
@@ -648,52 +772,10 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
           ),
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment:MainAxisAlignment.end,children: [
-        FloatingActionButton.extended(heroTag:"addToContact",
-          onPressed: () async {
-            PermissionStatus permissionStatus = await _getContactPermission();
-            if (permissionStatus == PermissionStatus.granted) {
-              if(phoneNumberTextField.text.isNotEmpty&&nameTextField.text.isNotEmpty){
-                try{
-                  Contact contact = Contact();
-                  PostalAddress address = PostalAddress(label: "Home");
-                  contact.givenName = nameTextField.text;
-                  contact.middleName = "";
-                  contact.familyName = "";
-                  contact.prefix = "";
-                  contact.suffix = "";
-                  contact.phones = [Item(label: "mobile", value: phoneNumberTextField.text)];
-                  contact.emails = null;
-                  contact.company = "";
-                  contact.company = "";
-                  contact.jobTitle = occupationTextField.text;
-                  address.street = addressTextField.text;
-                  address.city = "";
-                  address.region = "";
-                  address.postcode = "";
-                  address.country = "";
-                  contact.postalAddresses = [address];
-                  ContactsService.addContact(contact);
-                }
-                catch(E)
-                {
-                  globalShowInSnackBar(scaffoldMessengerKey,"Something went wrong!!");
-                }
-              }
-              else globalShowInSnackBar(scaffoldMessengerKey,"Name and the mobile no cannot be empty");
-            } else {
-              _handleInvalidPermissions(permissionStatus);
-            }
-
-          }, label: Text("Add To Contacts"),
-          icon: Icon(Icons.contacts_outlined),),
-        SizedBox(width: 10,),
-        FloatingActionButton.extended(
-          heroTag: "Save_Button",
-          onPressed: (){
-            _handleSubmitted();
-          }, label: Text("Save"),icon: Icon(Icons.save,),)],),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: (){
+          _handleSubmitted();
+        }, label: Text("Save"),icon: Icon(Icons.save,),),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     ),key: scaffoldMessengerKey,);
   }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Pages/globalClass.dart';
@@ -36,6 +35,14 @@ DatabaseReference addToRegisterIndex(RegisterIndexModel registerIndexModel)
   id.set(registerIndexModel.toJson());
   return id;
 }
+
+void renameRegisterModule(RegisterIndexModel registerIndex, DatabaseReference id) async{
+  id.update(registerIndex.toJson());
+  DatabaseReference id2 = databaseReference.child('${GlobalClass.user.uid}/registers/${registerIndex.uid}/');
+  id2.update({"Name":registerIndex.name});
+}
+
+
 void deleteDatabaseNode(DatabaseReference id) {
   databaseReference.child(id.path).remove();
 }
@@ -186,3 +193,4 @@ Future<UserModel> getUserDetails() async {
 void updateUserDetails(UserModel user, DatabaseReference id) {
   id.update(user.toJson());
 }
+

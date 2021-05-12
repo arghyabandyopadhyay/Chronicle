@@ -24,6 +24,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar:AppBar(
         title: Text(this.isAddToRegister?"Add To Registers":"Registers"),
         leading: IconButton(

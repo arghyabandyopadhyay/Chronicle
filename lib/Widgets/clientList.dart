@@ -81,8 +81,7 @@ class _ClientListState extends State<ClientList> {
                 secondaryActions: <Widget>[
                   if(this.widget.listItems[index].due>-1)IconSlideAction(
                     caption: 'Add Due',
-                    icon: Icons.more_time,
-                    color: Colors.red,
+                    iconWidget: Icon(Icons.more_time,color: CustomColors.addDueIconColor,),
                     onTap: () async {
                       addDueModule(this.widget.listItems[index],this);
                     },
@@ -90,8 +89,7 @@ class _ClientListState extends State<ClientList> {
                   ),
                   IconSlideAction(
                     caption: 'Add Payment',
-                    icon: Icons.payment,
-                    color: Colors.green,
+                    iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor,),
                     onTap: () {
                       addPaymentModule(this.widget.listItems[index],context,widget.scaffoldMessengerKey,this);
                     },
@@ -101,15 +99,15 @@ class _ClientListState extends State<ClientList> {
                 actions: <Widget>[
                   IconSlideAction(
                     caption: 'Call',
-                    icon: Icons.call,
+                    iconWidget: Icon(Icons.call,color: CustomColors.callIconColor,),
                     onTap: () async {
                       callModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
                     },
                   ),
                   IconSlideAction(
                     caption: 'SMS',
-                    icon: Icons.send,
-                    onTap: () async {
+                    iconWidget: Icon(Icons.send,color: CustomColors.sendIconColor,),
+                    onTap: () {
                       showModalBottomSheet(context: context, builder: (_)=>
                           OptionModalBottomSheet(
                             appBarIcon: Icons.send,
@@ -122,7 +120,7 @@ class _ClientListState extends State<ClientList> {
                                     Navigator.of(_).pop();
                                     showDialog(context: context, builder: (_)=>new AlertDialog(
                                       title: Text("Confirm Send"),
-                                      content: Text("Are you sure to send a reminder to all the clients?"),
+                                      content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
                                       actions: [
                                         ActionChip(label: Text("Yes"), onPressed: (){
                                           smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
@@ -151,7 +149,7 @@ class _ClientListState extends State<ClientList> {
                                       Navigator.of(_).pop();
                                       showDialog(context: context, builder: (_)=>new AlertDialog(
                                         title: Text("Confirm Send"),
-                                        content: Text("Are you sure to send the message to all the selected clients?"),
+                                        content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
                                         actions: [
                                           ActionChip(label: Text("Yes"), onPressed: (){
                                             try{

@@ -21,12 +21,13 @@ class RegisterList extends StatefulWidget {
 }
 
 class _RegisterListState extends State<RegisterList> {
+  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return StaggeredGridView.countBuilder(
       crossAxisCount: 4,
       itemCount: GlobalClass.registerList.length,
-      itemBuilder: (BuildContext context, int index) => GestureDetector(child:Container(
+      itemBuilder: (BuildContext staggeredGridViewContext, int index) => GestureDetector(child:Container(
           color: Colors.grey.withOpacity(0.1),
           alignment: Alignment.center,
           child: Text(GlobalClass.registerList[index].name,textAlign: TextAlign.center,style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),)),
@@ -88,7 +89,72 @@ class _RegisterListState extends State<RegisterList> {
                     })
                   ],
                 ));
-            },),
+            },
+            onDoubleTap: (){
+              if(widget.isDialog)
+                {
+                  if(GlobalClass.registerList[index].id.key==GlobalClass.lastRegister){
+                    globalShowInSnackBar(widget.scaffoldMessengerKey, "You can't rename your current register here!!");
+                  }
+                  else showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Rename Register"),
+                    content: TextField(controller: renameRegisterTextEditingController,
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "Name of the Register",
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                      ),
+                    ),
+                    actions: [ActionChip(label: Text("Rename"), onPressed: (){
+                      if(renameRegisterTextEditingController.text!=""){
+                        GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
+                        renameRegisterModule(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
+                        renameRegisterTextEditingController.clear();
+                        Navigator.of(_).pop();
+                      }
+                      else{
+                        Navigator.of(_).pop();
+                        globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                      }
+                    }),
+                      ActionChip(label: Text("Cancel"), onPressed: (){
+                        Navigator.of(_).pop();
+                      }),],
+                  ));
+                }
+              else showDialog(context: context, builder: (_)=>new AlertDialog(
+                title: Text("Rename Register"),
+                content: TextField(controller: renameRegisterTextEditingController,
+                  textCapitalization: TextCapitalization.words,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Name of the Register",
+                    contentPadding:
+                    EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                  ),
+                ),
+                actions: [ActionChip(label: Text("Rename"), onPressed: (){
+                  if(renameRegisterTextEditingController.text!=""){
+                    GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
+                    renameRegisterModule(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
+                    renameRegisterTextEditingController.clear();
+                    Navigator.of(_).pop();
+                  }
+                  else{
+                    Navigator.of(_).pop();
+                    globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                  }
+                }),
+                  ActionChip(label: Text("Cancel"), onPressed: (){
+                    Navigator.of(_).pop();
+                  }),],
+              ));
+            },
+      ),
       staggeredTileBuilder: (int index) =>
       new StaggeredTile.count(2, index%3==0?1:index%3.toDouble()),
       mainAxisSpacing: 5.0,

@@ -1,4 +1,5 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
@@ -8,7 +9,7 @@ import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/Contacts/contactListPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Pages/myHomePage.dart';
+import 'package:chronicle/Pages/registersPage.dart';
 import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
@@ -58,6 +59,7 @@ class _ClientPageState extends State<ClientPage> {
   //Controller
   final TextEditingController _searchController = new TextEditingController();
   final TextEditingController textEditingController=new TextEditingController();
+  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   //Widgets
   Widget appBarTitle;
   void _handleSearchStart() {
@@ -76,14 +78,15 @@ class _ClientPageState extends State<ClientPage> {
           text: TextSpan(
             children: [
               WidgetSpan(child: Text(widget.register.name)),
-
               WidgetSpan(
                   child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
               ),
             ],
           ),
         ),),
-        onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+        onTap: (){
+        showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));
+        },);
       _isSearching = false;
       _searchController.clear();
     });
@@ -138,205 +141,268 @@ class _ClientPageState extends State<ClientPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(cursorColor:Colors.white,autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();
             });
           }),
-          IconButton(icon: Icon(Icons.sort), onPressed: (){
-            setState(() {
-              if(sortVal==1)
-              {
-                List<ClientModel> temp=clients.where((element) => element.due>0).toList();
-                clients.removeWhere((element) => element.due>0);
-                clients.addAll(temp);
-                temp=clients.where((element) => element.due<=0).toList();
-                clients.removeWhere((element) => element.due<=0);
-                clients.addAll(temp);
-                sortVal=0;
-              }
-              else
-              {
-                List<ClientModel> temp=clients.where((element) => element.due<=0).toList();
-                clients.removeWhere((element) => element.due<=0);
-                clients.addAll(temp);
-                temp=clients.where((element) => element.due>0).toList();
-                clients.removeWhere((element) => element.due>0);
-                clients.addAll(temp);
-                sortVal=1;
-              }
-            });
-          }),
-          IconButton(icon: Icon(Icons.refresh), onPressed: () async {
-            refreshData();
-          }),
-          IconButton(icon: Icon(Icons.info_outline), onPressed: (){
-            int totalDues=0;
-            int totalPaid=0;
-            int totalLastMonths=0;
-            int totalPaidClients=0;
-            int totalDuedClients=0;
-            clients.forEach((element) {
-              if(element.due>0){
-                totalDues=totalDues+element.due;
-                totalDuedClients=totalDuedClients+1;
-              }
-              else if(element.due<0) {
-                totalPaid=totalPaid+element.due.abs()+1;
-                totalPaidClients=totalPaidClients+1;
-              }
-              else totalLastMonths++;
-            });
-            showDialog(context: context, builder: (_)=>AlertDialog(
-              title: Text("${widget.register.name}"),
-              content: Container(child: Column(
-                mainAxisAlignment:MainAxisAlignment.spaceEvenly,
-                children: [
-                Container(
-                  height: 50,
-                  padding: EdgeInsets.all(10),
-                  child:Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Total Dues:",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                Navigator.pop(popupContext);
+                setState(() {
+                  if(sortVal==1)
+                  {
+                    List<ClientModel> temp=clients.where((element) => element.due>0).toList();
+                    clients.removeWhere((element) => element.due>0);
+                    clients.addAll(temp);
+                    temp=clients.where((element) => element.due<=0).toList();
+                    clients.removeWhere((element) => element.due<=0);
+                    clients.addAll(temp);
+                    sortVal=0;
+                  }
+                  else
+                  {
+                    List<ClientModel> temp=clients.where((element) => element.due<=0).toList();
+                    clients.removeWhere((element) => element.due<=0);
+                    clients.addAll(temp);
+                    temp=clients.where((element) => element.due>0).toList();
+                    clients.removeWhere((element) => element.due>0);
+                    clients.addAll(temp);
+                    sortVal=1;
+                  }
+                });
+              }),
+                ModalOptionModel(particulars: "Rename",icon:Icons.edit, iconColor:CustomColors.editIconColor,onTap: () async {
+                  Navigator.pop(popupContext);
+                  showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Rename Register"),
+                    content: TextField(controller: renameRegisterTextEditingController,
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "Name of the Register",
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                       ),
-                      Expanded(child: Text(totalDues.toString(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
-                        textAlign: TextAlign.end,
-                      ))
-                    ],
-                  ),
-                ),
-                Container(
-                  height: 50,
-                  padding: EdgeInsets.all(10),
-                  child:Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Total Paid:",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
-                      ),
-                      Expanded(child: Text(totalPaid.toString(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 17.0,),
-                        textAlign: TextAlign.end,
-                      ))
-                    ],
-                  ),
-                ),
-                  SizedBox(height: 10,),
-                  Center(child: Text("*The data is in Months."),),
-                  Container(
-                    height: 50,
-                    padding: EdgeInsets.all(10),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Due Clients:",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                        ),
-                        Expanded(child: Text(totalDuedClients.toString(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                          textAlign: TextAlign.end,
-                        ))
-                      ],
                     ),
-                  ),
-                  Container(
-                    height: 50,
-                    padding: EdgeInsets.all(10),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Paid Clients:",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                        ),
-                        Expanded(child: Text(totalPaidClients.toString(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                          textAlign: TextAlign.end,
-                        ))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    padding: EdgeInsets.all(10),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Last Months:",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                        ),
-                        Expanded(child: Text(totalLastMonths.toString(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                          textAlign: TextAlign.end,
-                        ))
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    padding: EdgeInsets.all(10),
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("Total Clients:",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                        ),
-                        Expanded(child: Text((totalLastMonths+totalDuedClients+totalPaidClients).toString(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 17.0,),
-                          textAlign: TextAlign.end,
-                        ))
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 10,),
-                  Center(child: Text("*The data is in no of clients."),),
-                ],),height: 500,),
-              actions: [
-                ActionChip(label: Text("Close"), onPressed: (){
-                  Navigator.of(_).pop();
+                    actions: [ActionChip(label: Text("Rename"), onPressed: (){
+                      if(renameRegisterTextEditingController.text!=""){
+                        setState(() {
+                          widget.register.name=renameRegisterTextEditingController.text;
+                          renameRegisterModule(widget.register,widget.register.id);
+                          renameRegisterTextEditingController.clear();
+                          Navigator.of(_).pop();
+                          this.appBarTitle = GestureDetector(child: Container(
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                children: [
+                                  WidgetSpan(child: Text(widget.register.name)),
+
+                                  WidgetSpan(
+                                      child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
+                                  ),
+                                ],
+                              ),
+                            ),),
+                            onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+
+                        });
+                        globalShowInSnackBar(scaffoldMessengerKey, "Register Renamed to ${widget.register.name}!!");
+                      }
+                      else{
+                        globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                        Navigator.of(_).pop();
+                      }
+                    }),
+                      ActionChip(label: Text("Cancel"), onPressed: (){
+                        Navigator.of(_).pop();
+                      }),],
+                  ));
                 }),
-              ],
-            ));
-          }),
+                ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  refreshData();
+                }),
+                ModalOptionModel(particulars: "Info",icon: Icons.info_outline,onTap: (){
+                  Navigator.pop(popupContext);
+                  int totalDues=0;
+                  int totalPaid=0;
+                  int totalLastMonths=0;
+                  int totalPaidClients=0;
+                  int totalDuedClients=0;
+                  clients.forEach((element) {
+                    if(element.due>0){
+                      totalDues=totalDues+element.due;
+                      totalDuedClients=totalDuedClients+1;
+                    }
+                    else if(element.due<0) {
+                      totalPaid=totalPaid+element.due.abs()+1;
+                      totalPaidClients=totalPaidClients+1;
+                    }
+                    else totalLastMonths++;
+                  });
+                  showDialog(context: context, builder: (_)=>AlertDialog(
+                    title: Text("${widget.register.name}"),
+                    content: Container(child:  ListView(
+                      shrinkWrap: true,
+                      physics:BouncingScrollPhysics(),
+                      children: [
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Dues:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalDues.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Paid:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalPaid.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(child: Text("*The data is in Months."),),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Due Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalDuedClients.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Paid Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalPaidClients.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Last Months:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalLastMonths.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text((totalLastMonths+totalDuedClients+totalPaidClients).toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(child: Text("*The data is in no of clients."),),
+                      ],),
+                      width: double.minPositive,),
+                    actions: [
+                      ActionChip(label: Text("Close"), onPressed: (){
+                        Navigator.of(_).pop();
+                      }),
+                    ],
+                  ));
+                })].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
         ],);
     else
       return AppBar(
@@ -421,6 +487,7 @@ class _ClientPageState extends State<ClientPage> {
   }
   void refreshData() async{
     try{
+      if(_isSearching)_handleSearchEnd();
       Connectivity connectivity=Connectivity();
       await connectivity.checkConnectivity().then((value)async => {
         if(value!=ConnectivityResult.none)
@@ -488,7 +555,7 @@ class _ClientPageState extends State<ClientPage> {
               setLastRegister("");
               GlobalClass.lastRegister="";
               Navigator.pop(context);
-              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MyHomePage()));
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>RegistersPage()));
             }),
             DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
               Navigator.pop(context);
@@ -658,7 +725,7 @@ class _ClientPageState extends State<ClientPage> {
             ));
           }
         ))),
-        if(_isLoading)Container(color:Colors.black87,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),)]),),
+        if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(
         width: double.infinity,
