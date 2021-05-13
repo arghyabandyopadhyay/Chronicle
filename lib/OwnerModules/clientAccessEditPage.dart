@@ -70,13 +70,13 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
     chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
     userDetails.isAppRegistered=1;
     updateUserDetails(userDetails, userDetails.id);
-    this.setState(() {
+    if(mounted)this.setState(() {
       clients.add(chronicleUserModel);
     });
   }
   void getData() {
     getAllChronicleClients().then((clients) => {
-      this.setState(() {
+      if(mounted)this.setState(() {
         this.clients = clients;
         _isLoading=false;
       })

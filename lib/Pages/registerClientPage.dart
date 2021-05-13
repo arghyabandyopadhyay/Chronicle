@@ -171,7 +171,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
         actions: [
           IconButton(icon:Icon(Icons.perm_contact_cal_outlined),onPressed: (){
             Contact contact;
-            showModalBottomSheet(context: context, builder: (_)=>ContactListPage(isBottomSheet: true,)).then((value) =>
+            showModalBottomSheet(context: context, builder: (_)=>ContactListPage()).then((value) =>
             {
               if(value!=null){
                 contact=value,

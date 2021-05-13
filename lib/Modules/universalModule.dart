@@ -179,8 +179,18 @@ addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldM
             clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+intVal,clientData.endDate.day);
           }
           else{
-            clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month-1,clientData.endDate.day);
-            clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
+            DateTime nowTemp=DateTime.now();
+            DateTime today=DateTime(nowTemp.year,nowTemp.month,nowTemp.day);
+            if(clientData.due==0&&DateTime(clientData.endDate.year,clientData.endDate.month,clientData.endDate.day).isBefore(today))
+            {
+              clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month,clientData.endDate.day);
+              clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
+              intVal=intVal-1;
+            }
+            else{
+              clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month-1,clientData.endDate.day);
+              clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
+            }
           }
         }
         clientData.due=clientData.due-intVal;

@@ -34,12 +34,12 @@ class _RegistersPageState extends State<RegistersPage> {
     register.setId(addToRegister(register.name));
     RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
     registerIndex.setId(addToRegisterIndex(registerIndex));
-    this.setState(() {
+    if(mounted)this.setState(() {
       GlobalClass.registerList.add(registerIndex);
     });
   }
   void updateRegisterModel() {
-    this.setState(() {
+    if(mounted)this.setState(() {
     });
   }
 
@@ -71,11 +71,6 @@ class _RegistersPageState extends State<RegistersPage> {
             DrawerActionModel(Icons.notifications, "Notifications", ()async{
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
-            }),
-
-            DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage(isBottomSheet: false,)));
             }),
             DrawerActionModel(Icons.qr_code, "QR code", ()async{
               Navigator.pop(context);

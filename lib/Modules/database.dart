@@ -96,7 +96,6 @@ copyClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)a
 }
 moveClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
   selectedList.forEach((client) {
-    print(client.toJson());
     ClientModel newClient=client.copyClient();
     newClient.setId(registerUser(newClient,toRegister.uid));
   });

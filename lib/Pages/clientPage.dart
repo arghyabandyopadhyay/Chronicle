@@ -103,13 +103,13 @@ class _ClientPageState extends State<ClientPage> {
   void newClientModel(ClientModel client) {
     client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
     client.setId(registerUser(client,widget.register.uid));
-    this.setState(() {
+    if(mounted)this.setState(() {
       clients.add(client);
     });
   }
   void getClientModels() {
     getAllClients(widget.register.uid).then((clients) => {
-      this.setState(() {
+      if(mounted)this.setState(() {
         this.clients = clients;
         _counter++;
         _isLoading=false;
@@ -556,10 +556,6 @@ class _ClientPageState extends State<ClientPage> {
               GlobalClass.lastRegister="";
               Navigator.pop(context);
               Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>RegistersPage()));
-            }),
-            DrawerActionModel(Icons.contacts_outlined, "Contacts", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ContactListPage(isBottomSheet: false,)));
             }),
             DrawerActionModel(Icons.qr_code, "QR code", ()async{
               Navigator.pop(context);

@@ -5,11 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
-import 'contactsDetailsPage.dart';
 class ContactListPage extends StatefulWidget {
-  final bool isBottomSheet;
-
-  const ContactListPage({Key key, this.isBottomSheet}) : super(key: key);
+  const ContactListPage({Key key}) : super(key: key);
   @override
   _ContactListPageState createState() => _ContactListPageState();
 }
@@ -52,7 +49,6 @@ class _ContactListPageState extends State<ContactListPage> {
     searchResult.clear();
     if(_isSearching){
       searchResult=_contacts.where((Contact element) => (element.displayName.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\s+"), ""))).toList();
-      print(searchResult.length);
       setState(() {
       });
     }
@@ -107,7 +103,7 @@ class _ContactListPageState extends State<ContactListPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: appBarTitle,
-        leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:(widget.isBottomSheet?Icons.contacts:Icons.arrow_back)),),
+        leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:(Icons.contacts)),),
         actions: [
           new IconButton(icon: icon, onPressed:(){
             setState(() {
@@ -131,10 +127,7 @@ class _ContactListPageState extends State<ContactListPage> {
           var phone=c.phones;
           return ListTile(
             onTap: () {
-              if(widget.isBottomSheet)Navigator.pop(context,c);
-              else Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      ContactDetailsPage(c)));
+              Navigator.pop(context,c);
             },
             leading: (c.avatar != null && c.avatar.length > 0)
                 ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
@@ -153,10 +146,7 @@ class _ContactListPageState extends State<ContactListPage> {
           var phone=c.phones;
           return ListTile(
             onTap: () {
-              if(widget.isBottomSheet)Navigator.pop(context,c);
-              else Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      ContactDetailsPage(c)));
+              Navigator.pop(context,c);
             },
             leading: (c.avatar != null && c.avatar.length > 0)
                 ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
@@ -230,12 +220,6 @@ class _ContactListPageState extends State<ContactListPage> {
             ],
           )
       ),
-      floatingActionButton: (widget.isBottomSheet)?null:FloatingActionButton.extended(onPressed: () async {
-        await ContactsService.openContactForm();
-        setState(() {
-          refreshContacts();
-        });
-      }, icon:Icon(Icons.contacts_outlined),label: Text("Add")),
     ),key: scaffoldMessengerKey,);
   }
 }

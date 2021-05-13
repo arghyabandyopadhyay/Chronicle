@@ -39,6 +39,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   var heightTextField=TextEditingController();
   var weightTextField=TextEditingController();
   var paymentNumberTextField=TextEditingController();
+  DateTime startDateTemp;
   String sexDropDown;
   String casteDropDown;
   bool isLoading=false;
@@ -163,6 +164,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
       weightTextField.text=widget.client.weight!=null?widget.client.weight.toStringAsFixed(2):"";
       sexDropDown=widget.client.sex;
       casteDropDown=widget.client.caste;
+      startDateTemp=widget.client.startDate!=null?widget.client.startDate:today;
       counter++;
     }
     return ScaffoldMessenger(child: Scaffold(
@@ -723,6 +725,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         {
                           int months=int.parse(value);
                           months=months.abs();
+                          widget.client.startDate=startDateTemp;
                           widget.client.due= (months-1)*-1;
                           if(widget.client.startDate==null)widget.client.startDate=today;
                           widget.client.endDate = DateTime(widget.client.startDate.year,widget.client.startDate.month+months,widget.client.startDate.day);
@@ -754,9 +757,10 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
                     onDateSelected: (DateTime value) {
+                      startDateTemp=value;
                       try{
                         int months=int.parse(paymentNumberTextField.text);
-                        widget.client.startDate=value;
+                        widget.client.startDate=startDateTemp;
                         if(widget.client.startDate==null)widget.client.startDate=today;
                         months=months.abs();
                         widget.client.endDate = DateTime(widget.client.startDate.year,widget.client.startDate.month+months,widget.client.startDate.day);

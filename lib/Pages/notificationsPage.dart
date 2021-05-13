@@ -70,7 +70,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   void getNotifications() {
     getNotificationClients(context).then((clients) => {
-      this.setState(() {
+      if(mounted)this.setState(() {
         this.clients = clients;
         _counter++;
         _isLoading=false;
@@ -84,6 +84,11 @@ class _NotificationsPageState extends State<NotificationsPage> {
     _isLoading = false;
     getNotifications();
     appBarTitle=Text("Notifications");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -352,4 +357,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
       // },),
     ),key: scaffoldMessengerKey,);
   }
+
+
 }
