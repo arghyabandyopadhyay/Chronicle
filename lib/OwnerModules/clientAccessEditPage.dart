@@ -74,6 +74,47 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
       clients.add(chronicleUserModel);
     });
   }
+  Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
+      try{
+        if(_isSearching)_handleSearchEnd();
+        Connectivity connectivity=Connectivity();
+        await connectivity.checkConnectivity().then((value)async {
+          if(value!=ConnectivityResult.none)
+          {
+            if(!_isLoading){
+              if(isNotSwipeDownRefresh)setState(() {
+                _isLoading=true;
+              });
+              return getAllChronicleClients().then((clients) => {
+                if(mounted)this.setState(() {
+                  this.clients = clients;
+                  _isLoading=false;
+                })
+              });
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...");
+              return null;
+            }
+          }
+          else{
+            setState(() {
+              _isLoading=false;
+            });
+            globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!");
+            return null;
+          }
+        });
+      }
+      catch(E)
+      {
+        setState(() {
+          _isLoading=false;
+        });
+        globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+        return;
+      }
+  }
   void getData() {
     getAllChronicleClients().then((clients) => {
       if(mounted)this.setState(() {
@@ -109,40 +150,13 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
             });
           }),
           IconButton(icon: Icon(Icons.refresh), onPressed: ()async{
-            try{
-              Connectivity connectivity=Connectivity();
-              await connectivity.checkConnectivity().then((value)async => {
-                if(value!=ConnectivityResult.none)
-                  {
-                    if(!_isLoading){
-                      setState(() {
-                        _isLoading=true;
-                      }),
-                      getData(),
-                    }
-                    else{
-                      globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
-                    }
-                  }
-                else{
-                  setState(() {
-                    _isLoading=false;
-                  }),
-                  globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
-                }
-              });
-            }
-            catch(E)
-            {
-              setState(() {
-                _isLoading=false;
-              });
-              globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
-            }
+            refreshData(true);
           }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients)),
+        Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients,(){
+          return refreshData(false);
+        })),
         if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(

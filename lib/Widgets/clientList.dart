@@ -20,13 +20,15 @@ class ClientList extends StatefulWidget {
   final Function onLongPressed;
   final Function onTapList;
   final Function onDoubleTapList;
-  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList});
+  final Function refreshData;
+  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData});
   @override
   _ClientListState createState() => _ClientListState();
 }
 
 class _ClientListState extends State<ClientList> {
   final TextEditingController alertTextController=new TextEditingController();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   bool isLoading;
   @override
   void initState()
@@ -56,136 +58,142 @@ class _ClientListState extends State<ClientList> {
           isLoading: isLoading,
           scrollOffset: 500,
           onEndOfPage: () => _loadMore(),
-          child: ListView.builder(
-            physics: BouncingScrollPhysics(),
-            padding: EdgeInsets.only(bottom: 100),
-            itemCount: this.widget.listItems.length,
-            itemBuilder: (context, index) {
-              return Slidable(
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                child:ClientCardWidget(
-                  key: ObjectKey(this.widget.listItems[index].id.key),
-                  item: this.widget.listItems[index],
-                  index: index,
-                  onTapList: (index){
-                    widget.onTapList(index);
-                  },
-                  onLongPressed: (index){
-                    widget.onLongPressed(index);
-                  },
-                  onDoubleTap: (index){
-                    widget.onDoubleTapList(index);
-                  },
-                ),
-                secondaryActions: <Widget>[
-                  if(this.widget.listItems[index].due>-1)IconSlideAction(
-                    caption: 'Add Due',
-                    iconWidget: Icon(Icons.more_time,color: CustomColors.addDueIconColor,),
-                    onTap: () async {
-                      addDueModule(this.widget.listItems[index],this);
-                    },
-                    closeOnTap: false,
-                  ),
-                  IconSlideAction(
-                    caption: 'Add Payment',
-                    iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor,),
-                    onTap: () {
-                      addPaymentModule(this.widget.listItems[index],context,widget.scaffoldMessengerKey,this);
-                    },
-                    closeOnTap: false,
-                  ),
-                ],
-                actions: <Widget>[
-                  IconSlideAction(
-                    caption: 'Call',
-                    iconWidget: Icon(Icons.call,color: CustomColors.callIconColor,),
-                    onTap: () async {
-                      callModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
-                    },
-                  ),
-                  IconSlideAction(
-                    caption: 'SMS',
-                    iconWidget: Icon(Icons.send,color: CustomColors.sendIconColor,),
-                    onTap: () {
-                      showModalBottomSheet(context: context, builder: (_)=>
-                          OptionModalBottomSheet(
-                            appBarIcon: Icons.send,
-                            appBarText: "How to send the reminder",
-                            list: [
-                              ModalOptionModel(
-                                  particulars: "Send Sms using Default Sim",
-                                  icon: Icons.sim_card_outlined,
-                                  onTap: (){
-                                    Navigator.of(_).pop();
-                                    showDialog(context: context, builder: (_)=>new AlertDialog(
-                                      title: Text("Confirm Send"),
-                                      content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
-                                      actions: [
-                                        ActionChip(label: Text("Yes"), onPressed: (){
-                                          smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
-                                          Navigator.of(_).pop();
-                                        }),
-                                        ActionChip(label: Text("No"), onPressed: (){
-                                          Navigator.of(_).pop();
-                                        })
-                                      ],
-                                    ));
+          child: RefreshIndicator(
+            triggerMode: RefreshIndicatorTriggerMode.anywhere,
+              displacement: 10,
+              key: _refreshIndicatorKey,
+              onRefresh: widget.refreshData,
+              child:ListView.builder(
+                padding: EdgeInsets.only(bottom: 100),
+                itemCount: this.widget.listItems.length,
+                itemBuilder: (context, index) {
+                  return Slidable(
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    child:ClientCardWidget(
+                      key: ObjectKey(this.widget.listItems[index].id.key),
+                      item: this.widget.listItems[index],
+                      index: index,
+                      onTapList: (index){
+                        widget.onTapList(index);
+                      },
+                      onLongPressed: (index){
+                        widget.onLongPressed(index);
+                      },
+                      onDoubleTap: (index){
+                        widget.onDoubleTapList(index);
+                      },
+                    ),
+                    secondaryActions: <Widget>[
+                      if(this.widget.listItems[index].due>-1)IconSlideAction(
+                        caption: 'Add Due',
+                        iconWidget: Icon(Icons.more_time,color: CustomColors.addDueIconColor,),
+                        onTap: () async {
+                          addDueModule(this.widget.listItems[index],this);
+                        },
+                        closeOnTap: false,
+                      ),
+                      IconSlideAction(
+                        caption: 'Add Payment',
+                        iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor,),
+                        onTap: () {
+                          addPaymentModule(this.widget.listItems[index],context,widget.scaffoldMessengerKey,this);
+                        },
+                        closeOnTap: false,
+                      ),
+                    ],
+                    actions: <Widget>[
+                      IconSlideAction(
+                        caption: 'Call',
+                        iconWidget: Icon(Icons.call,color: CustomColors.callIconColor,),
+                        onTap: () async {
+                          callModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'SMS',
+                        iconWidget: Icon(Icons.send,color: CustomColors.sendIconColor,),
+                        onTap: () {
+                          showModalBottomSheet(context: context, builder: (_)=>
+                              OptionModalBottomSheet(
+                                appBarIcon: Icons.send,
+                                appBarText: "How to send the reminder",
+                                list: [
+                                  ModalOptionModel(
+                                      particulars: "Send Sms using Default Sim",
+                                      icon: Icons.sim_card_outlined,
+                                      onTap: (){
+                                        Navigator.of(_).pop();
+                                        showDialog(context: context, builder: (_)=>new AlertDialog(
+                                          title: Text("Confirm Send"),
+                                          content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
+                                          actions: [
+                                            ActionChip(label: Text("Yes"), onPressed: (){
+                                              smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                                              Navigator.of(_).pop();
+                                            }),
+                                            ActionChip(label: Text("No"), onPressed: (){
+                                              Navigator.of(_).pop();
+                                            })
+                                          ],
+                                        ));
 
-                                  }),
-                              ModalOptionModel(
-                                  particulars: "Send Sms using Sms Gateway",
-                                  icon: FontAwesomeIcons.server,
-                                  onTap: (){
-                                    if(GlobalClass.userDetail.smsAccessToken!=null
-                                        &&GlobalClass.userDetail.smsApiUrl!=null
-                                        &&GlobalClass.userDetail.smsUserId!=null
-                                        &&GlobalClass.userDetail.smsMobileNo!=null
-                                        &&GlobalClass.userDetail.smsAccessToken!=""
-                                        &&GlobalClass.userDetail.smsApiUrl!=""
-                                        &&GlobalClass.userDetail.smsUserId!=""
-                                        &&GlobalClass.userDetail.smsMobileNo!=""
-                                    ){
-                                      Navigator.of(_).pop();
-                                      showDialog(context: context, builder: (_)=>new AlertDialog(
-                                        title: Text("Confirm Send"),
-                                        content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
-                                        actions: [
-                                          ActionChip(label: Text("Yes"), onPressed: (){
-                                            try{
-                                              postForBulkMessage([widget.listItems[index]],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                                  ", please clear your dues for further continuation of services."}");
-                                              globalShowInSnackBar(widget.scaffoldMessengerKey,"Message Sent!!");
-                                            }
-                                            catch(E){
-                                              globalShowInSnackBar(widget.scaffoldMessengerKey,"Something Went Wrong!!");
-                                            }
-                                            Navigator.of(_).pop();
-                                          }),
-                                          ActionChip(label: Text("No"), onPressed: (){
-                                            Navigator.of(_).pop();
-                                          })
-                                        ],
-                                      ));
-                                    }
-                                    else{
-                                      globalShowInSnackBar(widget.scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
-                                      Navigator.of(_).pop();
-                                    }
-                                  }),],));
-                    },
-                  ),
-                  IconSlideAction(
-                    caption: 'WhatsApp',
-                    iconWidget: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen),
-                    onTap: () async {
-                      whatsAppModule(this.widget.listItems[index], widget.scaffoldMessengerKey);
-                    },
-                  ),
-                ],
-              );
-            },
-          )),
+                                      }),
+                                  ModalOptionModel(
+                                      particulars: "Send Sms using Sms Gateway",
+                                      icon: FontAwesomeIcons.server,
+                                      onTap: (){
+                                        if(GlobalClass.userDetail.smsAccessToken!=null
+                                            &&GlobalClass.userDetail.smsApiUrl!=null
+                                            &&GlobalClass.userDetail.smsUserId!=null
+                                            &&GlobalClass.userDetail.smsMobileNo!=null
+                                            &&GlobalClass.userDetail.smsAccessToken!=""
+                                            &&GlobalClass.userDetail.smsApiUrl!=""
+                                            &&GlobalClass.userDetail.smsUserId!=""
+                                            &&GlobalClass.userDetail.smsMobileNo!=""
+                                        ){
+                                          Navigator.of(_).pop();
+                                          showDialog(context: context, builder: (_)=>new AlertDialog(
+                                            title: Text("Confirm Send"),
+                                            content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
+                                            actions: [
+                                              ActionChip(label: Text("Yes"), onPressed: (){
+                                                try{
+                                                  postForBulkMessage([widget.listItems[index]],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                                      ", please clear your dues for further continuation of services."}");
+                                                  globalShowInSnackBar(widget.scaffoldMessengerKey,"Message Sent!!");
+                                                }
+                                                catch(E){
+                                                  globalShowInSnackBar(widget.scaffoldMessengerKey,"Something Went Wrong!!");
+                                                }
+                                                Navigator.of(_).pop();
+                                              }),
+                                              ActionChip(label: Text("No"), onPressed: (){
+                                                Navigator.of(_).pop();
+                                              })
+                                            ],
+                                          ));
+                                        }
+                                        else{
+                                          globalShowInSnackBar(widget.scaffoldMessengerKey, "Please configure Sms Gateway Data in Settings.");
+                                          Navigator.of(_).pop();
+                                        }
+                                      }),],));
+                        },
+                      ),
+                      IconSlideAction(
+                        caption: 'WhatsApp',
+                        iconWidget: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen),
+                        onTap: () async {
+                          whatsAppModule(this.widget.listItems[index], widget.scaffoldMessengerKey);
+                        },
+                      ),
+                    ],
+                  );
+                },
+              )
+          )
+          ),
     );
   }
   @override

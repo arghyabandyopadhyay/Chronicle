@@ -6,19 +6,19 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'globalClass.dart';
 
-class AboutsPage extends StatefulWidget {
-  AboutsPage({Key key,}) : super(key: key);
+class HelpAndFeedbackPage extends StatefulWidget {
+  HelpAndFeedbackPage({Key key,}) : super(key: key);
   @override
   _AboutsPageState createState() => _AboutsPageState();
 }
 
-class _AboutsPageState extends State<AboutsPage> {
+class _AboutsPageState extends State<HelpAndFeedbackPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(key: scaffoldMessengerKey,child: Scaffold(
       appBar: AppBar(
-        title:Text("Abouts"),
+        title:Text("Help and Feedback"),
 
       ),
       body: SafeArea(
@@ -36,30 +36,6 @@ class _AboutsPageState extends State<AboutsPage> {
                       'assets/firebase_logo.png',
                     ),
                   ),
-                  // Image(
-                  //   height: 160,
-                  //   alignment: Alignment.center,
-                  //   image: Image.asset(
-                  //     'assets/firebase_logo.png',
-                  //   ).image,
-                  // ),
-                  // Center(child: Text("Chronicle",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold),),),
-                  SizedBox(height: 20,),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    alignment: Alignment.centerLeft,
-                    child: ListTile(
-                      dense: true,
-                      title: Text("App Version"),
-                      subtitle: Text("2021.1"),
-                    ),
-                    decoration: BoxDecoration(
-                        borderRadius:
-                        const BorderRadius.all(
-                            Radius.circular(5)),
-                        border: Border.all(width: 0.2)
-                    ),
-                  ),
                   SizedBox(height: 20,),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 5),
@@ -75,8 +51,8 @@ class _AboutsPageState extends State<AboutsPage> {
                             Radius.circular(5)),
                         border: Border.all(width: 0.2)
                     ),
-                  )
-
+                  ),
+                  SizedBox(height: 20,),
                 ],
               ))),
       floatingActionButtonLocation:

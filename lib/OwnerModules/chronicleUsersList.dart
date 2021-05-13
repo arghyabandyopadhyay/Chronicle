@@ -7,15 +7,22 @@ import 'ownerDatabaseModule.dart';
 
 class ChronicleUsersList extends StatefulWidget {
   final List<ChronicleUserModel> listItems;
-  ChronicleUsersList(this.listItems);
+  final Function refreshData;
+  ChronicleUsersList(this.listItems,this.refreshData);
   @override
   _ChronicleUsersListState createState() => _ChronicleUsersListState();
 }
 
 class _ChronicleUsersListState extends State<ChronicleUsersList> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return RefreshIndicator(
+        triggerMode: RefreshIndicatorTriggerMode.anywhere,
+        displacement: 10,
+        key: _refreshIndicatorKey,
+        onRefresh: widget.refreshData,
+        child:ListView.builder(
       itemCount: this.widget.listItems.length,
       itemBuilder: (context, index) {
         return ListTile(
@@ -32,6 +39,6 @@ class _ChronicleUsersListState extends State<ChronicleUsersList> {
           },)
         );
       },
-    );
+    ));
   }
 }

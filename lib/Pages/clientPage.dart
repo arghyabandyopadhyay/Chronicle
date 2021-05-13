@@ -14,6 +14,7 @@ import 'package:chronicle/Pages/qrCodePage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
+import 'package:chronicle/Widgets/clientCardWidget.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:connectivity/connectivity.dart';
@@ -107,6 +108,69 @@ class _ClientPageState extends State<ClientPage> {
       clients.add(client);
     });
   }
+  Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
+    if(selectedList.length<1){
+      try{
+        if(_isSearching)_handleSearchEnd();
+        Connectivity connectivity=Connectivity();
+        await connectivity.checkConnectivity().then((value)async {
+          if(value!=ConnectivityResult.none)
+          {
+            if(!_isLoading){
+              if(isNotSwipeDownRefresh)setState(() {
+                _isLoading=true;
+              });
+              return getAllClients(widget.register.uid).then((clients) {
+                if(mounted)this.setState(() {
+                  this.clients = clients;
+                  _counter++;
+                  _isLoading=false;
+                  this.appBarTitle = GestureDetector(child: Container(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        children: [
+                          WidgetSpan(child: Text(widget.register.name)),
+
+                          WidgetSpan(
+                              child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
+                          ),
+                        ],
+                      ),
+                    ),),
+                    onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+                });
+              });
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...");
+              return;
+            }
+          }
+          else{
+            setState(() {
+              _isLoading=false;
+            });
+            globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!");
+            return;
+          }
+        });
+      }
+      catch(E)
+      {
+        setState(() {
+          _isLoading=false;
+        });
+        globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+        return;
+      }
+    }
+    else{
+      globalShowInSnackBar(scaffoldMessengerKey,"Can't refresh in selecting mode.");
+      return;
+    }
+  }
+
   void getClientModels() {
     getAllClients(widget.register.uid).then((clients) => {
       if(mounted)this.setState(() {
@@ -225,7 +289,7 @@ class _ClientPageState extends State<ClientPage> {
                 }),
                 ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  refreshData();
+                  refreshData(true);
                 }),
                 ModalOptionModel(particulars: "Info",icon: Icons.info_outline,onTap: (){
                   Navigator.pop(popupContext);
@@ -438,7 +502,7 @@ class _ClientPageState extends State<ClientPage> {
             onPressed: () async {
               showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: true,selectedClients:this.selectedList)).then((value) =>
               {
-                  refreshData(),
+                  refreshData(true),
                   for(ClientModel a in selectedList)
                   {
                     a.isSelected=false,
@@ -484,39 +548,6 @@ class _ClientPageState extends State<ClientPage> {
           )
         ],
       );
-  }
-  void refreshData() async{
-    try{
-      if(_isSearching)_handleSearchEnd();
-      Connectivity connectivity=Connectivity();
-      await connectivity.checkConnectivity().then((value)async => {
-        if(value!=ConnectivityResult.none)
-          {
-            if(!_isLoading){
-              setState(() {
-                _isLoading=true;
-              }),
-              getClientModels(),
-            }
-            else{
-              globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
-            }
-          }
-        else{
-          setState(() {
-            _isLoading=false;
-          }),
-          globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
-        }
-      });
-    }
-    catch(E)
-    {
-      setState(() {
-        _isLoading=false;
-      });
-      globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
-    }
   }
 
   @override
@@ -624,10 +655,25 @@ class _ClientPageState extends State<ClientPage> {
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: ClientList(listItems:this.searchResult,
+                refreshData: (){
+                  return refreshData(false);
+                },
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
-                if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index]))).then((value) => refreshData());
-                else {
+                  if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index]))).then((value) => refreshData(true));
+                  else {
+                    setState(() {
+                      searchResult[index].isSelected=!searchResult[index].isSelected;
+                      if (searchResult[index].isSelected) {
+                        selectedList.add(searchResult[index]);
+                      } else {
+                        selectedList.remove(searchResult[index]);
+                      }
+                    });
+                  }
+                },
+                onLongPressed:(index)
+                {
                   setState(() {
                     searchResult[index].isSelected=!searchResult[index].isSelected;
                     if (searchResult[index].isSelected) {
@@ -636,156 +682,148 @@ class _ClientPageState extends State<ClientPage> {
                       selectedList.remove(searchResult[index]);
                     }
                   });
+                },
+                onDoubleTapList:(index){
+                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${searchResult[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(searchResult[index].id);
+                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
+                          searchResult.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
                 }
-              },
-              onLongPressed:(index)
-              {
-                setState(() {
-                  searchResult[index].isSelected=!searchResult[index].isSelected;
-                  if (searchResult[index].isSelected) {
-                    selectedList.add(searchResult[index]);
-                  } else {
-                    selectedList.remove(searchResult[index]);
-                  }
-                });
-              },
-              onDoubleTapList:(index){
-              if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-                title: Text("Confirm Delete"),
-                content: Text("Are you sure to delete ${searchResult[index].name}?"),
-                actions: [
-                  ActionChip(label: Text("Yes"), onPressed: (){
-                    setState(() {
-                      deleteDatabaseNode(searchResult[index].id);
-                      globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
-                      searchResult.removeAt(index);
-                      Navigator.of(_).pop();
-                    });
-                  }),
-                  ActionChip(label: Text("No"), onPressed: (){
-                    setState(() {
-                      Navigator.of(_).pop();
-                    });
-                  })
-                ],
-              ));
-            }
-        )):
+            )):
         Provider.value(
-          value: _counter,
-          updateShouldNotify: (oldValue, newValue) => true,
-          child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
-              onTapList:(index){
-              if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index]))).then((value) => refreshData());
-              else {
-                setState(() {
-                  clients[index].isSelected=!clients[index].isSelected;
-                  if (clients[index].isSelected) {
-                    selectedList.add(clients[index]);
-                  } else {
-                    selectedList.remove(clients[index]);
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
+                refreshData: (){
+                  return refreshData(false);
+                },
+                onTapList:(index){
+                  if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index]))).then((value) => refreshData(true));
+                  else {
+                    setState(() {
+                      clients[index].isSelected=!clients[index].isSelected;
+                      if (clients[index].isSelected) {
+                        selectedList.add(clients[index]);
+                      } else {
+                        selectedList.remove(clients[index]);
+                      }
+                    });
                   }
-                });
-              }
-            },
-              onLongPressed:(index)
-          {
-            setState(() {
-              clients[index].isSelected=!clients[index].isSelected;
-              if (clients[index].isSelected) {
-                selectedList.add(clients[index]);
-              } else {
-                selectedList.remove(clients[index]);
-              }
-            });
-          },
-              onDoubleTapList:(index){
-            if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-              title: Text("Confirm Delete"),
-              content: Text("Are you sure to delete ${clients[index].name}?"),
-              actions: [
-                ActionChip(label: Text("Yes"), onPressed: (){
+                },
+                onLongPressed:(index)
+                {
                   setState(() {
-                    deleteDatabaseNode(clients[index].id);
-                    globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${clients[index].name}, deleted!!");
-                    clients.removeAt(index);
-                    Navigator.of(_).pop();
+                    clients[index].isSelected=!clients[index].isSelected;
+                    if (clients[index].isSelected) {
+                      selectedList.add(clients[index]);
+                    } else {
+                      selectedList.remove(clients[index]);
+                    }
                   });
-                }),
-                ActionChip(label: Text("No"), onPressed: (){
-                  setState(() {
-                    Navigator.of(_).pop();
-                  });
-                })
-              ],
-            ));
-          }
-        ))),
+                },
+                onDoubleTapList:(index){
+                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${clients[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(clients[index].id);
+                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${clients[index].name}, deleted!!");
+                          clients.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+            )
+            )),
         if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            Expanded(
-              child: Shimmer.fromColors(
-                  baseColor: Colors.white,
-                  highlightColor: Colors.grey.withOpacity(0.5),
-                  enabled: true,
-                  child: ListView.builder(
-                    itemBuilder: (_, __) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 48.0,
-                            height: 48.0,
-                            color: Colors.white,
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Container(
-                                  width: double.infinity,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.0),
-                                ),
-                                Container(
-                                  width: double.infinity,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 2.0),
-                                ),
-                                Container(
-                                  width: 40.0,
-                                  height: 8.0,
-                                  color: Colors.white,
-                                ),
-                              ],
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: Shimmer.fromColors(
+                    baseColor: Colors.white,
+                    highlightColor: Colors.grey.withOpacity(0.5),
+                    enabled: true,
+                    child: ListView.builder(
+                      itemBuilder: (_, __) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 48.0,
+                              height: 48.0,
+                              color: Colors.white,
                             ),
-                          )
-                        ],
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            ),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 2.0),
+                                  ),
+                                  Container(
+                                    width: 40.0,
+                                    height: 8.0,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    itemCount: 4,
-                  )
+                      itemCount: 4,
+                    )
+                ),
               ),
-            ),
-          ],
-        )
-    ),
+            ],
+          )
+      ),
       floatingActionButton:(selectedList.length < 1)?
       RegisterNewClientWidget(this.newClientModel):
       FloatingActionButton(onPressed: () async {

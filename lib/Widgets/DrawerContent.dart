@@ -1,6 +1,6 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
-import 'package:chronicle/Pages/aboutUsPage.dart';
+import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
 import 'package:chronicle/OwnerModules/clientAccessEditPage.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:chronicle/customColors.dart';
@@ -11,11 +11,16 @@ class DrawerContent extends StatelessWidget {
   DrawerContent({Key key,this.drawerItems,this.scaffoldMessengerKey}) : super(key: key);
   final List<DrawerActionModel> drawerItems;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  final List<Widget> aboutBoxChildren = <Widget>[
+    const SizedBox(height: 24),
+    Text('Chronicle is an easy to go Register maintaining application. '
+        'It is capable of managing your registers and maintaining '
+        'the fee records of your clients. '),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         title: Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisAlignment:MainAxisAlignment.start,children: [Text("Chronicle",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.start,),Text("      Version 2021.1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 10),textAlign: TextAlign.end,)],),
         automaticallyImplyLeading: false,
       ),
@@ -25,6 +30,8 @@ class DrawerContent extends StatelessWidget {
           children: <Widget>
           [
             if(GlobalClass.user!=null)DrawerHeader(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+              margin: EdgeInsets.zero,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,8 +67,6 @@ class DrawerContent extends StatelessWidget {
                   Text(GlobalClass.user.email,style: TextStyle(fontSize: 15,),),
                 ],
               ),
-              decoration: BoxDecoration(
-              ),
             ),
             if(GlobalClass.user!=null)ListView.builder(
                 shrinkWrap: true,
@@ -77,11 +82,26 @@ class DrawerContent extends StatelessWidget {
                 }
             ),
             ListTile(
-              leading: Icon(Icons.info),
-              title: Text("Abouts"),
+              leading: Icon(Icons.help),
+              title: Text("Help and Feedback"),
               onTap: ()async{
               Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AboutsPage()));
+              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>HelpAndFeedbackPage()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.info),
+              title: Text("About Chronicle"),
+              onTap: ()async{
+                Navigator.pop(context);
+                showAboutDialog(
+                  context: context,
+                  applicationIcon: Image.asset("assets/icon.png",width: 40,height: 40,),
+                  applicationName: 'Chronicle',
+                  applicationVersion: 'Version 2021.1',
+                  applicationLegalese: '\u{a9} 2021 Chronicle Business Solutions',
+                  children: aboutBoxChildren,
+                );
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(

@@ -91,6 +91,50 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.dispose();
   }
 
+  Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
+      try{
+        if(_isSearching)_handleSearchEnd();
+        Connectivity connectivity=Connectivity();
+        await connectivity.checkConnectivity().then((value)async {
+          if(value!=ConnectivityResult.none)
+          {
+            if(!_isLoading){
+              if(isNotSwipeDownRefresh)setState(() {
+                _isLoading=true;
+              });
+              return getNotificationClients(context).then((clients) => {
+                if(mounted)this.setState(() {
+                  this.clients = clients;
+                  _counter++;
+                  _isLoading=false;
+                  this.appBarTitle = Text("Notifications",);
+                })
+              });
+            }
+            else{
+              globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...");
+              return null;
+            }
+          }
+          else{
+            setState(() {
+              _isLoading=false;
+            });
+            globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!");
+            return null;
+          }
+        });
+      }
+      catch(E)
+      {
+        setState(() {
+          _isLoading=false;
+        });
+        globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+        return;
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
@@ -187,36 +231,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               }),
                 ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  try{
-                    Connectivity connectivity=Connectivity();
-                    await connectivity.checkConnectivity().then((value)async => {
-                      if(value!=ConnectivityResult.none)
-                        {
-                          if(!_isLoading){
-                            setState(() {
-                              _isLoading=true;
-                            }),
-                            getNotifications(),
-                          }
-                          else{
-                            globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...")
-                          }
-                        }
-                      else{
-                        setState(() {
-                          _isLoading=false;
-                        }),
-                        globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!")
-                      }
-                    });
-                  }
-                  catch(E)
-                  {
-                    setState(() {
-                      _isLoading=false;
-                    });
-                    globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
-                  }
+                  refreshData(true);
                 }),
                 ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
@@ -232,6 +247,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: ClientList(listItems:this.searchResult,
+                refreshData: (){
+                  return refreshData(false);
+                },
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index])));
@@ -264,6 +282,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
             child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index])));
+                },
+                refreshData: (){
+                  return refreshData(false);
                 },
                 onLongPressed:(index) {},
                 onDoubleTapList:(index){
