@@ -10,7 +10,7 @@ class CustomColors{
   static const Color whatsAppGreen = Color(0XFF4FCE5D);
   static const Color editIconColor = Colors.orange;
   static const Color sortIconColor = Colors.blue;
-  static const Color refreshIconColor = Colors.green;
+  static const Color moveToTopIconColor = Colors.green;
   static const Color infoIconColor = Colors.blue;
   static const Color callIconColor = Colors.orangeAccent;
   static const Color addToContactIconColor = Colors.blue;

@@ -35,6 +35,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   bool _isLoading;
   //Controller
   final TextEditingController _searchController = new TextEditingController();
+  ScrollController scrollController = new ScrollController();
   //Widgets
   Widget appBarTitle = Text("",
     textScaleFactor: 1,
@@ -229,9 +230,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               }
                             }),],));
               }),
-                ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  refreshData(true);
+                  scrollController.animateTo(
+                    scrollController.position.minScrollExtent,
+                    duration: Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                  );
                 }),
                 ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
@@ -250,6 +255,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 refreshData: (){
                   return refreshData(false);
                 },
+                scrollController: scrollController,
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index])));
@@ -283,6 +289,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 onTapList:(index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index])));
                 },
+                scrollController: scrollController,
                 refreshData: (){
                   return refreshData(false);
                 },

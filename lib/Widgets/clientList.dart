@@ -21,7 +21,8 @@ class ClientList extends StatefulWidget {
   final Function onTapList;
   final Function onDoubleTapList;
   final Function refreshData;
-  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData});
+  final ScrollController scrollController;
+  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData,this.scrollController});
   @override
   _ClientListState createState() => _ClientListState();
 }
@@ -64,6 +65,7 @@ class _ClientListState extends State<ClientList> {
               key: _refreshIndicatorKey,
               onRefresh: widget.refreshData,
               child:ListView.builder(
+                controller: widget.scrollController,
                 padding: EdgeInsets.only(bottom: 100),
                 itemCount: this.widget.listItems.length,
                 itemBuilder: (context, index) {

@@ -24,6 +24,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   bool _isLoading;
   List<ChronicleUserModel> searchResult = [];
   TextEditingController textEditingController=new TextEditingController();
+  ScrollController scrollController = new ScrollController();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   Icon icon = new Icon(
     Icons.search,
@@ -149,14 +150,18 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
               else _handleSearchEnd();
             });
           }),
-          IconButton(icon: Icon(Icons.refresh), onPressed: ()async{
-            refreshData(true);
+          if(this.clients!=null&&this.clients.length!=0)IconButton(icon: Icon(Icons.vertical_align_top_outlined), onPressed: ()async{
+            scrollController.animateTo(
+              scrollController.position.minScrollExtent,
+              duration: Duration(seconds: 1),
+              curve: Curves.fastOutSlowIn,
+            );
           }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients,(){
           return refreshData(false);
-        })),
+        },scrollController)),
         if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(

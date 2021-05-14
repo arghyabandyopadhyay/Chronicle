@@ -61,6 +61,7 @@ class _ClientPageState extends State<ClientPage> {
   final TextEditingController _searchController = new TextEditingController();
   final TextEditingController textEditingController=new TextEditingController();
   final TextEditingController renameRegisterTextEditingController=new TextEditingController();
+  ScrollController scrollController = new ScrollController();
   //Widgets
   Widget appBarTitle;
   void _handleSearchStart() {
@@ -109,7 +110,7 @@ class _ClientPageState extends State<ClientPage> {
     });
   }
   Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
-    if(selectedList.length<1){
+    if(selectedList.length<1||isNotSwipeDownRefresh){
       try{
         if(_isSearching)_handleSearchEnd();
         Connectivity connectivity=Connectivity();
@@ -287,9 +288,13 @@ class _ClientPageState extends State<ClientPage> {
                       }),],
                   ));
                 }),
-                ModalOptionModel(particulars: "Refresh",icon:Icons.refresh,iconColor:CustomColors.refreshIconColor, onTap: () async {
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  refreshData(true);
+                  scrollController.animateTo(
+                    scrollController.position.minScrollExtent,
+                    duration: Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                  );
                 }),
                 ModalOptionModel(particulars: "Info",icon: Icons.info_outline,onTap: (){
                   Navigator.pop(popupContext);
@@ -658,6 +663,7 @@ class _ClientPageState extends State<ClientPage> {
                 refreshData: (){
                   return refreshData(false);
                 },
+                scrollController:scrollController,
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
                   if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index]))).then((value) => refreshData(true));
@@ -712,6 +718,7 @@ class _ClientPageState extends State<ClientPage> {
                 refreshData: (){
                   return refreshData(false);
                 },
+                scrollController: scrollController,
                 onTapList:(index){
                   if(selectedList.length<1)Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index]))).then((value) => refreshData(true));
                   else {
