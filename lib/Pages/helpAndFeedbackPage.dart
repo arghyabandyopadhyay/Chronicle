@@ -42,8 +42,8 @@ class _AboutsPageState extends State<HelpAndFeedbackPage> {
                     alignment: Alignment.centerLeft,
                     child: ListTile(
                         dense: true,
-                        title: Text("Powered By"),
-                        subtitle: Text("Chronicle Business Solutions.")
+                        title: Text("Will you renew my subscription automatically?"),
+                        subtitle: Text("No, as soon as you clear your payments the access is granted again.")
                     ),
                     decoration: BoxDecoration(
                         borderRadius:

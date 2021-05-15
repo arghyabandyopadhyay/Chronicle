@@ -10,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../customColors.dart';
 import 'ownerDatabaseModule.dart';
 
 class ClientAccessEditPage extends StatefulWidget {
@@ -162,7 +161,6 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
         Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients,(){
           return refreshData(false);
         },scrollController)),
-        if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
       Container(
           width: double.infinity,

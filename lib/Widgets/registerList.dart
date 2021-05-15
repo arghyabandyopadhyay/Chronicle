@@ -10,6 +10,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+import '../customColors.dart';
+
 class RegisterList extends StatefulWidget {
   final List<ClientModel> selectedClients;
   final bool isDialog;
@@ -44,7 +46,7 @@ class _RegisterListState extends State<RegisterList> {
                         list: [
                           ModalOptionModel(
                               particulars: "Move",
-                              icon: Icons.drive_file_move,
+                              icon: Icons.drive_file_move,iconColor:CustomColors.moveIconColor,
                               onTap: (){
                                 moveClientsModule(widget.selectedClients, GlobalClass.registerList[index]);
                                 Navigator.of(context).pop();
@@ -53,7 +55,7 @@ class _RegisterListState extends State<RegisterList> {
                               }),
                           ModalOptionModel(
                               particulars: "Copy",
-                              icon: Icons.copy,
+                              icon: Icons.copy,iconColor:CustomColors.copyIconColor,
                               onTap: (){
                                 copyClientsModule(widget.selectedClients, GlobalClass.registerList[index]);
                                 Navigator.of(context).pop();

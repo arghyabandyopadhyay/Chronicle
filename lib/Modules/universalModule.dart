@@ -144,6 +144,67 @@ registerAppModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
     globalShowInSnackBar(scaffoldMessengerKey,"Access Denied for sending email!!");
   }
 }
+List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSorted){
+  List<ClientModel> sortedList=[];
+  if(sortType=="Dues First"){
+    List<ClientModel> temp=listToBeSorted.where((element) => element.due>0).toList();
+    sortedList.addAll(temp);
+    temp=listToBeSorted.where((element) => element.due<=0).toList();
+    sortedList.addAll(temp);
+  }
+  else if(sortType=="Last Months First"){
+    List<ClientModel> temp=listToBeSorted.where((element) => element.due==0).toList();
+    sortedList.addAll(temp);
+    temp=listToBeSorted.where((element) => element.due!=0).toList();
+    sortedList.addAll(temp);
+  }
+  else if(sortType=="Paid First"){
+    List<ClientModel> temp=listToBeSorted.where((element) => element.due<0).toList();
+    sortedList.addAll(temp);
+    temp=listToBeSorted.where((element) => element.due>=0).toList();
+    sortedList.addAll(temp);
+  }
+  else if(sortType=="A-Z"){
+    listToBeSorted.sort((a,b)=>a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Z-A"){
+    listToBeSorted.sort((a,b)=>b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Start Date Ascending"){
+    listToBeSorted.sort((a,b)=>a.startDate.toIso8601String().compareTo(b.startDate.toIso8601String()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Start Date Descending"){
+    listToBeSorted.sort((a,b)=>b.startDate.toIso8601String().compareTo(a.startDate.toIso8601String()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="End Date Ascending"){
+    listToBeSorted.sort((a,b)=>a.endDate.toIso8601String().compareTo(b.endDate.toIso8601String()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="End Date Descending"){
+    listToBeSorted.sort((a,b)=>b.endDate.toIso8601String().compareTo(a.endDate.toIso8601String()));
+    sortedList=listToBeSorted;
+  }
+  // if(sortVal==1)
+  // {
+  //
+  //   sortVal=0;
+  // }
+  // else
+  // {
+  //   List<ClientModel> temp=clients.where((element) => element.due<=0).toList();
+  //   clients.removeWhere((element) => element.due<=0);
+  //   clients.addAll(temp);
+  //   temp=clients.where((element) => element.due>0).toList();
+  //   clients.removeWhere((element) => element.due>0);
+  //   clients.addAll(temp);
+  //   sortVal=1;
+  // }
+  return sortedList;
+}
 deleteModule(ClientModel clientData,BuildContext context,state)async{
   showDialog(context: context, builder: (_)=>new AlertDialog(
     title: Text("Confirm Delete"),
@@ -153,7 +214,7 @@ deleteModule(ClientModel clientData,BuildContext context,state)async{
         state.setState(() {
           deleteDatabaseNode(clientData.id);
           Navigator.of(_).pop();
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(true);
         });
       }),
       ActionChip(label: Text("No"), onPressed: (){

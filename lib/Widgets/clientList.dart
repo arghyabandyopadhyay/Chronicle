@@ -22,14 +22,14 @@ class ClientList extends StatefulWidget {
   final Function onDoubleTapList;
   final Function refreshData;
   final ScrollController scrollController;
-  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData,this.scrollController});
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
+  ClientList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData,this.scrollController,this.refreshIndicatorKey});
   @override
   _ClientListState createState() => _ClientListState();
 }
 
 class _ClientListState extends State<ClientList> {
   final TextEditingController alertTextController=new TextEditingController();
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   bool isLoading;
   @override
   void initState()
@@ -62,7 +62,7 @@ class _ClientListState extends State<ClientList> {
           child: RefreshIndicator(
             triggerMode: RefreshIndicatorTriggerMode.anywhere,
               displacement: 10,
-              key: _refreshIndicatorKey,
+              key: widget.refreshIndicatorKey,
               onRefresh: widget.refreshData,
               child:ListView.builder(
                 controller: widget.scrollController,
@@ -123,7 +123,7 @@ class _ClientListState extends State<ClientList> {
                                 list: [
                                   ModalOptionModel(
                                       particulars: "Send Sms using Default Sim",
-                                      icon: Icons.sim_card_outlined,
+                                      icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
                                       onTap: (){
                                         Navigator.of(_).pop();
                                         showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -143,7 +143,7 @@ class _ClientListState extends State<ClientList> {
                                       }),
                                   ModalOptionModel(
                                       particulars: "Send Sms using Sms Gateway",
-                                      icon: FontAwesomeIcons.server,
+                                      icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
                                       onTap: (){
                                         if(GlobalClass.userDetail.smsAccessToken!=null
                                             &&GlobalClass.userDetail.smsApiUrl!=null

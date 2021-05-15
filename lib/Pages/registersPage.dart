@@ -17,7 +17,6 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:shimmer/shimmer.dart';
-import 'Contacts/contactListPage.dart';
 import 'SignInScreen.dart';
 import 'globalClass.dart';
 

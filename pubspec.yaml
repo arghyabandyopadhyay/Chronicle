@@ -59,6 +59,7 @@ dependencies:
   connectivity: ^3.0.3
   contacts_service: ^0.6.1
   permission_handler: ^7.1.0
+  flutter_spinkit: ^5.0.0
 
 dev_dependencies:
   flutter_test:

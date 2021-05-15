@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/globalClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -85,7 +86,8 @@ Future<List<ClientModel>> getAllClients(String registerId) async {
       clients.add(client);
     });
   }
-  clients.sort((a,b)=>a.name.compareTo(b.name));
+  // clients.sort((a,b)=>a.name.compareTo(b.name));
+  clients=sortClientsModule("A-Z", clients);
   return clients;
 }
 copyClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{

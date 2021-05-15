@@ -2,6 +2,7 @@ import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,6 +36,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   bool _isLoading;
   //Controller
   final TextEditingController _searchController = new TextEditingController();
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   ScrollController scrollController = new ScrollController();
   //Widgets
   Widget appBarTitle = Text("",
@@ -92,7 +94,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.dispose();
   }
 
-  Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
+  Future<Null> refreshData() async{
       try{
         if(_isSearching)_handleSearchEnd();
         Connectivity connectivity=Connectivity();
@@ -100,9 +102,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           if(value!=ConnectivityResult.none)
           {
             if(!_isLoading){
-              if(isNotSwipeDownRefresh)setState(() {
-                _isLoading=true;
-              });
+              _isLoading=true;
               return getNotificationClients(context).then((clients) => {
                 if(mounted)this.setState(() {
                   this.clients = clients;
@@ -165,7 +165,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       list: [
                         ModalOptionModel(
                             particulars: "Send Sms using Default Sim",
-                            icon: Icons.sim_card_outlined,
+                            icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
                             onTap: (){
                               Navigator.of(_).pop();
                               showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -191,7 +191,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             }),
                         ModalOptionModel(
                             particulars: "Send Sms using Sms Gateway",
-                            icon: FontAwesomeIcons.server,
+                            icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
                             onTap: (){
                               if(GlobalClass.userDetail.smsAccessToken!=null
                                   &&GlobalClass.userDetail.smsApiUrl!=null
@@ -230,6 +230,102 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               }
                             }),],));
               }),
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext alertDialogContext) {
+                        return OptionModalBottomSheet(
+                            appBarText: "Sort Options",
+                            appBarIcon: Icons.sort,
+                            list: [
+                              ModalOptionModel(
+                                icon:Icons.more_time,
+                                iconColor: CustomColors.addDueIconColor,
+                                particulars:"Dues First",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Dues First", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.hourglass_bottom_outlined,iconColor: CustomColors.lastMonthTextColor,
+                                particulars:"Last Months First",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Last Months First", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.payment_outlined,iconColor: CustomColors.addPaymentIconColor,
+                                particulars:"Paid First",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Paid First", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                                particulars:"A-Z",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("A-Z", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                                particulars:"Z-A",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Z-A", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                                particulars:"Start Date Ascending",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Start Date Ascending", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                                particulars:"Start Date Descending",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("Start Date Descending", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                                particulars:"End Date Ascending",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("End Date Ascending", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                                particulars:"End Date Descending",
+                                onTap: (){setState(() {
+                                  clients=sortClientsModule("End Date Descending", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                            ]
+                        );
+                      }
+                  );
+                }),
                 if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
@@ -238,7 +334,176 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     curve: Curves.fastOutSlowIn,
                   );
                 }),
-                ].map((ModalOptionModel choice){
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Info",icon: Icons.info_outline,onTap: (){
+                  Navigator.pop(popupContext);
+                  int totalDues=0;
+                  int totalPaid=0;
+                  int totalLastMonths=0;
+                  int totalPaidClients=0;
+                  int totalDuedClients=0;
+                  clients.forEach((element) {
+                    if(element.due>0){
+                      totalDues=totalDues+element.due;
+                      totalDuedClients=totalDuedClients+1;
+                    }
+                    else if(element.due<0) {
+                      totalPaid=totalPaid+element.due.abs()+1;
+                      totalPaidClients=totalPaidClients+1;
+                    }
+                    else totalLastMonths++;
+                  });
+                  showDialog(context: context, builder: (_)=>AlertDialog(
+                    title: Text("${"Notifications"}"),
+                    content: Container(child:  ListView(
+                      shrinkWrap: true,
+                      physics:BouncingScrollPhysics(),
+                      children: [
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Dues:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalDues.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Paid:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalPaid.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(child: Text("*The data is in Months."),),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Due Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalDuedClients.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Paid Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalPaidClients.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Last Months:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text(totalLastMonths.toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        Container(
+                          height: 50,
+                          padding: EdgeInsets.all(10),
+                          child:Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text("Total Clients:",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                              ),
+                              Expanded(child: Text((totalLastMonths+totalDuedClients+totalPaidClients).toString(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 17.0,),
+                                textAlign: TextAlign.end,
+                              ))
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Center(child: Text("*The data is in no of clients."),),
+                      ],),
+                      width: double.minPositive,),
+                    actions: [
+                      ActionChip(label: Text("Close"), onPressed: (){
+                        Navigator.of(_).pop();
+                      }),
+                    ],
+                  ));
+                }),
+              ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
                   value: choice,
                   child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
@@ -248,17 +513,28 @@ class _NotificationsPageState extends State<NotificationsPage> {
           ),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: _isSearching?Provider.value(
+        Expanded(child: _isSearching?
+        Provider.value(
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: ClientList(listItems:this.searchResult,
                 refreshData: (){
-                  return refreshData(false);
+                  return refreshData();
                 },
+                refreshIndicatorKey: refreshIndicatorKey,
                 scrollController: scrollController,
                 scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.searchResult[index])));
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      ClientInformationPage(client:this.searchResult[index]))).then((value){
+                        setState(() {
+                          if(value==null){}
+                          else {
+                            this.clients.remove(this.searchResult[index]);
+                            this.searchResult.remove(this.searchResult[index]);
+                          }
+                        });
+                      });
                 },
                 onLongPressed:(index) {},
                 onDoubleTapList:(index){
@@ -287,12 +563,13 @@ class _NotificationsPageState extends State<NotificationsPage> {
             updateShouldNotify: (oldValue, newValue) => true,
             child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
                 onTapList:(index){
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index])));
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientInformationPage(client:this.clients[index]))).then((value){setState(() {if(value==null){}else this.clients.remove(this.clients[index]);});});
                 },
                 scrollController: scrollController,
                 refreshData: (){
-                  return refreshData(false);
+                  return refreshData();
                 },
+                refreshIndicatorKey: refreshIndicatorKey,
                 onLongPressed:(index) {},
                 onDoubleTapList:(index){
                   showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -315,71 +592,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   ));
                 }
             ))),
-        if(_isLoading)Container(color:CustomColors.loadingBottomStrapColor,child: Row(mainAxisAlignment:MainAxisAlignment.center,children: <Widget>[Container(height:_isLoading?40:0,width:_isLoading?40:0,padding:EdgeInsets.all(10),child: CircularProgressIndicator(strokeWidth: 3,backgroundColor: CustomColors.firebaseBlue,),),Text("Loading...",style: TextStyle(fontWeight: FontWeight.bold,color: CustomColors.loadingBottomStrapTextColor),)]),),
       ]):
-      Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Expanded(
-                child: Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey.withOpacity(0.5),
-                    enabled: true,
-                    child: ListView.builder(
-                      itemBuilder: (_, __) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 48.0,
-                              height: 48.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: 40.0,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      itemCount: 4,
-                    )
-                ),
-              ),
-            ],
-          )
-      ),
+      ClientListSimmerWidget(),
       // floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
       //   //clearAllAnimation
       // },),

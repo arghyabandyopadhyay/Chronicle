@@ -20,6 +20,14 @@ class CustomColors{
   static const Color deleteIconColor = Colors.deepOrange;
   static const Color uploadIconColor = Colors.blue;
   static const Color downloadIconColor = Colors.indigo;
+  static const Color atozIconColor= Colors.greenAccent;
+  static const Color ztoaIconColor= Colors.redAccent;
+  static const Color endDateIconColor= Colors.deepOrangeAccent;
+  static const Color startDateIconColor= Colors.blueAccent;
+  static const Color simCardIconColor= Colors.grey;
+  static const Color serverIconColor= Colors.amber;
+  static const Color moveIconColor= Colors.indigoAccent;
+  static const Color copyIconColor= Colors.amberAccent;
 
 
 
@@ -27,8 +35,6 @@ class CustomColors{
   static const Color lastMonthTextColor = Colors.orangeAccent;
   static const Color paidTextColor = Colors.green;
   static const Color dueTextColor = Colors.red;
-  static const Color loadingBottomStrapColor = Colors.black87;
-  static const Color loadingBottomStrapTextColor = Colors.white;
 }
 
 var lightThemeData=ThemeData(

@@ -1,5 +1,6 @@
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Widgets/Simmers/contactListSimmerWidget.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -157,138 +158,8 @@ class _ContactListPageState extends State<ContactListPage> {
           );
         },
       )
-          : Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Expanded(
-                child: Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey.withOpacity(0.5),
-                    enabled: true,
-                    child: ListView.builder(
-                      itemBuilder: (_, __) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 48.0,
-                              height: 48.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: 40.0,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      itemCount: 4,
-                    )
-                ),
-              ),
-            ],
-          )
-      ),
+          : ContactListSimmerWidget(),
     ),key: scaffoldMessengerKey,);
-  }
-}
-
-class AddressesTile extends StatelessWidget {
-  AddressesTile(this._addresses);
-  final Iterable<PostalAddress> _addresses;
-
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        ListTile(title: Text("Addresses")),
-        Column(
-          children: _addresses.map((a) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text("Street"),
-                  trailing: Text(a.street ?? ""),
-                ),
-                ListTile(
-                  title: Text("Postcode"),
-                  trailing: Text(a.postcode ?? ""),
-                ),
-                ListTile(
-                  title: Text("City"),
-                  trailing: Text(a.city ?? ""),
-                ),
-                ListTile(
-                  title: Text("Region"),
-                  trailing: Text(a.region ?? ""),
-                ),
-                ListTile(
-                  title: Text("Country"),
-                  trailing: Text(a.country ?? ""),
-                ),
-              ],
-            ),
-          )).toList(),
-        ),
-      ],
-    );
-  }
-}
-
-class ItemsTile extends StatelessWidget {
-  ItemsTile(this._title, this._items);
-  final Iterable<Item> _items;
-  final String _title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        ListTile(title: Text(_title)),
-        Column(
-          children: _items.map((i) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: ListTile(
-              title: Text(i.label ?? ""),
-              trailing: Text(i.value ?? ""),
-            ),),
-          ).toList(),
-        ),
-      ],
-    );
   }
 }
 

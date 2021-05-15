@@ -225,7 +225,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         list: [
                           ModalOptionModel(
                               particulars: "Send Sms using Default Sim",
-                              icon: Icons.sim_card_outlined,
+                              icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
                               onTap: (){
                                 Navigator.of(_).pop();
                                 showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -244,7 +244,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                               }),
                           ModalOptionModel(
                               particulars: "Send Sms using Sms Gateway",
-                              icon: FontAwesomeIcons.server,
+                              icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
                               onTap: (){
                                 if(GlobalClass.userDetail.smsAccessToken!=null
                                     &&GlobalClass.userDetail.smsApiUrl!=null
