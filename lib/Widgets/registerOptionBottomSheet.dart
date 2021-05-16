@@ -4,7 +4,7 @@ import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +16,9 @@ class RegisterOptionBottomSheet extends StatelessWidget {
   //list of options you want to show in the bottom sheet
   RegisterOptionBottomSheet({Key key, this.isAddToRegister,this.selectedClients}) : super(key: key);
   void newRegisterModel(RegisterModel register) {
-    register.setId(addToRegister(register.name));
+    register.setId(addRegister(register.name));
     RegisterIndexModel registerIndex=RegisterIndexModel(uid: register.id.key,name: register.name);
-    registerIndex.setId(addToRegisterIndex(registerIndex));
+    registerIndex.setId(addRegisterIndex(registerIndex));
     GlobalClass.registerList.add(registerIndex);
   }
   @override

@@ -3,7 +3,7 @@ import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/contactListPage.dart';
+import 'package:chronicle/Pages/TutorPages/contactListPage.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
-import '../customColors.dart';
+import '../../customColors.dart';
 
 
 class RegisterClientPage extends StatefulWidget {

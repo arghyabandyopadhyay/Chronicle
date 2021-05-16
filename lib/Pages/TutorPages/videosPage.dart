@@ -1,0 +1,464 @@
+import 'dart:io';
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Modules/errorPage.dart';
+import 'package:chronicle/Modules/storage.dart';
+import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
+import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
+import 'package:chronicle/Widgets/videoList.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import '../../customColors.dart';
+import '../../globalClass.dart';
+
+class VideosPage extends StatefulWidget {
+  const VideosPage({ Key key}) : super(key: key);
+  @override
+  _VideosPageState createState() => _VideosPageState();
+}
+class _VideosPageState extends State<VideosPage> {
+  List<VideoIndexModel> videos;
+  List<VideoIndexModel> selectedList=[];
+  int _counter=0;
+  bool _isLoading;
+  GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
+  bool _isSearching=false;
+  int sortVal=1;
+  List<VideoIndexModel> searchResult = [];
+  Icon icon = new Icon(
+    Icons.search,
+  );
+  //Controller
+  final TextEditingController _searchController = new TextEditingController();
+  final TextEditingController textEditingController=new TextEditingController();
+  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
+  final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
+  ScrollController scrollController = new ScrollController();
+  //Widgets
+  Widget appBarTitle;
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+  void _handleSearchEnd() {
+    setState(() {
+      this.icon = new Icon(
+        Icons.search,
+      );
+      this.appBarTitle = Text("Videos");
+      _isSearching = false;
+      _searchController.clear();
+    });
+  }
+  void searchOperation(String searchText)
+  {
+    searchResult.clear();
+    if(_isSearching){
+      searchResult=videos.where((VideoIndexModel element) => (element.name).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      setState(() {
+      });
+    }
+  }
+  void newVideoIndexModel(VideoIndexModel video) {
+    video.setId(addVideoIndex(video));
+    if(mounted)this.setState(() {
+      videos.add(video);
+    });
+  }
+  Future<Null> refreshData() async{
+    if(selectedList.length!=0){
+      setState(() {
+        for(VideoIndexModel a in selectedList)
+        {
+          a.isSelected=false;
+        }
+        if(_isSearching)_handleSearchEnd();
+        selectedList.clear();
+      });
+    }
+    try{
+      if(_isSearching)_handleSearchEnd();
+      Connectivity connectivity=Connectivity();
+      await connectivity.checkConnectivity().then((value)async {
+        if(value!=ConnectivityResult.none)
+        {
+          if(!_isLoading){
+            _isLoading=true;
+            return getAllVideos().then((videos) {
+              if(mounted)this.setState(() {
+                this.videos = videos;
+                _counter++;
+                _isLoading=false;
+                this.appBarTitle = Text("Videos");
+              });
+            });
+          }
+          else{
+            globalShowInSnackBar(scaffoldMessengerKey, "Data is being loaded...");
+            return;
+          }
+        }
+        else{
+          setState(() {
+            _isLoading=false;
+          });
+          globalShowInSnackBar(scaffoldMessengerKey,"No Internet Connection!!");
+          return;
+        }
+      });
+    }
+    catch(E)
+    {
+      setState(() {
+        _isLoading=false;
+      });
+      globalShowInSnackBar(scaffoldMessengerKey,"Something Went Wrong");
+      return;
+    }
+  }
+
+  void getVideoIndexModels() {
+    getAllVideos().then((videos) => {
+      if(mounted)this.setState(() {
+        this.videos = videos;
+        _counter++;
+        _isLoading=false;
+        this.appBarTitle = Text("Videos");
+      })
+    });
+  }
+  double progressValue=0;
+  bool isUploading=false;
+  @override
+  void initState() {
+    super.initState();
+    getVideoIndexModels();
+    this.appBarTitle = Text("Videos");
+  }
+
+  getAppBar(){
+    if(selectedList.length < 1)
+      return AppBar(
+        title: appBarTitle,
+        leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:Icons.arrow_back),),
+        bottom: PreferredSize(
+          child: (isUploading)?LinearProgressIndicator(value: progressValue,minHeight: 2,):Container(width: 0.0, height: 0.0), preferredSize: Size(double.infinity,2),
+        ),
+        actions: [
+          new IconButton(icon: icon, onPressed:(){
+            setState(() {
+              if(this.icon.icon == Icons.search)
+              {
+                this.icon=new Icon(Icons.close);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                _handleSearchStart();
+              }
+              else _handleSearchEnd();
+            });
+          }),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  scrollController.animateTo(
+                    scrollController.position.minScrollExtent,
+                    duration: Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                  );
+                }),
+                ModalOptionModel(particulars: "Upload",icon:Icons.video_call_outlined,iconColor:CustomColors.uploadIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  final file = await ImagePicker().getVideo(source: ImageSource.gallery);
+                  if(file!=null)showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Name the video"),
+                    content: TextField(controller: textEditingController,
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "Name of the Video",
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                      ),
+                    ),
+                    actions: [ActionChip(label: Text("Upload"), onPressed: () async {
+                      if(textEditingController.text!=""){
+                        Navigator.pop(_);
+                        await uploadFile(file.path,textEditingController.text);
+                        textEditingController.clear();
+                      }
+                      else{
+                        globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your video!!");
+                        Navigator.of(_).pop();
+                      }
+                    }),
+                      ActionChip(label: Text("Cancel"), onPressed: (){
+                        Navigator.of(_).pop();
+                      }),],
+                  ));
+                }),
+              ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
+        ],);
+    else
+      return AppBar(
+        elevation: 0,
+        title: Text("${selectedList.length} item selected"),
+        leading:IconButton(
+          icon: Icon(Icons.clear,),
+          onPressed: (){
+            setState(() {
+              for(VideoIndexModel a in selectedList)
+              {
+                a.isSelected=false;
+              }
+              selectedList.clear();
+            });
+          },
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.select_all,),
+            onPressed: (){
+              setState(() {
+                selectedList.clear();
+                selectedList.addAll(_isSearching?searchResult:videos);
+                for(VideoIndexModel a in selectedList)
+                {
+                  a.isSelected=true;
+                }
+              });
+            },
+          ),
+          IconButton(
+            onPressed: () async {
+              showDialog(context: context, builder: (_)=>new AlertDialog(
+                title: Text("Confirm Delete"),
+                content: Text("Are you sure to delete all the selected videos?\n The change is irreversible."),
+                actions: [
+                  ActionChip(label: Text("Yes"), onPressed: (){
+                    setState(() {
+                      selectedList.forEach((element) {
+                        deleteDatabaseNode(element.id);
+                        if(_isSearching)searchResult.remove(element);
+                        videos.remove(element);
+                      });
+                      for(VideoIndexModel a in selectedList)
+                      {
+                        a.isSelected=false;
+                      }
+                      if(_isSearching)_handleSearchEnd();
+                      selectedList.clear();
+                      Navigator.of(_).pop();
+                    });
+                  }),
+                  ActionChip(label: Text("No"), onPressed: (){
+                    setState(() {
+                      Navigator.of(_).pop();
+                    });
+                  })
+                ],
+              ));
+
+            },
+            icon: Icon(Icons.delete),
+          )
+        ],
+      );
+  }
+  Future<void> uploadFile(String filePath,String name) async {
+    progressValue=0.1;
+    final DateTime now = DateTime.now();
+    final int millSeconds = now.millisecondsSinceEpoch;
+    final String month = now.month.toString();
+    final String date = now.day.toString();
+    final String storageId = (millSeconds.toString() + "_$name");
+    final String today = ('$month-$date');
+    File file = File(filePath);
+    setState(() {
+      isUploading=true;
+    });
+    firebase_storage.UploadTask task=storage.ref('${GlobalClass.user.uid}/$today/$storageId').putFile(file,firebase_storage.SettableMetadata(contentType: 'video/mp4'));
+    task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
+      print('Task state: ${snapshot.state}');
+      if(mounted)setState(() {
+        progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
+      });
+    }, onError: (e) {
+      // The final snapshot is also available on the task via `.snapshot`,
+      // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
+      print(task.snapshot);
+
+      if (e.code == 'permission-denied') {
+        print('User does not have permission to upload to this reference.');
+      }
+    });
+
+    // We can still optionally use the Future alongside the stream.
+    try {
+      await task;
+      String url=await downloadURL('${GlobalClass.user.uid}/$today/$storageId');
+      newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: ""));
+      if(mounted)setState(() {
+        isUploading=false;
+      });
+      refreshIndicatorKey.currentState.show();
+    }
+    on firebase_core.FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        print('User does not have permission to upload to this reference.');
+      }
+      // ...
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: getAppBar(),
+      body: this.videos!=null?this.videos.length==0?NoDataError():Column(children: <Widget>[
+        Expanded(child: _isSearching?
+        Provider.value(
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: VideoList(listItems:this.searchResult,
+                refreshIndicatorKey: refreshIndicatorKey,
+                refreshData: (){
+                  return refreshData();
+                },
+                scrollController:scrollController,
+                scaffoldMessengerKey:scaffoldMessengerKey,
+                onTapList:(index) async {
+                  if(selectedList.length<1){
+                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                        VideoPlayerPage(video:this.searchResult[index])));
+                  }
+                  else {
+                    setState(() {
+                      searchResult[index].isSelected=!searchResult[index].isSelected;
+                      if (searchResult[index].isSelected) {
+                        selectedList.add(searchResult[index]);
+                      } else {
+                        selectedList.remove(searchResult[index]);
+                      }
+                    });
+                  }
+                },
+                onLongPressed:(index)
+                {
+                  setState(() {
+                    searchResult[index].isSelected=!searchResult[index].isSelected;
+                    if (searchResult[index].isSelected) {
+                      selectedList.add(searchResult[index]);
+                    } else {
+                      selectedList.remove(searchResult[index]);
+                    }
+                  });
+                },
+                onDoubleTapList:(index){
+                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${searchResult[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(searchResult[index].id);
+                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
+                          searchResult.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+            )):
+        Provider.value(
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: VideoList(listItems:this.videos,scaffoldMessengerKey:scaffoldMessengerKey,
+                refreshData: (){
+                  return refreshData();
+                },
+                refreshIndicatorKey: refreshIndicatorKey,
+                scrollController: scrollController,
+                onTapList:(index) async {
+                  if(selectedList.length<1){
+                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                        VideoPlayerPage(video:this.videos[index]))).then((value){
+                      setState(() {
+                        if(value==null) {}
+                        else this.videos.remove(this.videos[index]);
+                      });
+                    });
+                  }
+                  else {
+                    setState(() {
+                      videos[index].isSelected=!videos[index].isSelected;
+                      if (videos[index].isSelected) {
+                        selectedList.add(videos[index]);
+                      } else {
+                        selectedList.remove(videos[index]);
+                      }
+                    });
+                  }
+                },
+                onLongPressed:(index)
+                {
+                  setState(() {
+                    videos[index].isSelected=!videos[index].isSelected;
+                    if (videos[index].isSelected) {
+                      selectedList.add(videos[index]);
+                    } else {
+                      selectedList.remove(videos[index]);
+                    }
+                  });
+                },
+                onDoubleTapList:(index){
+                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                    title: Text("Confirm Delete"),
+                    content: Text("Are you sure to delete ${videos[index].name}?"),
+                    actions: [
+                      ActionChip(label: Text("Yes"), onPressed: (){
+                        setState(() {
+                          deleteDatabaseNode(videos[index].id);
+                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${videos[index].name}, deleted!!");
+                          videos.removeAt(index);
+                          Navigator.of(_).pop();
+                        });
+                      }),
+                      ActionChip(label: Text("No"), onPressed: (){
+                        setState(() {
+                          Navigator.of(_).pop();
+                        });
+                      })
+                    ],
+                  ));
+                }
+            )
+        )),
+      ]):
+      ClientListSimmerWidget(),
+    );
+  }
+}

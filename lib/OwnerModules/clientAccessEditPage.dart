@@ -1,3 +1,4 @@
+import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -5,11 +6,13 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/OwnerModules/chronicleUsersList.dart';
+import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../customColors.dart';
 import 'ownerDatabaseModule.dart';
 
 class ClientAccessEditPage extends StatefulWidget {
@@ -69,6 +72,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
     ChronicleUserModel chronicleUserModel=new ChronicleUserModel(uid: uid,email: userDetails.email,canAccess: 0,displayName: userDetails.displayName);
     chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
     userDetails.isAppRegistered=1;
+    userDetails.canAccess=0;
     updateUserDetails(userDetails, userDetails.id);
     if(mounted)this.setState(() {
       clients.add(chronicleUserModel);
@@ -149,6 +153,57 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
               else _handleSearchEnd();
             });
           }),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext alertDialogContext) {
+                        return OptionModalBottomSheet(
+                            appBarText: "Sort Options",
+                            appBarIcon: Icons.sort,
+                            list: [
+                              ModalOptionModel(
+                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                                particulars:"A-Z",
+                                onTap: (){setState(() {
+                                  clients=sortChronicleUsersModule("A-Z", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                              ModalOptionModel(
+                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                                particulars:"Z-A",
+                                onTap: (){setState(() {
+                                  clients=sortChronicleUsersModule("Z-A", clients);
+                                });
+                                Navigator.pop(alertDialogContext);
+                                },
+                              ),
+                            ]
+                        );
+                      }
+                  );
+                }),
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  scrollController.animateTo(
+                    scrollController.position.minScrollExtent,
+                    duration: Duration(seconds: 1),
+                    curve: Curves.fastOutSlowIn,
+                  );
+                }),
+              ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
           if(this.clients!=null&&this.clients.length!=0)IconButton(icon: Icon(Icons.vertical_align_top_outlined), onPressed: ()async{
             scrollController.animateTo(
               scrollController.position.minScrollExtent,

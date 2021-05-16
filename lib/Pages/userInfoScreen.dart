@@ -1,6 +1,6 @@
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/qrCodePage.dart';
+import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +9,8 @@ import 'package:qr_code_tools/qr_code_tools.dart';
 
 import '../Modules/auth.dart';
 import '../customColors.dart';
-import 'SignInScreen.dart';
-import 'globalClass.dart';
+import 'routingPage.dart';
+import '../globalClass.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({Key key}):super(key: key);
@@ -23,9 +23,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
 
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
-  Route _routeToSignInScreen() {
+  Route _routeToRoutingPage() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => RoutingPage(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(-1.0, 0.0);
         var end = Offset.zero;
@@ -170,7 +170,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               //       _isSigningOut = false;
               //     });
               //     Navigator.of(context).popUntil((route) => route.isFirst);
-              //     Navigator.of(context).pushReplacement(_routeToSignInScreen());
+              //     Navigator.of(context).pushReplacement(_routeToRoutingPage());
               //   },
               //   child: Padding(
               //     padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
@@ -213,7 +213,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
             _isSigningOut = false;
           });
           Navigator.of(context).popUntil((route) => route.isFirst);
-          Navigator.of(context).pushReplacement(_routeToSignInScreen());
+          Navigator.of(context).pushReplacement(_routeToRoutingPage());
         },
         child: Padding(
           padding: EdgeInsets.only(top: 8.0, bottom: 8.0),

@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
 import 'Models/receivedNotificationModel.dart';
 import 'Modules/auth.dart';
-import 'Pages/SignInScreen.dart';
-import 'Pages/globalClass.dart';
+import 'Pages/routingPage.dart';
+import 'globalClass.dart';
 import 'Pages/errorDisplayPage.dart';
 import 'customColors.dart';
 import 'dart:async';
@@ -101,7 +101,6 @@ class Chronicle extends StatefulWidget {
 }
 class _ChronicleState extends State<Chronicle> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
-  NotificationSettings _settings;
   Stream<String> _tokenStream;
 
   void setToken(String token) {
@@ -119,7 +118,6 @@ class _ChronicleState extends State<Chronicle> {
       carPlay: true,
       criticalAlert: true,
     );
-    _settings = settings;
   }
   void _configureDidReceiveLocalNotificationSubject() {
     didReceiveLocalNotificationSubject.stream
@@ -221,7 +219,7 @@ class _ChronicleState extends State<Chronicle> {
                 return ErrorDisplayPage(appBarText: "Error 404",asset: "errorHasOccured.jpg",message: 'Please contact System Administrator',);
               }
               else if (snapshot.connectionState == ConnectionState.done) {
-                return SignInScreen();
+                return RoutingPage();
               }
               // return Scaffold(
               //     appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
@@ -306,7 +304,7 @@ class _ChronicleState extends State<Chronicle> {
 //                     return IdBlockedPage();
 //                   }
 //                   else if (snapshot.connectionState == ConnectionState.done) {
-//                     return SignInScreen();
+//                     return RoutingPage();
 //                   }
 //                   return Scaffold(
 //                       appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),

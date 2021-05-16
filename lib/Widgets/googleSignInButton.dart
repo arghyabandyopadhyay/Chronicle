@@ -1,6 +1,7 @@
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Pages/StudentPages/masterPage.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
-import 'package:chronicle/Pages/registersPage.dart';
+import 'package:chronicle/Pages/TutorPages/registersPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -55,16 +56,17 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
             if(user!=null){
               // initiateDatabase();
               GlobalClass.user=user;
-              registerUserDetail().then((value) => {
+              addUserDetail().then((value) => {
               _isSigningIn = false,
                 if(value!=null)
                   {
                     FirebaseMessaging.instance.getToken().then(setToken),
-                    if(GlobalClass.userDetail!=null&&GlobalClass.userDetail.canAccess==1){
-                      Navigator.pushReplacement(
+                    if(GlobalClass.userDetail!=null){
+                      if(GlobalClass.userDetail.isAppRegistered==1)Navigator.pushReplacement(
                           context,
                           CupertinoPageRoute(
                               builder: (context) => RegistersPage()))
+                      else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MasterPage()))
                     }
                     else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
 

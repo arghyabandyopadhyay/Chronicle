@@ -1,4 +1,4 @@
-import 'package:chronicle/Pages/registerClientPage.dart';
+import 'package:chronicle/Pages/TutorPages/registerClientPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

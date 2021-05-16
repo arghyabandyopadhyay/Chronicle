@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:chronicle/Models/clientModel.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
+import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -288,6 +290,27 @@ String getFormattedMobileNo(String value)
   else{
     return "";
   }
+}
+copyClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
+  selectedList.forEach((client) {
+    ClientModel newClient=client.copyClient();
+    newClient.setId(addClientInRegister(newClient,toRegister.uid));
+  });
+}
+moveClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
+  selectedList.forEach((client) {
+    ClientModel newClient=client.copyClient();
+    newClient.setId(addClientInRegister(newClient,toRegister.uid));
+  });
+  deleteClientsModule(selectedList);
+}
+deleteClientsModule(List<ClientModel> selectedList){
+  selectedList.forEach((element) {
+    deleteDatabaseNode(element.id);
+  });
+}
+shareModule(VideoIndexModel video,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey){
+
 }
 void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
 {

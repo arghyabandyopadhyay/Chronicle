@@ -1,15 +1,5 @@
-import 'package:chronicle/Models/clientModel.dart';
-import 'package:chronicle/Models/registerIndexModel.dart';
-import 'package:chronicle/Models/registerModel.dart';
-import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/Modules/errorPage.dart';
-import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:shimmer/shimmer.dart';
 
 import 'colorLoaderWidget.dart';
 class ClientListSimmerWidget extends StatelessWidget {

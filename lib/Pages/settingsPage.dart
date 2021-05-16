@@ -2,7 +2,7 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

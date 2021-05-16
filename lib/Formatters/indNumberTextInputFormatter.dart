@@ -53,6 +53,7 @@ class IndNumberTextInputFormatter extends TextInputFormatter {
     catch(E)
     {
       print(E);
+      return TextEditingValue(text: "");
     }
   }
 }

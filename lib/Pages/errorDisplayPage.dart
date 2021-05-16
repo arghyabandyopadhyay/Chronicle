@@ -1,8 +1,8 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/SignInScreen.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Pages/routingPage.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/DrawerContent.dart';
 import 'package:flutter/cupertino.dart';
@@ -36,9 +36,6 @@ class _ErrorDisplayPageState extends State<ErrorDisplayPage> {
         drawer: Drawer(
           child: DrawerContent(
             drawerItems: [
-              if(!(GlobalClass.userDetail!=null&&GlobalClass.userDetail.isAppRegistered==1))DrawerActionModel(Icons.notifications, "Register App", ()async{
-                registerAppModule(scaffoldMessengerKey);
-              }),
               DrawerActionModel(Icons.account_circle, "Profile", ()async{
                 Navigator.pop(context);
                 Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen()));
@@ -47,7 +44,7 @@ class _ErrorDisplayPageState extends State<ErrorDisplayPage> {
                 await Authentication.signOut(context: context);
                 Navigator.popUntil(context, (route) => route.isFirst);
                 Navigator.of(context).pushReplacement(PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
+                  pageBuilder: (context, animation, secondaryAnimation) => RoutingPage(),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     var begin = Offset(-1.0, 0.0);
                     var end = Offset.zero;
@@ -89,7 +86,7 @@ class _ErrorDisplayPageState extends State<ErrorDisplayPage> {
           SizedBox(width: 10,),
           FloatingActionButton.extended(heroTag:"refreshButton",
             onPressed: () {
-              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>SignInScreen()));
+              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>RoutingPage()));
             }, label: Text("Refresh"),
             icon: Icon(Icons.refresh),),],)
     ),key: scaffoldMessengerKey,);

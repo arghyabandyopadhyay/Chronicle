@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'globalClass.dart';
+import '../globalClass.dart';
 
 class HelpAndFeedbackPage extends StatefulWidget {
   HelpAndFeedbackPage({Key key,}) : super(key: key);

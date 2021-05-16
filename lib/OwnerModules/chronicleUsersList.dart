@@ -8,7 +8,7 @@ import 'ownerDatabaseModule.dart';
 class ChronicleUsersList extends StatefulWidget {
   final List<ChronicleUserModel> listItems;
   final Function refreshData;
-  ScrollController scrollController;
+  final ScrollController scrollController;
   ChronicleUsersList(this.listItems,this.refreshData,this.scrollController);
   @override
   _ChronicleUsersListState createState() => _ChronicleUsersListState();

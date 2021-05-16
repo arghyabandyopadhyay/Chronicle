@@ -2,7 +2,7 @@
 import 'package:chronicle/Models/RequestJson/ApiHeaderModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:http/http.dart' as http;
 

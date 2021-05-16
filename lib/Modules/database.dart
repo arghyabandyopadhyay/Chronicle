@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/videoIndexModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,14 +16,14 @@ final databaseReference=database.reference();
 //   database.setPersistenceEnabled(true);
 //   database.setPersistenceCacheSizeBytes(100000000);
 // }
-DatabaseReference registerUser(ClientModel client,String registerId)
+DatabaseReference addClientInRegister(ClientModel client,String registerId)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').push();
   id.set(client.toJson());
   return id;
 }
 
-DatabaseReference addToRegister(String name,)
+DatabaseReference addRegister(String name,)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registers/').push();
   id.set({
@@ -30,14 +31,14 @@ DatabaseReference addToRegister(String name,)
   });
   return id;
 }
-DatabaseReference addToRegisterIndex(RegisterIndexModel registerIndexModel)
+DatabaseReference addRegisterIndex(RegisterIndexModel registerIndexModel)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registerIndex/').push();
   id.set(registerIndexModel.toJson());
   return id;
 }
 
-void renameRegisterModule(RegisterIndexModel registerIndex, DatabaseReference id) async{
+void renameRegister(RegisterIndexModel registerIndex, DatabaseReference id) async{
   id.update(registerIndex.toJson());
   DatabaseReference id2 = databaseReference.child('${GlobalClass.user.uid}/registers/${registerIndex.uid}/');
   id2.update({"Name":registerIndex.name});
@@ -51,21 +52,18 @@ DatabaseReference getDatabaseReference(String directory)
 {
   return databaseReference.child('${GlobalClass.user.uid}/$directory');
 }
-Future<DatabaseReference> registerUserDetail() async {
+Future<DatabaseReference> addUserDetail() async {
   DatabaseReference id;
   await getUserDetails().then((value) => {
     if(value==null){
       id=databaseReference.child('${GlobalClass.user.uid}/userDetails/').push(),
-      id.set(new UserModel(displayName: GlobalClass.user.displayName,email: GlobalClass.user.email,canAccess: 0,phoneNumber: GlobalClass.user.phoneNumber,isAppRegistered: 0).toJson()),
+      GlobalClass.userDetail=new UserModel(displayName: GlobalClass.user.displayName,email: GlobalClass.user.email,canAccess: 1,phoneNumber: GlobalClass.user.phoneNumber,isAppRegistered: 0),
+      id.set(GlobalClass.userDetail.toJson()),
     }
     else{
-      if(value.canAccess==0)
-        {
-          id=null
-        }
-      else{
-        id=value.id
-      }
+      if(value.isOwner==1)id=value.id
+      else if(value.isAppRegistered==1&&value.canAccess==0) id=null
+      else id=value.id
     }
   });
   return id;
@@ -75,7 +73,7 @@ void updateClient(ClientModel client, DatabaseReference id) {
   client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
   id.update(client.toJson());
 }
-
+///gets the list of clients in a register.
 Future<List<ClientModel>> getAllClients(String registerId) async {
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').once();
   List<ClientModel> clients = [];
@@ -86,34 +84,15 @@ Future<List<ClientModel>> getAllClients(String registerId) async {
       clients.add(client);
     });
   }
-  // clients.sort((a,b)=>a.name.compareTo(b.name));
   clients=sortClientsModule("A-Z", clients);
   return clients;
-}
-copyClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
-  selectedList.forEach((client) {
-    ClientModel newClient=client.copyClient();
-    newClient.setId(registerUser(newClient,toRegister.uid));
-  });
-}
-moveClientsModule(List<ClientModel> selectedList,RegisterIndexModel toRegister)async{
-  selectedList.forEach((client) {
-    ClientModel newClient=client.copyClient();
-    newClient.setId(registerUser(newClient,toRegister.uid));
-  });
-  deleteClientsModule(selectedList);
-}
-deleteClientsModule(List<ClientModel> selectedList){
-  selectedList.forEach((element) {
-    deleteDatabaseNode(element.id);
-  });
 }
 Future<List<ClientModel>> getNotificationClients(BuildContext context) async{
   await Authentication.initializeFirebase();
   if(GlobalClass.user==null)GlobalClass.user = FirebaseAuth.instance.currentUser;
   List<ClientModel> clients = [];
   if(GlobalClass.user!=null){
-    await registerUserDetail().then((value)async=>{
+    await addUserDetail().then((value)async=>{
       if(value!=null){
         await getAllRegisters().then((registers) => {
           registers.forEach((registerElement){
@@ -146,6 +125,8 @@ Future<List<ClientModel>> getNotificationClients(BuildContext context) async{
   // });
   return clients;
 }
+
+///gets list of registers enlisted in the account.
 Future<List<RegisterModel>> getAllRegisters() async {
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registers/').once();
   List<RegisterModel> registers = [];
@@ -159,7 +140,7 @@ Future<List<RegisterModel>> getAllRegisters() async {
   registers.sort((a,b)=>a.name.compareTo(b.name));
   return registers;
 }
-
+///gets list of register indexes enlisted in the account.
 Future<List<RegisterIndexModel>> getAllRegisterIndex() async {
   DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/registerIndex/').once();
   List<RegisterIndexModel> registers = [];
@@ -173,7 +154,7 @@ Future<List<RegisterIndexModel>> getAllRegisterIndex() async {
   registers.sort((a,b)=>a.name.compareTo(b.name));
   return registers;
 }
-
+///gets the details of the user.
 Future<UserModel> getUserDetails() async {
   DatabaseReference userDetailReference=databaseReference.child('${GlobalClass.user.uid}/userDetails/');
   // userDetailReference.keepSynced(true);
@@ -190,8 +171,27 @@ Future<UserModel> getUserDetails() async {
   GlobalClass.userDetail=userDetail;
   return userDetail;
 }
-
+///updates the details of the user.
 void updateUserDetails(UserModel user, DatabaseReference id) {
   id.update(user.toJson());
 }
 
+DatabaseReference addVideoIndex(VideoIndexModel videoIndexModel)
+{
+  var id=databaseReference.child('VideoIndex/${GlobalClass.user.uid}/').push();
+  id.set(videoIndexModel.toJson());
+  return id;
+}
+///gets the list of videos.
+Future<List<VideoIndexModel>> getAllVideos() async {
+  DataSnapshot dataSnapshot = await databaseReference.child('VideoIndex/${GlobalClass.user.uid}/').once();
+  List<VideoIndexModel> videos = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      VideoIndexModel video = VideoIndexModel.fromJson(jsonDecode(jsonEncode(value)),key);
+      video.setId(databaseReference.child('Videos/${GlobalClass.user.uid}/' + key));
+      videos.add(video);
+    });
+  }
+  return videos;
+}

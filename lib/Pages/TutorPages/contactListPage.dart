@@ -5,7 +5,6 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:shimmer/shimmer.dart';
 class ContactListPage extends StatefulWidget {
   const ContactListPage({Key key}) : super(key: key);
   @override

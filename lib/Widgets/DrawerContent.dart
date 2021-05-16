@@ -2,7 +2,7 @@ import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
 import 'package:chronicle/OwnerModules/clientAccessEditPage.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

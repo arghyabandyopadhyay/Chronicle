@@ -1,7 +1,7 @@
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/clientCardWidget.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';

@@ -1,8 +1,8 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
-import 'package:chronicle/Pages/clientPage.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/Pages/TutorPages/clientPage.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/googleSignInButton.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,14 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
+import 'StudentPages/masterPage.dart';
 import 'errorDisplayPage.dart';
-import 'registersPage.dart';
+import 'TutorPages/registersPage.dart';
 
-class SignInScreen extends StatefulWidget {
+class RoutingPage extends StatefulWidget {
   @override
-  _SignInScreenState createState() => _SignInScreenState();
+  _RoutingPageState createState() => _RoutingPageState();
 }
-class _SignInScreenState extends State<SignInScreen> {
+class _RoutingPageState extends State<RoutingPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   Future<Widget> getWidget()async{
     Widget widget;
@@ -30,9 +31,9 @@ class _SignInScreenState extends State<SignInScreen> {
         {
           GlobalClass.user = FirebaseAuth.instance.currentUser,
           if(GlobalClass.user!=null){
-            await registerUserDetail().then((value)async=>{
+            await addUserDetail().then((value)async=>{
               if(value!=null){
-                await getLastRegister().then((lastRegister) async => {
+                if(GlobalClass.userDetail.isOwner==1||GlobalClass.userDetail.isAppRegistered==1) await getLastRegister().then((lastRegister) async => {
                   GlobalClass.lastRegister=lastRegister,
                   if(lastRegister==null||lastRegister=="")
                     {
@@ -66,6 +67,15 @@ class _SignInScreenState extends State<SignInScreen> {
                     })
                   }
                 })
+                else{
+                  widget= MaterialApp(
+                      title: 'Chronicle',
+                      debugShowCheckedModeBanner: false,
+                      theme: lightThemeData,
+                      darkTheme: darkThemeData,
+                      themeMode: ThemeMode.system,
+                      home: MasterPage())
+                }
               }
               else{
                 widget= MaterialApp(
@@ -146,7 +156,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
     // GlobalClass.user = FirebaseAuth.instance.currentUser;
     // if(GlobalClass.user!=null){
-    //   await registerUserDetail().then((value)async=>{
+    //   await addUserDetail().then((value)async=>{
     //     if(value!=null){
     //       await getLastRegister().then((lastRegister) async => {
     //         GlobalClass.lastRegister=lastRegister,

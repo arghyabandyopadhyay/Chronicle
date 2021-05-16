@@ -35,6 +35,8 @@ class CustomColors{
   static const Color lastMonthTextColor = Colors.orangeAccent;
   static const Color paidTextColor = Colors.green;
   static const Color dueTextColor = Colors.red;
+
+  static const Color primaryText=Colors.black;
 }
 
 var lightThemeData=ThemeData(

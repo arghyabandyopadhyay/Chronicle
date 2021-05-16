@@ -1,37 +1,25 @@
-import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
-import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
-import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/errorPage.dart';
-import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
-import 'package:chronicle/Pages/registersPage.dart';
-import 'package:chronicle/Pages/qrCodePage.dart';
-import 'package:chronicle/Pages/settingsPage.dart';
-import 'package:chronicle/Pages/userInfoScreen.dart';
-import 'package:chronicle/Widgets/DrawerContent.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
+import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:sms/sms.dart';
-import '../Models/clientModel.dart';
-import '../Widgets/clientList.dart';
-import '../Widgets/registerNewClientWidget.dart';
-import 'SignInScreen.dart';
+import '../../Models/clientModel.dart';
+import '../../Widgets/clientList.dart';
+import '../../Widgets/registerNewClientWidget.dart';
 import 'clientInformationPage.dart';
-import 'notificationsPage.dart';
 
 
 class ClientPage extends StatefulWidget {
@@ -104,7 +92,7 @@ class _ClientPageState extends State<ClientPage> {
   }
   void newClientModel(ClientModel client) {
     client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
-    client.setId(registerUser(client,widget.register.uid));
+    client.setId(addClientInRegister(client,widget.register.uid));
     if(mounted)this.setState(() {
       clients.add(client);
     });
@@ -186,7 +174,6 @@ class _ClientPageState extends State<ClientPage> {
             text: TextSpan(
               children: [
                 WidgetSpan(child: Text(widget.register.name)),
-
                 WidgetSpan(
                     child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
                 ),
@@ -331,7 +318,7 @@ class _ClientPageState extends State<ClientPage> {
                       if(renameRegisterTextEditingController.text!=""){
                         setState(() {
                           widget.register.name=renameRegisterTextEditingController.text;
-                          renameRegisterModule(widget.register,widget.register.id);
+                          renameRegister(widget.register,widget.register.id);
                           renameRegisterTextEditingController.clear();
                           Navigator.of(_).pop();
                           this.appBarTitle = GestureDetector(child: Container(
@@ -648,80 +635,7 @@ class _ClientPageState extends State<ClientPage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       key:scaffoldKey,
-      drawer: Drawer(
-        child: DrawerContent(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          drawerItems: [
-            DrawerActionModel(Icons.notifications, "Notifications", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
-            }),
-            DrawerActionModel(Icons.book, "Registers", ()async{
-              setLastRegister("");
-              GlobalClass.lastRegister="";
-              Navigator.pop(context);
-              Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>RegistersPage()));
-            }),
-            DrawerActionModel(Icons.qr_code, "QR code", ()async{
-              Navigator.pop(context);
-              UserModel userModel=await getUserDetails();
-              if(userModel.qrcodeDetail!=null){
-                Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
-              }
-              else {
-                String _data = '';
-                try {
-                  final pickedFile = await ImagePicker().getImage(
-                    source: ImageSource.gallery,
-                    maxWidth: 300,
-                    maxHeight: 300,
-                    imageQuality: 30,
-                  );
-                  setState(() {
-                    QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
-                      _data = value;
-                      userModel.qrcodeDetail=_data;
-                      updateUserDetails(userModel, userModel.id);
-                    });
-
-                  });
-                } catch (e) {
-                  globalShowInSnackBar(scaffoldMessengerKey,e);
-                  setState(() {
-                    _data = '';
-                  });
-                }
-              }
-            }),
-            DrawerActionModel(Icons.account_circle, "Profile", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>UserInfoScreen()));
-            }),
-            DrawerActionModel(Icons.logout, "Log out", ()async{
-              await Authentication.signOut(context: context);
-              Navigator.popUntil(context, (route) => route.isFirst);
-              Navigator.of(context).pushReplacement(PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) => SignInScreen(),
-                transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                  var begin = Offset(-1.0, 0.0);
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
-                  var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                  return SlideTransition(
-                    position: animation.drive(tween),
-                    child: child,
-                  );
-                },
-              ));
-            }),
-            DrawerActionModel(Icons.settings, "Settings", ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>SettingsPage()));
-            }),
-          ],
-        ),
-      ),
+      drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: true,masterContext: context,),
       appBar: getAppBar(),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: _isSearching?

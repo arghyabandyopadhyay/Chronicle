@@ -4,7 +4,7 @@ import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -100,4 +100,17 @@ Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMe
   } catch (e) {
     globalShowInSnackBar(scaffoldMessengerKey,e);
   }
+}
+
+List<ChronicleUserModel> sortChronicleUsersModule(String sortType,List<ChronicleUserModel> listToBeSorted){
+  List<ChronicleUserModel> sortedList=[];
+  if(sortType=="A-Z"){
+    listToBeSorted.sort((a,b)=>a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Z-A"){
+    listToBeSorted.sort((a,b)=>b.displayName.toLowerCase().compareTo(a.displayName.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
+  return sortedList;
 }

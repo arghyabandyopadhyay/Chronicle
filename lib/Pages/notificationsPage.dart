@@ -10,13 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sms/sms.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
 import '../customColors.dart';
-import 'clientInformationPage.dart';
-import 'globalClass.dart';
+import 'TutorPages/clientInformationPage.dart';
+import '../globalClass.dart';
 
 class NotificationsPage extends StatefulWidget {
   static const String routeName = '/notificationPage';

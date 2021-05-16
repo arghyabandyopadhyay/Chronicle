@@ -2,9 +2,9 @@ import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/clientPage.dart';
+import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/Pages/globalClass.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -113,7 +113,7 @@ class _RegisterListState extends State<RegisterList> {
                     actions: [ActionChip(label: Text("Rename"), onPressed: (){
                       if(renameRegisterTextEditingController.text!=""){
                         GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
-                        renameRegisterModule(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
+                        renameRegister(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
                         renameRegisterTextEditingController.clear();
                         Navigator.of(_).pop();
                       }
@@ -142,7 +142,7 @@ class _RegisterListState extends State<RegisterList> {
                 actions: [ActionChip(label: Text("Rename"), onPressed: (){
                   if(renameRegisterTextEditingController.text!=""){
                     GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
-                    renameRegisterModule(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
+                    renameRegister(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
                     renameRegisterTextEditingController.clear();
                     Navigator.of(_).pop();
                   }
