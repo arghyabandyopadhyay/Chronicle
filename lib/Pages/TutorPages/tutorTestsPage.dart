@@ -20,7 +20,7 @@ class _TutorTestsPageState extends State<TutorTestsPage> {
       appBar: AppBar(
         title: Text("Tests"),),
       body: Center(
-        child: Text("This is test page"),
+        child: Text("Coming soon..."),
       ),
     );
   }

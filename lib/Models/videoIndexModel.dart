@@ -5,19 +5,21 @@ import 'package:firebase_database/firebase_database.dart';
 class VideoIndexModel {
   final String directory;
   String downloadUrl;
+  String thumbnailUrl;
   String name;
   String sharedRegisterKeys;
   bool isSelected=false;
   DatabaseReference id;
 
-  VideoIndexModel({this.directory, this.name,this.sharedRegisterKeys,this.downloadUrl});
+  VideoIndexModel({this.directory, this.name,this.sharedRegisterKeys,this.downloadUrl,this.thumbnailUrl});
 
   factory VideoIndexModel.fromJson(Map<String, dynamic> json1,String idKey) {
     return VideoIndexModel(
       directory: json1['Directory'],
       name: json1['Name'],
       sharedRegisterKeys:json1['Registers'],
-      downloadUrl:json1['DownloadUrl']
+      downloadUrl:json1['DownloadUrl'],
+        thumbnailUrl:json1['ThumbnailUrl']
     );
   }
 
@@ -32,5 +34,6 @@ class VideoIndexModel {
         "Directory":this.directory,
         "Registers":this.sharedRegisterKeys,
         "DownloadUrl":this.downloadUrl,
+        "ThumbnailUrl":this.thumbnailUrl,
       };
 }

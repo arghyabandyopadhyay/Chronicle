@@ -1,7 +1,10 @@
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/videoIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
+import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/videoInformationPage.dart';
 import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
 import 'package:chronicle/Widgets/videoTile.dart';
 import 'package:chronicle/globalClass.dart';
@@ -92,18 +95,21 @@ class _VideoListState extends State<VideoList> {
                     ),
                     secondaryActions: <Widget>[
                       IconSlideAction(
-                        caption: 'Watch',
-                        iconWidget: Icon(Icons.video_label_rounded,color: CustomColors.addDueIconColor,),
-                        onTap: () async {
-                          Navigator.of(context).push(CupertinoPageRoute(builder: (videoPlayerContext)=>VideoPlayerPage(video: this.widget.listItems[index])));
+                        caption: 'Information',
+                        iconWidget: Icon(Icons.info_outline,color: CustomColors.addPaymentIconColor,),
+                        onTap: () {
+                          Navigator.of(context).push(CupertinoPageRoute(builder: (videoPlayerContext)=>VideoInformationPage(video: this.widget.listItems[index])));
                         },
                         closeOnTap: false,
                       ),
                       IconSlideAction(
-                        caption: 'Information',
-                        iconWidget: Icon(Icons.info_outline,color: CustomColors.addPaymentIconColor,),
-                        onTap: () {
-                          Navigator.of(context).push(CupertinoPageRoute(builder: (videoPlayerContext)=>VideoPlayerPage(video: this.widget.listItems[index])));
+                        caption: 'Delete',
+                        iconWidget: Icon(Icons.delete,color: CustomColors.addDueIconColor,),
+                        onTap: () async {
+                          setState(() {
+                            deleteFromStorageModule(this.widget.listItems[index]);
+                            this.widget.listItems.remove(this.widget.listItems[index]);
+                          });
                         },
                         closeOnTap: false,
                       ),

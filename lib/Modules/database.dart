@@ -189,7 +189,7 @@ Future<List<VideoIndexModel>> getAllVideos() async {
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       VideoIndexModel video = VideoIndexModel.fromJson(jsonDecode(jsonEncode(value)),key);
-      video.setId(databaseReference.child('Videos/${GlobalClass.user.uid}/' + key));
+      video.setId(databaseReference.child('VideoIndex/${GlobalClass.user.uid}/' + key));
       videos.add(video);
     });
   }

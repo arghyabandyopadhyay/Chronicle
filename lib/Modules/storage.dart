@@ -1,33 +1,23 @@
 import 'dart:io';
+import 'package:chronicle/Models/videoIndexModel.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'database.dart';
 firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
-Future uploadToStorage(String directory,String uid) async {
+void deleteFromStorageModule(VideoIndexModel video) {
   try {
-    final DateTime now = DateTime.now();
-    final int millSeconds = now.millisecondsSinceEpoch;
-    final String month = now.month.toString();
-    final String date = now.day.toString();
-    final String storageId = (millSeconds.toString() + uid);
-    final String today = ('$month-$date');
-
-    final file = await ImagePicker().getVideo(source: ImageSource.gallery);
-    File videoFile=File(file.path);
-
-    firebase_storage.Reference ref = storage.ref().child(directory).child(today).child(storageId);
-    firebase_storage.UploadTask uploadTask = ref.putFile(videoFile, firebase_storage.SettableMetadata(contentType: 'video/mp4'));
-
-    String downloadUrl = await firebase_storage.FirebaseStorage.instance
-        .ref(directory)
-        .getDownloadURL();
-
-    print(downloadUrl);
+    firebase_storage.Reference ref = storage.ref().child(video.directory);
+    ref.delete();
+    ref = storage.ref().child(video.directory.replaceFirst("/", "/thumbnail_",video.directory.lastIndexOf("/")-1));
+    ref.delete();
   }on firebase_core.FirebaseException catch (error) {
     print(error);
   }
+  deleteDatabaseNode(video.id);
 }
 
 Future<void> downloadFile() async {

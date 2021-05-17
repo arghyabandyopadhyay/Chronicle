@@ -317,7 +317,7 @@ class _ClientPageState extends State<ClientPage> {
                     actions: [ActionChip(label: Text("Rename"), onPressed: (){
                       if(renameRegisterTextEditingController.text!=""){
                         setState(() {
-                          widget.register.name=renameRegisterTextEditingController.text;
+                          widget.register.name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
                           renameRegister(widget.register,widget.register.id);
                           renameRegisterTextEditingController.clear();
                           Navigator.of(_).pop();

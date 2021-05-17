@@ -65,6 +65,7 @@ dependencies:
   video_player: ^2.1.1
   intl: ^0.17.0
   firebase_storage: ^8.0.6
+  video_thumbnail: ^0.3.3
 
 dev_dependencies:
   flutter_test:

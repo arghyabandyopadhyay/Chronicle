@@ -72,7 +72,7 @@ class _MasterPageState extends State<MasterPage> {
                 },
               ),
               DrawerActionModel(
-                Icons.home,"Tests",(){
+                FontAwesomeIcons.bookOpen,"Tests",(){
                 Navigator.pop(context);
                 _controller.jumpToTab(1);
               },

@@ -15,7 +15,9 @@ import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../customColors.dart';
 import '../../globalClass.dart';
 
@@ -64,7 +66,7 @@ class _VideosPageState extends State<VideosPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=videos.where((VideoIndexModel element) => (element.name).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=videos.where((VideoIndexModel element) => (element.name.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }
@@ -179,7 +181,7 @@ class _VideosPageState extends State<VideosPage> {
                 }),
                 ModalOptionModel(particulars: "Upload",icon:Icons.video_call_outlined,iconColor:CustomColors.uploadIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  final file = await ImagePicker().getVideo(source: ImageSource.gallery);
+                  final file = await ImagePicker().getVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 300),);
                   if(file!=null)showDialog(context: context, builder: (_)=>new AlertDialog(
                     title: Text("Name the video"),
                     content: TextField(controller: textEditingController,
@@ -195,7 +197,7 @@ class _VideosPageState extends State<VideosPage> {
                     actions: [ActionChip(label: Text("Upload"), onPressed: () async {
                       if(textEditingController.text!=""){
                         Navigator.pop(_);
-                        await uploadFile(file.path,textEditingController.text);
+                        await uploadFile(file.path,textEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),""));
                         textEditingController.clear();
                       }
                       else{
@@ -284,38 +286,58 @@ class _VideosPageState extends State<VideosPage> {
       );
   }
   Future<void> uploadFile(String filePath,String name) async {
-    progressValue=0.1;
-    final DateTime now = DateTime.now();
-    final int millSeconds = now.millisecondsSinceEpoch;
-    final String month = now.month.toString();
-    final String date = now.day.toString();
-    final String storageId = (millSeconds.toString() + "_$name");
-    final String today = ('$month-$date');
-    File file = File(filePath);
-    setState(() {
-      isUploading=true;
-    });
-    firebase_storage.UploadTask task=storage.ref('${GlobalClass.user.uid}/$today/$storageId').putFile(file,firebase_storage.SettableMetadata(contentType: 'video/mp4'));
-    task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
-      print('Task state: ${snapshot.state}');
-      if(mounted)setState(() {
-        progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
-      });
-    }, onError: (e) {
-      // The final snapshot is also available on the task via `.snapshot`,
-      // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
-      print(task.snapshot);
-
-      if (e.code == 'permission-denied') {
-        print('User does not have permission to upload to this reference.');
-      }
-    });
-
-    // We can still optionally use the Future alongside the stream.
     try {
+      progressValue=0.1;
+      final DateTime now = DateTime.now();
+      final int millSeconds = now.millisecondsSinceEpoch;
+      final String month = now.month.toString();
+      final String date = now.day.toString();
+      final String storageId = (millSeconds.toString() + "_$name");
+      final String today = ('$month-$date');
+      File file = File(filePath);
+      setState(() {
+        isUploading=true;
+      });
+      firebase_storage.UploadTask task=storage.ref('${GlobalClass.user.uid}/$today/$storageId').putFile(file,firebase_storage.SettableMetadata(contentType: 'video/mp4'));
+      task.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
+        if(mounted)setState(() {
+          progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
+        });
+      }, onError: (e) {
+        // The final snapshot is also available on the task via `.snapshot`,
+        // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
+        print(task.snapshot);
+
+        if (e.code == 'permission-denied') {
+          print('User does not have permission to upload to this reference.');
+        }
+      });
       await task;
       String url=await downloadURL('${GlobalClass.user.uid}/$today/$storageId');
-      newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: ""));
+      String thumbnailFile = await VideoThumbnail.thumbnailFile(
+        video: url,
+        thumbnailPath: (await getTemporaryDirectory()).path,
+        imageFormat: ImageFormat.WEBP,
+        maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        quality: 75,
+      );
+      firebase_storage.UploadTask task2=storage.ref('${GlobalClass.user.uid}/$today/thumbnail_$storageId').putFile(File(thumbnailFile),firebase_storage.SettableMetadata(contentType: 'Jpeg'));
+      task2.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
+        if(mounted)setState(() {
+          progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
+        });
+      }, onError: (e) {
+        // The final snapshot is also available on the task via `.snapshot`,
+        // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
+        print(task.snapshot);
+
+        if (e.code == 'permission-denied') {
+          print('User does not have permission to upload to this reference.');
+        }
+      });
+      await task2;
+      String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
+      newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
       if(mounted)setState(() {
         isUploading=false;
       });

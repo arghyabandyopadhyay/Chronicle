@@ -112,7 +112,7 @@ class _RegisterListState extends State<RegisterList> {
                     ),
                     actions: [ActionChip(label: Text("Rename"), onPressed: (){
                       if(renameRegisterTextEditingController.text!=""){
-                        GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
+                        GlobalClass.registerList[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
                         renameRegister(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
                         renameRegisterTextEditingController.clear();
                         Navigator.of(_).pop();
@@ -141,10 +141,12 @@ class _RegisterListState extends State<RegisterList> {
                 ),
                 actions: [ActionChip(label: Text("Rename"), onPressed: (){
                   if(renameRegisterTextEditingController.text!=""){
-                    GlobalClass.registerList[index].name=renameRegisterTextEditingController.text;
-                    renameRegister(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
-                    renameRegisterTextEditingController.clear();
-                    Navigator.of(_).pop();
+                    setState(() {
+                      GlobalClass.registerList[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
+                      renameRegister(GlobalClass.registerList[index],GlobalClass.registerList[index].id);
+                      renameRegisterTextEditingController.clear();
+                      Navigator.of(_).pop();
+                    });
                   }
                   else{
                     Navigator.of(_).pop();

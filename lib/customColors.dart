@@ -37,6 +37,7 @@ class CustomColors{
   static const Color dueTextColor = Colors.red;
 
   static const Color primaryText=Colors.black;
+  static const Color playbackSpeedTextColor=Colors.white;
 }
 
 var lightThemeData=ThemeData(

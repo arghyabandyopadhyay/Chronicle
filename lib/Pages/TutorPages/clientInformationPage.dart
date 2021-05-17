@@ -145,28 +145,25 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   void initState() {
     now=DateTime.now();
     today=DateTime(now.year,now.month,now.day);
+    phoneNumberTextField.text=widget.client.mobileNo!=null?widget.client.mobileNo:"";
+    nameTextField.text=widget.client.name!=null?widget.client.name:"";
+    dueTextField.text=widget.client.due!=null?widget.client.due.toString():"";
+    addressTextField.text=widget.client.address!=null?widget.client.address:"";
+    fathersNameTextField.text=widget.client.fathersName!=null?widget.client.fathersName:"";
+    educationTextField.text=widget.client.education!=null?widget.client.education:"";
+    occupationTextField.text=widget.client.occupation!=null?widget.client.occupation:"";
+    injuriesTextField.text=widget.client.injuries!=null?widget.client.injuries:"";
+    registrationIdTextField.text=(this.widget.client.registrationId!=null&&this.widget.client.registrationId!=""?this.widget.client.registrationId:this.widget.client.id.key);
+    heightTextField.text=widget.client.height!=null?widget.client.height.toStringAsFixed(2):"";
+    weightTextField.text=widget.client.weight!=null?widget.client.weight.toStringAsFixed(2):"";
+    sexDropDown=widget.client.sex;
+    casteDropDown=widget.client.caste;
+    startDateTemp=widget.client.startDate!=null?widget.client.startDate:today;
+
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    if(counter==0)
-    {
-      phoneNumberTextField.text=widget.client.mobileNo!=null?widget.client.mobileNo:"";
-      nameTextField.text=widget.client.name!=null?widget.client.name:"";
-      dueTextField.text=widget.client.due!=null?widget.client.due.toString():"";
-      addressTextField.text=widget.client.address!=null?widget.client.address:"";
-      fathersNameTextField.text=widget.client.fathersName!=null?widget.client.fathersName:"";
-      educationTextField.text=widget.client.education!=null?widget.client.education:"";
-      occupationTextField.text=widget.client.occupation!=null?widget.client.occupation:"";
-      injuriesTextField.text=widget.client.injuries!=null?widget.client.injuries:"";
-      registrationIdTextField.text=(this.widget.client.registrationId!=null&&this.widget.client.registrationId!=""?this.widget.client.registrationId:this.widget.client.id.key);
-      heightTextField.text=widget.client.height!=null?widget.client.height.toStringAsFixed(2):"";
-      weightTextField.text=widget.client.weight!=null?widget.client.weight.toStringAsFixed(2):"";
-      sexDropDown=widget.client.sex;
-      casteDropDown=widget.client.caste;
-      startDateTemp=widget.client.startDate!=null?widget.client.startDate:today;
-      counter++;
-    }
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
         title: Text(widget.client.name!=null?widget.client.name:"Client Profile",),

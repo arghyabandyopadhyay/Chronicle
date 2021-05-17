@@ -43,20 +43,12 @@ class _VideoInformationPageState extends State<VideoInformationPage> {
   DateTime startDateTemp;
   String sexDropDown;
   String casteDropDown;
+  String appBarText='Video';
   bool isLoading=false;
   final focus = FocusNode();
   int counter=0;
   String _validateName(String value) {
     if(value.isEmpty)nameTextField.text="";
-    return null;
-  }
-  final IndNumberTextInputFormatter _phoneNumberFormatter =IndNumberTextInputFormatter();
-  String _validatePhoneNumber(String value) {
-    final phoneExp = RegExp(r'^\d\d\d\d\d\ \d\d\d\d\d$');
-    if (value.isNotEmpty&&!phoneExp.hasMatch(value)) {
-      return "Wrong Mobile No.!";
-    }
-    else if(value.isEmpty)phoneNumberTextField.text="";
     return null;
   }
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -72,17 +64,15 @@ class _VideoInformationPageState extends State<VideoInformationPage> {
   void initState() {
     now=DateTime.now();
     today=DateTime(now.year,now.month,now.day);
+    appBarText=this.widget.video.name.substring(this.widget.video.name.indexOf("_")+1);
+    nameTextField.text=appBarText;
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
-    if(counter==0)
-    {
-      counter++;
-    }
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-        title: Text(widget.video.name!=null?widget.video.name:"Client Profile",),
+        title: Text(appBarText),
         actions: [
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
