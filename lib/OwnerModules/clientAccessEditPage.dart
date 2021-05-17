@@ -204,13 +204,6 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
               }).toList();
             },
           ),
-          if(this.clients!=null&&this.clients.length!=0)IconButton(icon: Icon(Icons.vertical_align_top_outlined), onPressed: ()async{
-            scrollController.animateTo(
-              scrollController.position.minScrollExtent,
-              duration: Duration(seconds: 1),
-              curve: Curves.fastOutSlowIn,
-            );
-          }),
         ],),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: ChronicleUsersList(_isSearching?this.searchResult:this.clients,(){

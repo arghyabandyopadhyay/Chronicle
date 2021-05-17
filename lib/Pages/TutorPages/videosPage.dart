@@ -287,7 +287,7 @@ class _VideosPageState extends State<VideosPage> {
   }
   Future<void> uploadFile(String filePath,String name) async {
     try {
-      progressValue=0.1;
+      progressValue=0;
       final DateTime now = DateTime.now();
       final int millSeconds = now.millisecondsSinceEpoch;
       final String month = now.month.toString();
@@ -309,19 +309,20 @@ class _VideosPageState extends State<VideosPage> {
         print(task.snapshot);
 
         if (e.code == 'permission-denied') {
-          print('User does not have permission to upload to this reference.');
+          globalShowInSnackBar(scaffoldMessengerKey,'You does not have permission to upload to this reference.');
         }
       });
       await task;
+      globalShowInSnackBar(scaffoldMessengerKey,"The video has been uploaded. Uploading metadata...");
       String url=await downloadURL('${GlobalClass.user.uid}/$today/$storageId');
       String thumbnailFile = await VideoThumbnail.thumbnailFile(
         video: url,
         thumbnailPath: (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.WEBP,
-        maxHeight: 64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        maxHeight: 100, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
         quality: 75,
       );
-      firebase_storage.UploadTask task2=storage.ref('${GlobalClass.user.uid}/$today/thumbnail_$storageId').putFile(File(thumbnailFile),firebase_storage.SettableMetadata(contentType: 'Jpeg'));
+      firebase_storage.UploadTask task2=storage.ref('${GlobalClass.user.uid}/$today/thumbnail_$storageId').putFile(File(thumbnailFile),firebase_storage.SettableMetadata(contentType: 'WEBP'));
       task2.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
         if(mounted)setState(() {
           progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
@@ -332,12 +333,13 @@ class _VideosPageState extends State<VideosPage> {
         print(task.snapshot);
 
         if (e.code == 'permission-denied') {
-          print('User does not have permission to upload to this reference.');
+          globalShowInSnackBar(scaffoldMessengerKey,'User does not have permission to upload to this reference.');
         }
       });
       await task2;
       String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
       newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
+      globalShowInSnackBar(scaffoldMessengerKey,"Upload complete!!");
       if(mounted)setState(() {
         isUploading=false;
       });
@@ -345,14 +347,14 @@ class _VideosPageState extends State<VideosPage> {
     }
     on firebase_core.FirebaseException catch (e) {
       if (e.code == 'permission-denied') {
-        print('User does not have permission to upload to this reference.');
+        globalShowInSnackBar(scaffoldMessengerKey,'User does not have permission to upload to this reference.');
       }
       // ...
     }
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       appBar: getAppBar(),
       body: this.videos!=null?this.videos.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: _isSearching?
@@ -481,6 +483,6 @@ class _VideosPageState extends State<VideosPage> {
         )),
       ]):
       ClientListSimmerWidget(),
-    );
+    ),key: scaffoldMessengerKey,);
   }
 }
