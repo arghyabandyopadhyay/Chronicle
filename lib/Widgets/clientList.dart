@@ -65,6 +65,7 @@ class _ClientListState extends State<ClientList> {
               key: widget.refreshIndicatorKey,
               onRefresh: widget.refreshData,
               child:ListView.builder(
+                physics: AlwaysScrollableScrollPhysics(),
                 controller: widget.scrollController,
                 padding: EdgeInsets.only(bottom: 100),
                 itemCount: this.widget.listItems.length,
