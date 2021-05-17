@@ -2,16 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-class TestsPage extends StatefulWidget {
+class CoursesPage extends StatefulWidget {
   final BuildContext menuScreenContext;
   final bool hideStatus;
   final GlobalKey<ScaffoldState> scaffoldKey;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
-  const TestsPage({ Key key,this.menuScreenContext,this.hideStatus,this.scaffoldKey,this.scaffoldMessengerKey}) : super(key: key);
+  const CoursesPage({ Key key,this.menuScreenContext,this.hideStatus,this.scaffoldKey,this.scaffoldMessengerKey}) : super(key: key);
   @override
-  _TestsPageState createState() => _TestsPageState();
+  _CoursesPageState createState() => _CoursesPageState();
 }
-class _TestsPageState extends State<TestsPage> {
+class _CoursesPageState extends State<CoursesPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -22,7 +22,7 @@ class _TestsPageState extends State<TestsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tests"),
+        title: Text("Courses"),
         leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),),
       body: Center(
         child: Text("Coming Soon..."),

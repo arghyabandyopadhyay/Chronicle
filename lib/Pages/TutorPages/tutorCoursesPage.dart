@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-class TutorTestsPage extends StatefulWidget {
-  const TutorTestsPage({ Key key}) : super(key: key);
+class TutorCoursesPage extends StatefulWidget {
+  const TutorCoursesPage({ Key key}) : super(key: key);
   @override
-  _TutorTestsPageState createState() => _TutorTestsPageState();
+  _TutorCoursesPageState createState() => _TutorCoursesPageState();
 }
-class _TutorTestsPageState extends State<TutorTestsPage> {
+class _TutorCoursesPageState extends State<TutorCoursesPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -18,7 +18,7 @@ class _TutorTestsPageState extends State<TutorTestsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tests"),),
+        title: Text("Courses"),),
       body: Center(
         child: Text("Coming soon..."),
       ),

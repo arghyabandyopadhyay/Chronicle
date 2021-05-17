@@ -71,7 +71,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                     _data = value;
                     userModel.qrcodeDetail=_data;
-                    updateUserDetails(userModel, userModel.id);
+                    userModel.update();
 
                   });
 

@@ -1,24 +1,22 @@
 import "package:flutter/material.dart";
 import 'dart:math';
 
-class ColorLoader3 extends StatefulWidget {
-  final double radius;
-  final double dotRadius;
-  final Color centerCircleColor;
+import '../../customColors.dart';
 
-  ColorLoader3({this.radius = 30.0, this.dotRadius = 3.0,this.centerCircleColor=Colors.black12});
-
+class LoaderWidget extends StatefulWidget {
   @override
-  _ColorLoader3State createState() => _ColorLoader3State();
+  _LoaderWidgetState createState() => _LoaderWidgetState();
 }
 
-class _ColorLoader3State extends State<ColorLoader3>
+class _LoaderWidgetState extends State<LoaderWidget>
     with SingleTickerProviderStateMixin {
   Animation<double> animationRotation;
   Animation<double> animationRadiusIn;
   Animation<double> animationRadiusOut;
   AnimationController controller;
-
+  final double finalRadius=30;
+  final double finalDotRadius=8;
+  
   double radius;
   double dotRadius;
   Color centerCircleColor;
@@ -26,10 +24,9 @@ class _ColorLoader3State extends State<ColorLoader3>
   @override
   void initState() {
     super.initState();
-
-    radius = widget.radius;
-    dotRadius = widget.dotRadius;
-    centerCircleColor=widget.centerCircleColor;
+    radius = finalRadius;
+    dotRadius = finalDotRadius;
+    centerCircleColor=Colors.grey.withOpacity(0.25);
 
     controller = AnimationController(
         lowerBound: 0.0,
@@ -61,9 +58,9 @@ class _ColorLoader3State extends State<ColorLoader3>
     controller.addListener(() {
       setState(() {
         if (controller.value >= 0.75 && controller.value <= 1.0)
-          radius = widget.radius * animationRadiusIn.value;
+          radius = finalRadius * animationRadiusIn.value;
         else if (controller.value >= 0.0 && controller.value <= 0.25)
-          radius = widget.radius * animationRadiusOut.value;
+          radius = finalRadius * animationRadiusOut.value;
       });
     });
 
@@ -76,7 +73,7 @@ class _ColorLoader3State extends State<ColorLoader3>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Center(child:Container(
       width: 100.0,
       height: 100.0,
       //color: Colors.black12,
@@ -181,7 +178,7 @@ class _ColorLoader3State extends State<ColorLoader3>
           ),
         ),
       ),
-    );
+    ));
   }
 
   @override

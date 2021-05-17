@@ -312,6 +312,15 @@ deleteClientsModule(List<ClientModel> selectedList){
 shareModule(VideoIndexModel video,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey){
 
 }
+
+String classifySize(int inBytes) {
+  if(inBytes<1000) return inBytes.toString()+" B";
+  else if(inBytes<1000000) return (inBytes/1000).toStringAsFixed(2)+" KB";
+  else if(inBytes<1000000000) return (inBytes/1000000).toStringAsFixed(2)+" MB";
+  else if(inBytes<1000000000000) return (inBytes/1000000000).toStringAsFixed(2)+" GB";
+  else return (inBytes/1000000000000).toString()+" TB";
+}
+
 void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
 {
   FocusScopeNode currentFocus = FocusScope.of(context);

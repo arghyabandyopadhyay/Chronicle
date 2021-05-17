@@ -54,7 +54,7 @@ class _QrCodePageState extends State<QrCodePage> {
                 setState(() {
                   qrCode=_data;
                 });
-                updateUserDetails(value, value.id);
+                value.update();
               });
             });
 

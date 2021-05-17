@@ -29,7 +29,7 @@ class DataModel {
       List<UserModel> userList = [];
       if (jsonList!= null) {
         jsonList.keys.forEach((key) {
-          UserModel user = UserModel.fromJson(jsonDecode(jsonEncode(jsonList[key])));
+          UserModel user = UserModel.fromJson(jsonDecode(jsonEncode(jsonList[key])),key);
           user.setId(databaseReference.child('$uid/userDetails/' + key));
           userList.add(user);
         });

@@ -139,12 +139,12 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
         // int months=int.parse(paymentNumberTextField.text);
         // months=months.abs();
         // clientData.endDate = DateTime(clientData.startDate.year,clientData.startDate.month+months,clientData.startDate.day);
-        // print(clientData.toJson());
+        // globalShowInSnackBar(scaffoldMessengerKey,clientData.toJson());
       widget.callback(clientData);
       Navigator.pop(context);
       // }
       // catch(E){
-      //   print(E);
+      //   globalShowInSnackBar(scaffoldMessengerKey,E);
       //   globalShowInSnackBar(scaffoldMessengerKey,"Please Enter No of Payments!!");
       // }
       FocusScope.of(context).unfocus();

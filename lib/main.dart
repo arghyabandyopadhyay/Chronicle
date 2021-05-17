@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -102,13 +106,56 @@ class Chronicle extends StatefulWidget {
 class _ChronicleState extends State<Chronicle> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
   Stream<String> _tokenStream;
-
-  void setToken(String token) {
-    GlobalClass.applicationToken = token;
-    if(GlobalClass.user!=null)getUserDetails().then((value) => {
-      value.token=token,
-      updateUserDetails(value, value.id)
-    });
+  //void setToken(String token) {
+  //     GlobalClass.applicationToken = token;
+  //     if(GlobalClass.user!=null)getUserDetails().then((value) => {
+  //       value.token=token,
+  //       updateUserDetails(value, value.id)
+  //     });
+  //   }
+  void setToken(String token) async {
+    bool foundDeviceHistory=false;
+    if(Platform.isAndroid){
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      GlobalClass.applicationToken = token;
+      if(GlobalClass.user!=null)getUserDetails().then((value) => {
+        if(value.tokens==null){
+          addToken(value, TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
+        }
+        else{
+          value.tokens.forEach((element) {
+            if(element.deviceId==androidInfo.androidId) {
+              element.token = token;
+              foundDeviceHistory=true;
+              updateToken(element);
+            }
+          }),
+          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
+        },
+      });
+    }
+    else if (Platform.isIOS) {
+      // request permissions if we're on android
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      GlobalClass.applicationToken = token;
+      if(GlobalClass.user!=null)getUserDetails().then((value) => {
+        if(value.tokens==null){
+          addToken(value, TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
+        }
+        else{
+          value.tokens.forEach((element) {
+            if(element.deviceId==iosInfo.identifierForVendor) {
+              element.token = token;
+              foundDeviceHistory=true;
+              updateToken(element);
+            }
+          }),
+          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
+        },
+      });
+    }
   }
 
   Future<void> requestPermissions() async {

@@ -6,7 +6,7 @@ import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';
-import 'package:chronicle/Pages/TutorPages/tutorTestsPage.dart';
+import 'package:chronicle/Pages/TutorPages/tutorCoursesPage.dart';
 import 'package:chronicle/Pages/TutorPages/videosPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
@@ -19,7 +19,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 
-import 'DrawerContent.dart';
+import 'drawerContent.dart';
 
 class UniversalDrawerWidget extends StatelessWidget
 {
@@ -50,9 +50,9 @@ class UniversalDrawerWidget extends StatelessWidget
             Navigator.pop(masterContext);
             Navigator.of(masterContext).push(CupertinoPageRoute(builder: (videosPageContext)=>VideosPage()));
           }),
-          DrawerActionModel(FontAwesomeIcons.bookOpen, "Tests", ()async{
+          DrawerActionModel(FontAwesomeIcons.bookOpen, "Courses", ()async{
             Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (tutorTestContext)=>TutorTestsPage()));
+            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (tutorTestContext)=>TutorCoursesPage()));
           }),
           DrawerActionModel(Icons.qr_code, "QR code", ()async{
             Navigator.pop(masterContext);
@@ -73,7 +73,7 @@ class UniversalDrawerWidget extends StatelessWidget
                   QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
                     _data = value;
                     userModel.qrcodeDetail=_data;
-                    updateUserDetails(userModel, userModel.id);
+                    userModel.update();
                   });
 
                 });

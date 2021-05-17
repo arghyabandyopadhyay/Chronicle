@@ -11,11 +11,13 @@ DatabaseReference chronicleUserRegistration(ChronicleUserModel user)
   id.set(user.toJson());
   return id;
 }
-void updateChronicleUserDetails(ChronicleUserModel user, DatabaseReference id) async{
+void updateChronicleUserDetails(ChronicleUserModel user, DatabaseReference id,bool isForAccessChange) async{
   id.update(user.toJson());
-  UserModel userDetails=await getChronicleUserDetails(user.uid);
-  userDetails.canAccess=user.canAccess;
-  updateUserDetails(userDetails, userDetails.id);
+  if(isForAccessChange){
+    UserModel userDetails=await getChronicleUserDetails(user.uid);
+    userDetails.canAccess=user.canAccess;
+    userDetails.update();
+  }
 }
 
 Future<UserModel> getChronicleUserDetails(String uid) async {
@@ -23,7 +25,7 @@ Future<UserModel> getChronicleUserDetails(String uid) async {
   UserModel userDetail;
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
-      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)));
+      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)),key);
       userDetail.setId(databaseReference.child('$uid/userDetails/'+key));
     });
   }

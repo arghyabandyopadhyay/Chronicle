@@ -107,7 +107,7 @@ class _VideoListState extends State<VideoList> {
                         iconWidget: Icon(Icons.delete,color: CustomColors.addDueIconColor,),
                         onTap: () async {
                           setState(() {
-                            deleteFromStorageModule(this.widget.listItems[index]);
+                            deleteFromStorageModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
                             this.widget.listItems.remove(this.widget.listItems[index]);
                           });
                         },

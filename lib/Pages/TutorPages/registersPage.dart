@@ -2,7 +2,7 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/registerList.dart';
 import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,7 +56,7 @@ class _RegistersPageState extends State<RegistersPage> {
       body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey)),
       ]):
-      ClientListSimmerWidget(),
+      LoaderWidget(),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));
         showDialog(context: context, builder: (_)=>new AlertDialog(

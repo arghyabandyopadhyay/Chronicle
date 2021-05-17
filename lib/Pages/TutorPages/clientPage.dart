@@ -4,7 +4,7 @@ import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:chronicle/Widgets/universalDrawer.dart';
@@ -766,7 +766,7 @@ class _ClientPageState extends State<ClientPage> {
             )
             )),
       ]):
-      ClientListSimmerWidget(),
+      LoaderWidget(),
       floatingActionButton:(selectedList.length < 1)?
       RegisterNewClientWidget(this.newClientModel):
       FloatingActionButton(onPressed: () async {

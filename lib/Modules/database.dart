@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
+import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Models/videoIndexModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/globalClass.dart';
@@ -162,7 +163,7 @@ Future<UserModel> getUserDetails() async {
   UserModel userDetail;
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
-      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)));
+      userDetail = UserModel.fromJson(jsonDecode(jsonEncode(value)),key);
       userDetail.setId(databaseReference.child('${GlobalClass.user.uid}/userDetails/'+key));
     });
     // userDetail = UserModel.fromJson(json[json.keys.toList()[0]]);
@@ -170,6 +171,18 @@ Future<UserModel> getUserDetails() async {
   }
   GlobalClass.userDetail=userDetail;
   return userDetail;
+}
+addToken(UserModel userModel,TokenModel tokenModel)
+{
+  var id=databaseReference.child(userModel.id.path+"/Tokens/").push();
+  id.set(tokenModel.toJson());
+  tokenModel.setId(id);
+  if(userModel.tokens==null)userModel.tokens=[tokenModel];
+  else userModel.tokens.add(tokenModel);
+}
+updateToken(TokenModel tokenModel)
+{
+  tokenModel.id.update(tokenModel.toJson());
 }
 ///updates the details of the user.
 void updateUserDetails(UserModel user, DatabaseReference id) {

@@ -46,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
     GlobalClass.userDetail.smsUserId=smsUserIdText.text;
     GlobalClass.userDetail.smsAccessToken=smsAccessTokenText.text;
     GlobalClass.userDetail.smsMobileNo=smsMobileNoText.text;
-    if(reminderMessageText.text.isNotEmpty)updateUserDetails(GlobalClass.userDetail, GlobalClass.userDetail.id);
+    if(reminderMessageText.text.isNotEmpty)GlobalClass.userDetail.update();
     changesSavedModule(context,scaffoldMessengerKey);
   }
   @override

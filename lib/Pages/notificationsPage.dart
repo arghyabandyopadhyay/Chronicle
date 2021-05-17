@@ -2,7 +2,7 @@ import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -592,7 +592,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 }
             ))),
       ]):
-      ClientListSimmerWidget(),
+      LoaderWidget(),
       // floatingActionButton: FloatingActionButton(child: Icon(Icons.clear_all),onPressed: (){
       //   //clearAllAnimation
       // },),

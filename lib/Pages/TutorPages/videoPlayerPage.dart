@@ -1,5 +1,5 @@
 import 'package:chronicle/Models/videoIndexModel.dart';
-import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -141,7 +141,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                     Align(alignment: Alignment.bottomCenter,child: VideoProgressIndicator(_controller, allowScrubbing: true),)
                   ],
                 ),
-              ],),): ClientListSimmerWidget()
+              ],),): LoaderWidget()
       ),
     );
   }

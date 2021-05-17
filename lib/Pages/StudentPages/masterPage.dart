@@ -1,8 +1,8 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/StudentPages/testsPage.dart';
+import 'package:chronicle/Pages/StudentPages/coursesPage.dart';
 import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Widgets/DrawerContent.dart';
+import 'package:chronicle/Widgets/drawerContent.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +31,7 @@ class _MasterPageState extends State<MasterPage> {
         scaffoldKey: masterPageScaffoldKey,
         scaffoldMessengerKey: masterScaffoldMessengerKey,
       ),
-      TestsPage(
+      CoursesPage(
         scaffoldKey: masterPageScaffoldKey,
         scaffoldMessengerKey: masterScaffoldMessengerKey,
       ),
@@ -48,7 +48,7 @@ class _MasterPageState extends State<MasterPage> {
       ),
       PersistentBottomNavBarItem(
         icon: Icon(FontAwesomeIcons.bookOpen),
-        title: "Tests",
+        title: "Courses",
         inactiveColorPrimary: Colors.grey,
         activeColorPrimary: CustomColors.primaryColor,
       ),
@@ -72,7 +72,7 @@ class _MasterPageState extends State<MasterPage> {
                 },
               ),
               DrawerActionModel(
-                FontAwesomeIcons.bookOpen,"Tests",(){
+                FontAwesomeIcons.bookOpen,"Courses",(){
                 Navigator.pop(context);
                 _controller.jumpToTab(1);
               },

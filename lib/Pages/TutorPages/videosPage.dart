@@ -6,7 +6,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
-import 'package:chronicle/Widgets/Simmers/clientListSimmerWidget.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/videoList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -295,6 +295,7 @@ class _VideosPageState extends State<VideosPage> {
       final String storageId = (millSeconds.toString() + "_$name");
       final String today = ('$month-$date');
       File file = File(filePath);
+      int fileSize=await file.length();
       setState(() {
         isUploading=true;
       });
@@ -306,7 +307,7 @@ class _VideosPageState extends State<VideosPage> {
       }, onError: (e) {
         // The final snapshot is also available on the task via `.snapshot`,
         // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
-        print(task.snapshot);
+        globalShowInSnackBar(scaffoldMessengerKey,e.toString());
 
         if (e.code == 'permission-denied') {
           globalShowInSnackBar(scaffoldMessengerKey,'You does not have permission to upload to this reference.');
@@ -315,14 +316,16 @@ class _VideosPageState extends State<VideosPage> {
       await task;
       globalShowInSnackBar(scaffoldMessengerKey,"The video has been uploaded. Uploading metadata...");
       String url=await downloadURL('${GlobalClass.user.uid}/$today/$storageId');
-      String thumbnailFile = await VideoThumbnail.thumbnailFile(
+      String thumbnailFilePath = await VideoThumbnail.thumbnailFile(
         video: url,
         thumbnailPath: (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.WEBP,
         maxHeight: 100, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
         quality: 75,
       );
-      firebase_storage.UploadTask task2=storage.ref('${GlobalClass.user.uid}/$today/thumbnail_$storageId').putFile(File(thumbnailFile),firebase_storage.SettableMetadata(contentType: 'WEBP'));
+      File thumbnailFile=File(thumbnailFilePath);
+      int thumbnailFileSize=await thumbnailFile.length();
+      firebase_storage.UploadTask task2=storage.ref('${GlobalClass.user.uid}/$today/thumbnail_$storageId').putFile(thumbnailFile,firebase_storage.SettableMetadata(contentType: 'WEBP'));
       task2.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot) {
         if(mounted)setState(() {
           progressValue=(snapshot.bytesTransferred / snapshot.totalBytes);
@@ -330,8 +333,7 @@ class _VideosPageState extends State<VideosPage> {
       }, onError: (e) {
         // The final snapshot is also available on the task via `.snapshot`,
         // this can include 2 additional states, `TaskState.error` & `TaskState.canceled`
-        print(task.snapshot);
-
+        globalShowInSnackBar(scaffoldMessengerKey,e.toString());
         if (e.code == 'permission-denied') {
           globalShowInSnackBar(scaffoldMessengerKey,'User does not have permission to upload to this reference.');
         }
@@ -339,6 +341,8 @@ class _VideosPageState extends State<VideosPage> {
       await task2;
       String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
       newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
+      GlobalClass.userDetail.cloudStorageSize=GlobalClass.userDetail.cloudStorageSize+thumbnailFileSize+fileSize;
+      GlobalClass.userDetail.update();
       globalShowInSnackBar(scaffoldMessengerKey,"Upload complete!!");
       if(mounted)setState(() {
         isUploading=false;
@@ -357,6 +361,7 @@ class _VideosPageState extends State<VideosPage> {
     return ScaffoldMessenger(child: Scaffold(
       appBar: getAppBar(),
       body: this.videos!=null?this.videos.length==0?NoDataError():Column(children: <Widget>[
+        Center(child: Text("Storage Occupied: ${classifySize(GlobalClass.userDetail.cloudStorageSize)}"),),
         Expanded(child: _isSearching?
         Provider.value(
             value: _counter,
@@ -482,7 +487,7 @@ class _VideosPageState extends State<VideosPage> {
             )
         )),
       ]):
-      ClientListSimmerWidget(),
+      LoaderWidget(),
     ),key: scaffoldMessengerKey,);
   }
 }

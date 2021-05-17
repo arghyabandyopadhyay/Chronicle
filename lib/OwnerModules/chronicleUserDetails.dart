@@ -87,14 +87,14 @@ class _ChronicleUserDetailsPageState extends State<ChronicleUserDetailsPage> {
                               border: Border.all(width: 0.2)
                           ),
                         ),
-                        if(userDetail.token!=null)SizedBox(height: 20,),
-                        if(userDetail.token!=null)Container(
+                        SizedBox(height: 20,),
+                        Container(
                           margin: EdgeInsets.symmetric(horizontal: 5),
                           alignment: Alignment.centerLeft,
                           child: ListTile(
                               dense: true,
-                              title: Text("Device Token"),
-                              subtitle: Text(userDetail.token)
+                              title: Text("Can Access"),
+                              subtitle: Text((userDetail.canAccess==1).toString())
                           ),
                           decoration: BoxDecoration(
                               borderRadius:
@@ -108,9 +108,9 @@ class _ChronicleUserDetailsPageState extends State<ChronicleUserDetailsPage> {
                           margin: EdgeInsets.symmetric(horizontal: 5),
                           alignment: Alignment.centerLeft,
                           child: ListTile(
-                              dense: true,
-                              title: Text("Can Access"),
-                              subtitle: Text((userDetail.canAccess==1).toString())
+                            dense: true,
+                            title: Text("Storage Occupied"),
+                            subtitle: Text(classifySize(userDetail.cloudStorageSize)),
                           ),
                           decoration: BoxDecoration(
                               borderRadius:

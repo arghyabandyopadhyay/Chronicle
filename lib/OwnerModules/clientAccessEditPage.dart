@@ -6,6 +6,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/OwnerModules/chronicleUsersList.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,7 +74,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
     chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
     userDetails.isAppRegistered=1;
     userDetails.canAccess=0;
-    updateUserDetails(userDetails, userDetails.id);
+    userDetails.update();
     if(mounted)this.setState(() {
       clients.add(chronicleUserModel);
     });
@@ -127,7 +128,15 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
       })
     });
   }
-
+  synchronizeCloudStorageSizes() async {
+    await Future.forEach(clients,(element) async {
+      UserModel user=await getChronicleUserDetails(element.uid);
+      element.cloudStorageSize=user.cloudStorageSize;
+      element.update(false);
+    });
+    setState(() {
+    });
+  }
   @override
   void initState() {
     super.initState();
@@ -196,6 +205,10 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
                     curve: Curves.fastOutSlowIn,
                   );
                 }),
+                ModalOptionModel(particulars: "Sync Cloud Occupied Data",icon:Icons.sync,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  synchronizeCloudStorageSizes();
+                }),
               ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
                   value: choice,
@@ -210,69 +223,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
           return refreshData(false);
         },scrollController)),
       ]):
-      Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Expanded(
-                child: Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey.withOpacity(0.5),
-                    enabled: true,
-                    child: ListView.builder(
-                      itemBuilder: (_, __) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              width: 48.0,
-                              height: 48.0,
-                              color: Colors.white,
-                            ),
-                            const Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            ),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: double.infinity,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 2.0),
-                                  ),
-                                  Container(
-                                    width: 40.0,
-                                    height: 8.0,
-                                    color: Colors.white,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      itemCount: 4,
-                    )
-                ),
-              ),
-            ],
-          )
-      ),
+      LoaderWidget(),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Enter the UID"),

@@ -1,4 +1,5 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/OwnerModules/dispatchNotificationConsole.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
 import 'package:chronicle/OwnerModules/clientAccessEditPage.dart';
@@ -108,7 +109,8 @@ class DrawerContent extends StatelessWidget {
               leading: Icon(Icons.send),
               title: Text("Dispatch Notification"),
               onTap: ()async{
-                sendNotificationsToAll(scaffoldMessengerKey,GlobalClass.userDetail.messageString);
+                Navigator.of(context).pop();
+                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(

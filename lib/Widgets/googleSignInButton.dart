@@ -1,8 +1,12 @@
+import 'dart:io';
+
+import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Pages/StudentPages/masterPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';
 import 'package:chronicle/customColors.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,12 +24,56 @@ class GoogleSignInButton extends StatefulWidget {
 
 class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   bool _isSigningIn = false;
+  // Future<void> setToken(String token) async {
+  //   GlobalClass.applicationToken = token;
+  //   getUserDetails().then((value) => {
+  //     value.tokens=token,
+  //     value.update()
+  //   });
+  // }
   Future<void> setToken(String token) async {
-    GlobalClass.applicationToken = token;
-    getUserDetails().then((value) => {
-      value.token=token,
-      updateUserDetails(value, value.id)
-    });
+    bool foundDeviceHistory=false;
+    if (Platform.isIOS) {
+      // request permissions if we're on android
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      GlobalClass.applicationToken = token;
+      if(GlobalClass.user!=null)getUserDetails().then((value) => {
+        if(value.tokens==null){
+          addToken(value, TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
+        }
+        else{
+          value.tokens.forEach((element) {
+            if(element.deviceId==iosInfo.identifierForVendor) {
+              element.token = token;
+              foundDeviceHistory=true;
+              updateToken(element);
+            }
+          }),
+          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
+        },
+      });
+    }
+    else if(Platform.isAndroid){
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      GlobalClass.applicationToken = token;
+      if(GlobalClass.user!=null)getUserDetails().then((value) => {
+        if(value.tokens==null){
+          addToken(value, TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
+        }
+        else{
+          value.tokens.forEach((element) {
+            if(element.deviceId==androidInfo.androidId) {
+              element.token = token;
+              foundDeviceHistory=true;
+              updateToken(element);
+            }
+          }),
+          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
+        },
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {
