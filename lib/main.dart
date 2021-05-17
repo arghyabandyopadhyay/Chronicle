@@ -4,6 +4,7 @@ import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:device_info/device_info.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -106,15 +107,9 @@ class Chronicle extends StatefulWidget {
 class _ChronicleState extends State<Chronicle> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
   Stream<String> _tokenStream;
-  //void setToken(String token) {
-  //     GlobalClass.applicationToken = token;
-  //     if(GlobalClass.user!=null)getUserDetails().then((value) => {
-  //       value.token=token,
-  //       updateUserDetails(value, value.id)
-  //     });
-  //   }
   void setToken(String token) async {
     bool foundDeviceHistory=false;
+    GlobalClass.user = FirebaseAuth.instance.currentUser;
     if(Platform.isAndroid){
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -126,9 +121,12 @@ class _ChronicleState extends State<Chronicle> {
         else{
           value.tokens.forEach((element) {
             if(element.deviceId==androidInfo.androidId) {
-              element.token = token;
+              if(element.token!=token)
+                {
+                  element.token = token;
+                  updateToken(element);
+                }
               foundDeviceHistory=true;
-              updateToken(element);
             }
           }),
           if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
@@ -147,9 +145,12 @@ class _ChronicleState extends State<Chronicle> {
         else{
           value.tokens.forEach((element) {
             if(element.deviceId==iosInfo.identifierForVendor) {
-              element.token = token;
+              if(element.token!=token)
+              {
+                element.token = token;
+                updateToken(element);
+              }
               foundDeviceHistory=true;
-              updateToken(element);
             }
           }),
           if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))

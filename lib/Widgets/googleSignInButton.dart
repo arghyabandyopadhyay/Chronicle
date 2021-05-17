@@ -45,9 +45,12 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
         else{
           value.tokens.forEach((element) {
             if(element.deviceId==iosInfo.identifierForVendor) {
-              element.token = token;
+              if(element.token!=token)
+              {
+                element.token = token;
+                updateToken(element);
+              }
               foundDeviceHistory=true;
-              updateToken(element);
             }
           }),
           if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
@@ -65,9 +68,12 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
         else{
           value.tokens.forEach((element) {
             if(element.deviceId==androidInfo.androidId) {
-              element.token = token;
+              if(element.token!=token)
+              {
+                element.token = token;
+                updateToken(element);
+              }
               foundDeviceHistory=true;
-              updateToken(element);
             }
           }),
           if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
