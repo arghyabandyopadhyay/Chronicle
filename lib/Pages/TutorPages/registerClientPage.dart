@@ -8,8 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-
 class RegisterClientPage extends StatefulWidget {
   final Function(ClientModel) callback;
   const RegisterClientPage({Key key, this.callback}) : super(key: key);

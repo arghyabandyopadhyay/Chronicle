@@ -138,6 +138,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
       element.update(false);
     });
     setState(() {
+      globalShowInSnackBar(scaffoldMessengerKey, "Cloud Occupied data synchronized");
     });
   }
   @override
