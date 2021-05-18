@@ -40,12 +40,12 @@ class UniversalDrawerWidget extends StatelessWidget
             Navigator.pop(masterContext);
             Navigator.of(masterContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
           }),
-          if(isNotRegisterPage)DrawerActionModel(Icons.book, "Registers", ()async{
-            setLastRegister("");
-            GlobalClass.lastRegister="";
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).pushReplacement(CupertinoPageRoute(builder: (registerPageContext)=>RegistersPage()));
-          }),
+          // if(isNotRegisterPage)DrawerActionModel(Icons.book, "Registers", ()async{
+          //   setLastRegister("");
+          //   GlobalClass.lastRegister="";
+          //   Navigator.pop(masterContext);
+          //   Navigator.of(masterContext).pushReplacement(CupertinoPageRoute(builder: (registerPageContext)=>RegistersPage()));
+          // }),
           DrawerActionModel(Icons.video_collection_sharp, "Videos", ()async{
             Navigator.pop(masterContext);
             Navigator.of(masterContext).push(CupertinoPageRoute(builder: (videosPageContext)=>VideosPage()));
