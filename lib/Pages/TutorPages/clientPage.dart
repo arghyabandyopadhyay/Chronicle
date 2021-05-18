@@ -20,6 +20,15 @@ import '../../Models/clientModel.dart';
 import '../../Widgets/clientList.dart';
 import '../../Widgets/registerNewClientWidget.dart';
 import 'clientInformationPage.dart';
+import 'package:chronicle/Models/excelClientModel.dart';
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import '../../customColors.dart';
 
 
 class ClientPage extends StatefulWidget {
@@ -36,6 +45,7 @@ class _ClientPageState extends State<ClientPage> {
   List<ClientModel> selectedList=[];
   int _counter=0;
   bool _isLoading;
+  String _filePath;
   GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   bool _isSearching=false;
@@ -89,6 +99,74 @@ class _ClientPageState extends State<ClientPage> {
       setState(() {
       });
     }
+  }
+  Future<String> get localPath async {
+    final directory = await getExternalStorageDirectory();
+    return directory.path;
+  }
+  fileLocalName(String type, String assetPath) async {
+    String dic = await localPath + "/filereader/files/";
+    return dic + "ClientUploadExcelFile"+ "." + type;
+  }
+  void getFilePath() async {
+    try {
+      FilePickerResult filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
+      String filePath=filePickerResult.paths[0];
+      if (filePath == '') {
+        return;
+      }
+      this._filePath = filePath;
+      var bytes = File(_filePath).readAsBytesSync();
+      var excel = Excel.decodeBytes(bytes);
+      int i = 0;
+      List<dynamic> keys = [];
+      List<Map<String, dynamic>> json = [];
+      for (var table in excel.tables.keys) {
+        for (var row in excel.tables[table].rows) {
+          if (i == 0) {
+            keys = row;
+            i++;
+          } else {
+            Map<String, dynamic> temp = Map<String, dynamic>();
+            int j = 0;
+            String tk = '';
+            for (var key in keys) {
+              tk = key;
+              temp[tk] = (row[j].runtimeType==String)?row[j].toString():row[j];
+              j++;
+            }
+            json.add(temp);
+          }
+        }
+      }
+      json.forEach((jsonItem)
+      {
+        ExcelClientModel excelClientModel=ExcelClientModel.fromJson(jsonItem);
+        ClientModel temp=excelClientModel.toClientModel();
+        newClientModel(temp);
+      });
+    } catch (e) {
+      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!"+e.toString());
+    }
+  }
+  fileExists(String type, String assetPath) async {
+    String fileName = await fileLocalName(type, assetPath);
+    if (await File(fileName).exists()) {
+      return true;
+    }
+    return false;
+  }
+  asset2Local(String type, String assetPath) async {
+    var path=await fileLocalName(type, assetPath);
+    File file = File(path);
+    if (await fileExists(type, assetPath)) {
+      await file.delete();
+    }
+    await file.create(recursive: true);
+    ByteData bd = await rootBundle.load(assetPath);
+    await file.writeAsBytes(bd.buffer.asUint8List(), flush: true);
+    await OpenFile.open(path);
+    return true;
   }
   void newClientModel(ClientModel client) {
     client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
@@ -525,6 +603,14 @@ class _ClientPageState extends State<ClientPage> {
                       }),
                     ],
                   ));
+                }),
+                ModalOptionModel(particulars: "Upload Client list",icon:Icons.upload_file,iconColor: CustomColors.uploadIconColor, onTap: () async {
+                  Navigator.pop(popupContext);
+                  getFilePath();
+                }),
+                ModalOptionModel(particulars: "Download Template",icon: Icons.download_sharp,iconColor: CustomColors.downloadIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  asset2Local("xlsx", "assets/clientList.xlsx");
                 })
               ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(

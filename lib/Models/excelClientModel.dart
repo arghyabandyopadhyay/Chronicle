@@ -23,6 +23,8 @@ class ExcelClientModel
 
   factory ExcelClientModel.fromJson(Map<String, dynamic> json1) {
     DateTime getDate(String date){
+      date=date.replaceFirst(".0", "");
+      date=date.replaceAll(" ", "");
       try{
         int length=date.length;
         if(length==7)date="0"+date;
@@ -33,8 +35,30 @@ class ExcelClientModel
         return null;
       }
     }
-    String getFormattedMobileNo(String value)
-    {
+    String getSex(String string){
+      string=string.toLowerCase().replaceAll(" ", "");
+      if(string.length>0)
+      {
+        if(string[0]=="m")return "Male";
+        else if(string[0]=="f") return "Female";
+        else return null;
+      }
+      else return null;
+    }
+    String getCaste(String string){
+      //'General', 'OBC', 'SC/ST'
+      string=string.toLowerCase().replaceAll(" ", "");
+      if(string.length>0)
+      {
+        if(string[0]=="g")return "General";
+        else if(string[0]=="o") return "OBC";
+        else if(string[0]=="s") return "SC/ST";
+        else return null;
+      }
+      else return null;
+    }
+    String getFormattedMobileNo(String value) {
+      value=value.replaceFirst(".0", "");
       value=value.replaceAll(" ", "");
       RegExp mobileNoRegex = new RegExp(r'(^(?:[+0]9)?[0-9]{10,12}$)');
       if (value.length == 0) {
@@ -59,10 +83,23 @@ class ExcelClientModel
         return "";
       }
     }
-    int months=json1['NoOfPayments']!=null?json1['NoOfPayments']:0;
+    int getNoOfPayments(dynamic noOfPayments){
+      try{
+        return json1['NoOfPayments']!=null||json1['NoOfPayments']>0?json1['NoOfPayments']:1;
+      }
+      catch(E){
+        return 1;
+      }
+    }
+    int months=getNoOfPayments(json1['NoOfPayments']);
     DateTime startDate;
-    if(json1['StartDate(DDMMYYYY)']!=null)
-    startDate=getDate(json1['StartDate(DDMMYYYY)'].toString());
+    if(json1['StartDate(DDMMYYYY)']!=null){
+      startDate=getDate(json1['StartDate(DDMMYYYY)'].toString());
+      if(startDate==null){
+        DateTime now=DateTime.now();
+        startDate=DateTime(now.year,now.month,now.day);
+      }
+    }
     else {
       DateTime now=DateTime.now();
       startDate=DateTime(now.year,now.month,now.day);
@@ -79,8 +116,8 @@ class ExcelClientModel
         occupation: json1['Occupation']!=null?json1['Occupation'].toString():null,
         address: json1['Address']!=null?json1['Address'].toString():null,
         injuries: json1['Injuries']!=null?json1['Injuries'].toString():null,
-        sex: json1['Sex']!=null?json1['Sex'].toString():null,
-        caste: json1['Caste']!=null?json1['Caste'].toString():null,
+        sex: json1['Sex']!=null?getSex(json1['Sex'].toString()):null,
+        caste: json1['Caste']!=null?getCaste(json1['Caste'].toString()):null,
         startDate: startDate,
         endDate: endDate,
         dob: json1['Dob(DDMMYYYY)']!=null?getDate(json1['Dob(DDMMYYYY)'].toString()):null,
