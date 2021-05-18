@@ -70,14 +70,17 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   void registerClientUsingToken(String uid) async{
     //isLoading mechanisms
     UserModel userDetails=await getChronicleUserDetails(uid);
-    ChronicleUserModel chronicleUserModel=new ChronicleUserModel(uid: uid,email: userDetails.email,canAccess: 0,displayName: userDetails.displayName);
-    chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
-    userDetails.isAppRegistered=1;
-    userDetails.canAccess=0;
-    userDetails.update();
-    if(mounted)this.setState(() {
-      clients.add(chronicleUserModel);
-    });
+    if(userDetails!=null){
+      ChronicleUserModel chronicleUserModel=new ChronicleUserModel(uid: uid,email: userDetails.email,canAccess: 0,displayName: userDetails.displayName);
+      chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
+      userDetails.isAppRegistered=1;
+      userDetails.canAccess=0;
+      userDetails.update();
+      if(mounted)this.setState(() {
+        clients.add(chronicleUserModel);
+      });
+    }
+    else globalShowInSnackBar(scaffoldMessengerKey,"No Such user found!!");
   }
   Future<Null> refreshData(bool isNotSwipeDownRefresh) async{
       try{
@@ -239,7 +242,9 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
           ),
           actions: [ActionChip(label: Text("Add"), onPressed: (){
             if(textEditingController.text!=""){
-              registerClientUsingToken(textEditingController.text);
+              if(clients.where((element) => element.uid==textEditingController.text).toList().length==0)registerClientUsingToken(textEditingController.text);
+              else globalShowInSnackBar(scaffoldMessengerKey, "User already present!!");
+
               textEditingController.clear();
               Navigator.pop(_);
             }

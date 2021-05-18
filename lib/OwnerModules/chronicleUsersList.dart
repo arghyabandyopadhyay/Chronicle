@@ -27,29 +27,34 @@ class _ChronicleUsersListState extends State<ChronicleUsersList> {
           controller: widget.scrollController,
       itemCount: this.widget.listItems.length,
       itemBuilder: (context, index) {
-        return Card(
-          color: Colors.transparent,
-          elevation: 0,
-          margin: EdgeInsets.only(bottom: 2),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10,vertical: 3),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: Column(
-                  crossAxisAlignment:CrossAxisAlignment.start,
-                  mainAxisAlignment:MainAxisAlignment.start,
-                  children: [
-                  Text(this.widget.listItems[index].displayName,style: TextStyle(fontWeight: FontWeight.w900),),
-                  Text(this.widget.listItems[index].email,style: TextStyle(fontWeight: FontWeight.w300),),
-                  Text(classifySize(this.widget.listItems[index].cloudStorageSize),style: TextStyle(fontWeight: FontWeight.w300),),
-                ],)),
-                IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.desktop_access_disabled_outlined,color: Colors.red,):Icon(Icons.how_to_reg_outlined,color: Colors.green,),onPressed: (){
-                  setState(() {
-                    this.widget.listItems[index].canAccess=(this.widget.listItems[index].canAccess+1)%2;
-                    this.widget.listItems[index].update(true);
-                  });})
-              ],),),);
+        return InkWell(
+          onTap: (){
+            Navigator.of(context).push(CupertinoPageRoute(builder: (chronicleUserDetailsContext)=>ChronicleUserDetailsPage(user: this.widget.listItems[index],)));
+          },
+          child: Card(
+            color: Colors.transparent,
+            elevation: 0,
+            margin: EdgeInsets.only(bottom: 2),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 3),
+              child: Row(crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: Column(
+                    crossAxisAlignment:CrossAxisAlignment.start,
+                    mainAxisAlignment:MainAxisAlignment.start,
+                    children: [
+                      Text(this.widget.listItems[index].displayName,style: TextStyle(fontWeight: FontWeight.w900),),
+                      Text(this.widget.listItems[index].email,style: TextStyle(fontWeight: FontWeight.w300),),
+                      Text(classifySize(this.widget.listItems[index].cloudStorageSize),style: TextStyle(fontWeight: FontWeight.w300),),
+                    ],)),
+                  IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.desktop_access_disabled_outlined,color: Colors.red,):Icon(Icons.how_to_reg_outlined,color: Colors.green,),onPressed: (){
+                    setState(() {
+                      this.widget.listItems[index].canAccess=(this.widget.listItems[index].canAccess+1)%2;
+                      this.widget.listItems[index].update(true);
+                    });})
+                ],),),),
+        );
       },
     ));
   }
