@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../globalClass.dart';
 import 'database.dart';
 firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
 
@@ -16,6 +17,8 @@ void deleteFromStorageModule(VideoIndexModel video,GlobalKey<ScaffoldMessengerSt
     ref.delete();
     ref = storage.ref().child(video.directory.replaceFirst("/", "/thumbnail_",video.directory.lastIndexOf("/")-1));
     ref.delete();
+    GlobalClass.userDetail.cloudStorageSize=GlobalClass.userDetail.cloudStorageSize-video.thumbnailSize-video.cloudStorageSize;
+    GlobalClass.userDetail.update();
   }on firebase_core.FirebaseException catch (error) {
     globalShowInSnackBar(scaffoldMessengerKey,error.message);
   }

@@ -8,10 +8,12 @@ class VideoIndexModel {
   String thumbnailUrl;
   String name;
   String sharedRegisterKeys;
+  int cloudStorageSize;
+  int thumbnailSize;
   bool isSelected=false;
   DatabaseReference id;
 
-  VideoIndexModel({this.directory, this.name,this.sharedRegisterKeys,this.downloadUrl,this.thumbnailUrl});
+  VideoIndexModel({this.directory, this.name,this.sharedRegisterKeys,this.downloadUrl,this.thumbnailSize,this.thumbnailUrl,this.cloudStorageSize});
 
   factory VideoIndexModel.fromJson(Map<String, dynamic> json1,String idKey) {
     return VideoIndexModel(
@@ -19,7 +21,9 @@ class VideoIndexModel {
       name: json1['Name'],
       sharedRegisterKeys:json1['Registers'],
       downloadUrl:json1['DownloadUrl'],
-        thumbnailUrl:json1['ThumbnailUrl']
+      cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
+      thumbnailSize:json1['ThumbnailSize']!=null?json1['ThumbnailSize']:0,
+      thumbnailUrl:json1['ThumbnailUrl']
     );
   }
 
@@ -34,6 +38,8 @@ class VideoIndexModel {
         "Directory":this.directory,
         "Registers":this.sharedRegisterKeys,
         "DownloadUrl":this.downloadUrl,
+        "CloudStorageSize":this.cloudStorageSize,
+        "ThumbnailSize":this.thumbnailSize,
         "ThumbnailUrl":this.thumbnailUrl,
       };
 }

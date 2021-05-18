@@ -25,11 +25,10 @@ class VideoList extends StatefulWidget {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
   final Function onLongPressed;
   final Function onTapList;
-  final Function onDoubleTapList;
   final Function refreshData;
   final ScrollController scrollController;
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey;
-  VideoList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.onDoubleTapList,this.refreshData,this.scrollController,this.refreshIndicatorKey});
+  VideoList({this.listItems,this.scaffoldMessengerKey,this.onTapList,this.onLongPressed,this.refreshData,this.scrollController,this.refreshIndicatorKey});
   @override
   _VideoListState createState() => _VideoListState();
 }
@@ -88,9 +87,6 @@ class _VideoListState extends State<VideoList> {
                       },
                       onLongPressed: (index){
                         widget.onLongPressed(index);
-                      },
-                      onDoubleTap: (index){
-                        widget.onDoubleTapList(index);
                       },
                     ),
                     secondaryActions: <Widget>[

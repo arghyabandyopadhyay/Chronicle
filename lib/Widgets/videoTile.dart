@@ -9,9 +9,8 @@ class VideoCardWidget extends StatefulWidget {
   final double size;
   final Function onTapList;
   final Function onLongPressed;
-  final Function onDoubleTap;
   final int index;
-  VideoCardWidget({this.item, this.key,this.size,this.onTapList,this.index,this.onLongPressed,this.onDoubleTap});
+  VideoCardWidget({this.item, this.key,this.size,this.onTapList,this.index,this.onLongPressed});
   @override
   _VideoCardWidgetState createState() => _VideoCardWidgetState();
 }
@@ -42,9 +41,6 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
           },
           onLongPress: (){
             widget.onLongPressed(widget.index);
-          },
-          onDoubleTap: (){
-            widget.onDoubleTap(widget.index);
           },
           child: ListTile(
             leading: this.widget.item.thumbnailUrl!=null?Image.network(

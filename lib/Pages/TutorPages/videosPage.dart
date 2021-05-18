@@ -7,7 +7,6 @@ import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
-import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/videoList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -147,7 +146,6 @@ class _VideosPageState extends State<VideosPage> {
     getVideoIndexModels();
     this.appBarTitle = Text("Videos");
   }
-
   getAppBar(){
     if(selectedList.length < 1)
       return AppBar(
@@ -258,7 +256,7 @@ class _VideosPageState extends State<VideosPage> {
                   ActionChip(label: Text("Yes"), onPressed: (){
                     setState(() {
                       selectedList.forEach((element) {
-                        deleteDatabaseNode(element.id);
+                        deleteFromStorageModule(element,scaffoldMessengerKey);
                         if(_isSearching)searchResult.remove(element);
                         videos.remove(element);
                       });
@@ -340,7 +338,7 @@ class _VideosPageState extends State<VideosPage> {
       });
       await task2;
       String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
-      newVideoIndexModel(new VideoIndexModel(name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
+      newVideoIndexModel(new VideoIndexModel(cloudStorageSize:fileSize,thumbnailSize:thumbnailFileSize,name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
       GlobalClass.userDetail.cloudStorageSize=GlobalClass.userDetail.cloudStorageSize+thumbnailFileSize+fileSize;
       GlobalClass.userDetail.update();
       globalShowInSnackBar(scaffoldMessengerKey,"Upload complete!!");
@@ -400,27 +398,6 @@ class _VideosPageState extends State<VideosPage> {
                     }
                   });
                 },
-                onDoubleTapList:(index){
-                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-                    title: Text("Confirm Delete"),
-                    content: Text("Are you sure to delete ${searchResult[index].name}?"),
-                    actions: [
-                      ActionChip(label: Text("Yes"), onPressed: (){
-                        setState(() {
-                          deleteDatabaseNode(searchResult[index].id);
-                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
-                          searchResult.removeAt(index);
-                          Navigator.of(_).pop();
-                        });
-                      }),
-                      ActionChip(label: Text("No"), onPressed: (){
-                        setState(() {
-                          Navigator.of(_).pop();
-                        });
-                      })
-                    ],
-                  ));
-                }
             )):
         Provider.value(
             value: _counter,
@@ -463,27 +440,6 @@ class _VideosPageState extends State<VideosPage> {
                     }
                   });
                 },
-                onDoubleTapList:(index){
-                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-                    title: Text("Confirm Delete"),
-                    content: Text("Are you sure to delete ${videos[index].name}?"),
-                    actions: [
-                      ActionChip(label: Text("Yes"), onPressed: (){
-                        setState(() {
-                          deleteDatabaseNode(videos[index].id);
-                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${videos[index].name}, deleted!!");
-                          videos.removeAt(index);
-                          Navigator.of(_).pop();
-                        });
-                      }),
-                      ActionChip(label: Text("No"), onPressed: (){
-                        setState(() {
-                          Navigator.of(_).pop();
-                        });
-                      })
-                    ],
-                  ));
-                }
             )
         )),
       ]):
