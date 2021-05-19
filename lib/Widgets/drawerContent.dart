@@ -1,4 +1,4 @@
-import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/drawerActionModel.dart';
 import 'package:chronicle/OwnerModules/dispatchNotificationConsole.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
@@ -12,12 +12,7 @@ class DrawerContent extends StatelessWidget {
   DrawerContent({Key key,this.drawerItems,this.scaffoldMessengerKey}) : super(key: key);
   final List<DrawerActionModel> drawerItems;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
-  final List<Widget> aboutBoxChildren = <Widget>[
-    const SizedBox(height: 24),
-    Text('Chronicle is an easy to go Register maintaining application. '
-        'It is capable of managing your registers and maintaining '
-        'the fee records of your clients. '),
-  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,21 +83,6 @@ class DrawerContent extends StatelessWidget {
               onTap: ()async{
               Navigator.pop(context);
               Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>HelpAndFeedbackPage()));
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text("About Chronicle"),
-              onTap: ()async{
-                Navigator.pop(context);
-                showAboutDialog(
-                  context: context,
-                  applicationIcon: Image.asset("assets/icon.png",width: 40,height: 40,),
-                  applicationName: 'Chronicle',
-                  applicationVersion: 'Version 2021.2',
-                  applicationLegalese: '\u{a9} 2021 Chronicle Business Solutions',
-                  children: aboutBoxChildren,
-                );
               },
             ),
             if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(

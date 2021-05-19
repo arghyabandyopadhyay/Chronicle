@@ -1,24 +1,14 @@
-import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/Modules/apiModule.dart';
-import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/storage.dart';
-import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/videoInformationPage.dart';
-import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
-import 'package:chronicle/Widgets/videoTile.dart';
-import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Widgets/clientCardWidget.dart';
+import 'package:chronicle/Widgets/videoCardWidget.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import '../Models/clientModel.dart';
 import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
-import 'optionModalBottomSheet.dart';
 
 class VideoList extends StatefulWidget {
   final List<VideoIndexModel> listItems;

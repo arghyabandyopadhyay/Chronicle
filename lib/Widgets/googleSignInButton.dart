@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chronicle/Models/tokenModel.dart';
-import 'package:chronicle/Pages/chronicleMasterPage.dart';
+import 'package:chronicle/Pages/MasterPages/chronicleMasterPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';

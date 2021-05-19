@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../globalClass.dart';
 
 class CourseModel {
+  String previewThumbnailUrl;
   String authorUid;
   String title;
   String description;
@@ -19,7 +20,7 @@ class CourseModel {
   List<VideoIndexModel> videos;
   VideoIndexModel previewVideo;
 
-  CourseModel({this.videos,this.previewVideo,this.totalUsers,this.authorUid, this.title,this.description,this.whatWillYouLearn,this.authorPrice,this.sellingPrice,this.coursePackageDurationInMonths,this.lastUpdated});
+  CourseModel({this.videos,this.previewThumbnailUrl,this.previewVideo,this.totalUsers,this.authorUid, this.title,this.description,this.whatWillYouLearn,this.authorPrice,this.sellingPrice,this.coursePackageDurationInMonths,this.lastUpdated});
 
   factory CourseModel.fromJson(Map<String, dynamic> json1,String idKey) {
     List<VideoIndexModel> getVideos(Map<String, dynamic> jsonList){
@@ -53,6 +54,7 @@ class CourseModel {
         authorPrice:json1['AuthorPrice'],
         sellingPrice:json1['SellingPrice'],
         lastUpdated:json1['LastUpdated'],
+        previewThumbnailUrl: json1['PreviewThumbnailUrl'],
         videos: getVideos(jsonDecode(jsonEncode(json1['Videos']))),
         previewVideo: getPreviewVideo(jsonDecode(jsonEncode(json1['Videos'])))
     );
@@ -65,14 +67,15 @@ class CourseModel {
 
   Map<String,dynamic> toJson() =>
       {
-        "TotalUsers": totalUsers,
-        "AuthorUid": authorPrice,
-        "Title":title,
-        "Description":description,
-        "WhatWillYouLearn":whatWillYouLearn,
-        "CoursePackageDurationInMonths":coursePackageDurationInMonths,
-        "AuthorPrice":authorPrice,
-        "SellingPrice":sellingPrice,
-        "LastUpdated":lastUpdated,
+        "TotalUsers": this.totalUsers,
+        "AuthorUid": this.authorPrice,
+        "Title":this.title,
+        "PreviewThumbnailUrl":this.previewThumbnailUrl,
+        "Description":this.description,
+        "WhatWillYouLearn":this.whatWillYouLearn,
+        "CoursePackageDurationInMonths":this.coursePackageDurationInMonths,
+        "AuthorPrice":this.authorPrice,
+        "SellingPrice":this.sellingPrice,
+        "LastUpdated":this.lastUpdated,
       };
 }

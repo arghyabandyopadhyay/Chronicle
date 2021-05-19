@@ -1,9 +1,9 @@
-import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/drawerActionModel.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/routingPage.dart';
 import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Pages/userInfoScreen.dart';
+import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/drawerContent.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

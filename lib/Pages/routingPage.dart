@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
-import 'chronicleMasterPage.dart';
+import 'MasterPages/chronicleMasterPage.dart';
 import 'errorDisplayPage.dart';
 import 'TutorPages/registersPage.dart';
 

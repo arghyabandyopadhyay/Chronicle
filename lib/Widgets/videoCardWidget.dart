@@ -1,6 +1,5 @@
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:flutter/material.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 
 class VideoCardWidget extends StatefulWidget {

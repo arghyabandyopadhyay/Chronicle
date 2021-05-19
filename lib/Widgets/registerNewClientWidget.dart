@@ -6,8 +6,9 @@ import '../Models/clientModel.dart';
 
 class RegisterNewClientWidget extends StatefulWidget {
   final Function(ClientModel) callback;
+  final BuildContext mainScreenContext;
 
-  RegisterNewClientWidget(this.callback);
+  RegisterNewClientWidget(this.callback,this.mainScreenContext);
 
   @override
   _RegisterNewClientWidgetState createState() => _RegisterNewClientWidgetState();
@@ -35,7 +36,7 @@ class _RegisterNewClientWidgetState extends State<RegisterNewClientWidget> {
       child: Icon(Icons.person_add),
       tooltip: "Register Clients",
       onPressed: (){
-        Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>RegisterClientPage(callback:this.click)));
+        Navigator.of(widget.mainScreenContext).push(new MaterialPageRoute(builder: (context)=>RegisterClientPage(callback:this.click)));
       },
     );
   }

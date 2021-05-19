@@ -46,7 +46,7 @@ class _ChronicleUsersListState extends State<ChronicleUsersList> {
                     children: [
                       Text(this.widget.listItems[index].displayName,style: TextStyle(fontWeight: FontWeight.w900),),
                       Text(this.widget.listItems[index].email,style: TextStyle(fontWeight: FontWeight.w300),),
-                      Text("${classifySize(this.widget.listItems[index].cloudStorageSize)} of ${classifySize(this.widget.listItems[index].cloudStorageSize)}",style: TextStyle(fontWeight: FontWeight.w300),),
+                      Text("${classifySize(this.widget.listItems[index].cloudStorageSize)} of ${classifySize(this.widget.listItems[index].cloudStorageSizeLimit)}",style: TextStyle(fontWeight: FontWeight.w300),),
                     ],)),
                   IconButton(icon: this.widget.listItems[index].canAccess==1?Icon(Icons.desktop_access_disabled_outlined,color: Colors.red,):Icon(Icons.how_to_reg_outlined,color: Colors.green,),onPressed: (){
                     setState(() {

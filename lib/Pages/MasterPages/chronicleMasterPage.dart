@@ -1,8 +1,8 @@
-import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/drawerActionModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
-import 'package:chronicle/Pages/userInfoScreen.dart';
+import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/drawerContent.dart';
 import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:chronicle/customColors.dart';
@@ -12,10 +12,10 @@ import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-import '../globalClass.dart';
+import '../../globalClass.dart';
 import 'searchCoursesPage.dart';
 import 'homePage.dart';
-import 'wishlistPage.dart';
+import '../wishlistPage.dart';
 
 class ChronicleMasterPage extends StatefulWidget {
   final RegisterIndexModel register;
@@ -52,10 +52,6 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
       ),
-      WishlistPage(
-        scaffoldKey: masterPageScaffoldKey,
-        mainScreenContext: context,
-      ),
       UserInfoScreen(
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
@@ -86,12 +82,6 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
       PersistentBottomNavBarItem(
         icon: Icon(Icons.search),
         title: "Search",
-        inactiveColorPrimary: Colors.grey,
-        activeColorPrimary: CustomColors.primaryColor,
-      ),
-      PersistentBottomNavBarItem(
-        icon: Icon(FontAwesomeIcons.heart),
-        title: "Wishlist",
         inactiveColorPrimary: Colors.grey,
         activeColorPrimary: CustomColors.primaryColor,
       ),
@@ -161,11 +151,11 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
           curve: Curves.ease,
         ),
         screenTransitionAnimation: ScreenTransitionAnimation(
-          animateTabTransition: true,
+          animateTabTransition: false,
           curve: Curves.ease,
           duration: Duration(milliseconds: 200),
         ),
-        navBarStyle:NavBarStyle.style1, // Choose the nav bar style with this property
+        navBarStyle:NavBarStyle.style3, // Choose the nav bar style with this property
       ),
     ),key: masterScaffoldMessengerKey,);
   }

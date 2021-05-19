@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
@@ -229,6 +230,19 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
   //   clients.addAll(temp);
   //   sortVal=1;
   // }
+  return sortedList;
+}
+
+List<CourseModel> sortCoursesModule(String sortType,List<CourseModel> listToBeSorted){
+  List<CourseModel> sortedList=[];
+  if(sortType=="A-Z"){
+    listToBeSorted.sort((a,b)=>a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Z-A"){
+    listToBeSorted.sort((a,b)=>b.title.toLowerCase().compareTo(a.title.toLowerCase()));
+    sortedList=listToBeSorted;
+  }
   return sortedList;
 }
 deleteModule(ClientModel clientData,BuildContext context,state)async{

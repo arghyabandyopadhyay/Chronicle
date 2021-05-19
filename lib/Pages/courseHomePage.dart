@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -17,15 +18,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-import '../../customColors.dart';
-import '../../globalClass.dart';
 
-class VideosPage extends StatefulWidget {
-  const VideosPage({ Key key}) : super(key: key);
+import '../customColors.dart';
+import '../globalClass.dart';
+class CourseHomePage extends StatefulWidget {
+  final CourseModel course;
+  const CourseHomePage({ Key key, this.course}) : super(key: key);
   @override
-  _VideosPageState createState() => _VideosPageState();
+  _CourseHomePageState createState() => _CourseHomePageState();
 }
-class _VideosPageState extends State<VideosPage> {
+class _CourseHomePageState extends State<CourseHomePage> {
   List<VideoIndexModel> videos;
   List<VideoIndexModel> selectedList=[];
   int _counter=0;
@@ -365,30 +367,18 @@ class _VideosPageState extends State<VideosPage> {
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: VideoList(listItems:this.searchResult,
-                refreshIndicatorKey: refreshIndicatorKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                scrollController:scrollController,
-                scaffoldMessengerKey:scaffoldMessengerKey,
-                onTapList:(index) async {
-                  if(selectedList.length<1){
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        VideoPlayerPage(video:this.searchResult[index])));
-                  }
-                  else {
-                    setState(() {
-                      searchResult[index].isSelected=!searchResult[index].isSelected;
-                      if (searchResult[index].isSelected) {
-                        selectedList.add(searchResult[index]);
-                      } else {
-                        selectedList.remove(searchResult[index]);
-                      }
-                    });
-                  }
-                },
-                onLongPressed:(index)
-                {
+              refreshIndicatorKey: refreshIndicatorKey,
+              refreshData: (){
+                return refreshData();
+              },
+              scrollController:scrollController,
+              scaffoldMessengerKey:scaffoldMessengerKey,
+              onTapList:(index) async {
+                if(selectedList.length<1){
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      VideoPlayerPage(video:this.searchResult[index])));
+                }
+                else {
                   setState(() {
                     searchResult[index].isSelected=!searchResult[index].isSelected;
                     if (searchResult[index].isSelected) {
@@ -397,35 +387,35 @@ class _VideosPageState extends State<VideosPage> {
                       selectedList.remove(searchResult[index]);
                     }
                   });
-                },
+                }
+              },
+              onLongPressed:(index)
+              {
+                setState(() {
+                  searchResult[index].isSelected=!searchResult[index].isSelected;
+                  if (searchResult[index].isSelected) {
+                    selectedList.add(searchResult[index]);
+                  } else {
+                    selectedList.remove(searchResult[index]);
+                  }
+                });
+              },
             )):
         Provider.value(
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: VideoList(listItems:this.videos,scaffoldMessengerKey:scaffoldMessengerKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                refreshIndicatorKey: refreshIndicatorKey,
-                scrollController: scrollController,
-                onTapList:(index) async {
-                  if(selectedList.length<1){
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        VideoPlayerPage(video:this.videos[index])));
-                  }
-                  else {
-                    setState(() {
-                      videos[index].isSelected=!videos[index].isSelected;
-                      if (videos[index].isSelected) {
-                        selectedList.add(videos[index]);
-                      } else {
-                        selectedList.remove(videos[index]);
-                      }
-                    });
-                  }
-                },
-                onLongPressed:(index)
-                {
+              refreshData: (){
+                return refreshData();
+              },
+              refreshIndicatorKey: refreshIndicatorKey,
+              scrollController: scrollController,
+              onTapList:(index) async {
+                if(selectedList.length<1){
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      VideoPlayerPage(video:this.videos[index])));
+                }
+                else {
                   setState(() {
                     videos[index].isSelected=!videos[index].isSelected;
                     if (videos[index].isSelected) {
@@ -434,7 +424,19 @@ class _VideosPageState extends State<VideosPage> {
                       selectedList.remove(videos[index]);
                     }
                   });
-                },
+                }
+              },
+              onLongPressed:(index)
+              {
+                setState(() {
+                  videos[index].isSelected=!videos[index].isSelected;
+                  if (videos[index].isSelected) {
+                    selectedList.add(videos[index]);
+                  } else {
+                    selectedList.remove(videos[index]);
+                  }
+                });
+              },
             )
         )),
       ]):

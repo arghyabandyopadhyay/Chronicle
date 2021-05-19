@@ -1,4 +1,4 @@
-import 'package:chronicle/Models/DrawerActionModel.dart';
+import 'package:chronicle/Models/drawerActionModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/auth.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -12,7 +12,7 @@ import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:chronicle/Pages/routingPage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
-import 'package:chronicle/Pages/userInfoScreen.dart';
+import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -36,59 +36,59 @@ class UniversalDrawerWidget extends StatelessWidget
       child: DrawerContent(
         scaffoldMessengerKey: scaffoldMessengerKey,
         drawerItems: [
-          DrawerActionModel(Icons.notifications, "Notifications", ()async{
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
-          }),
+          // DrawerActionModel(Icons.notifications, "Notifications", ()async{
+          //   Navigator.pop(masterContext);
+          //   Navigator.of(masterContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
+          // }),
           // if(isNotRegisterPage)DrawerActionModel(Icons.book, "Registers", ()async{
           //   setLastRegister("");
           //   GlobalClass.lastRegister="";
           //   Navigator.pop(masterContext);
           //   Navigator.of(masterContext).pushReplacement(CupertinoPageRoute(builder: (registerPageContext)=>RegistersPage()));
           // }),
-          DrawerActionModel(Icons.video_collection_sharp, "Videos", ()async{
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (videosPageContext)=>VideosPage()));
-          }),
+          // DrawerActionModel(Icons.video_collection_sharp, "Videos", ()async{
+          //   Navigator.pop(masterContext);
+          //   Navigator.of(masterContext).push(CupertinoPageRoute(builder: (videosPageContext)=>VideosPage()));
+          // }),
           // DrawerActionModel(FontAwesomeIcons.bookOpen, "Courses", ()async{
           //   Navigator.pop(masterContext);
           //   Navigator.of(masterContext).push(CupertinoPageRoute(builder: (tutorTestContext)=>TutorCoursesPage()));
           // }),
-          DrawerActionModel(Icons.qr_code, "QR code", ()async{
-            Navigator.pop(masterContext);
-            UserModel userModel=await getUserDetails();
-            if(userModel.qrcodeDetail!=null){
-              Navigator.of(masterContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
-            }
-            else {
-              String _data = '';
-              try {
-                final pickedFile = await ImagePicker().getImage(
-                  source: ImageSource.gallery,
-                  maxWidth: 300,
-                  maxHeight: 300,
-                  imageQuality: 30,
-                );
-                state.setState(() {
-                  QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
-                    _data = value;
-                    userModel.qrcodeDetail=_data;
-                    userModel.update();
-                  });
-
-                });
-              } catch (e) {
-                globalShowInSnackBar(scaffoldMessengerKey,"Invalid File!!");
-                state.setState(() {
-                  _data = '';
-                });
-              }
-            }
-          }),
-          DrawerActionModel(Icons.settings, "Settings", ()async{
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (settingsContext)=>SettingsPage()));
-          }),
+          // DrawerActionModel(Icons.qr_code, "QR code", ()async{
+          //   Navigator.pop(masterContext);
+          //   UserModel userModel=await getUserDetails();
+          //   if(userModel.qrcodeDetail!=null){
+          //     Navigator.of(masterContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
+          //   }
+          //   else {
+          //     String _data = '';
+          //     try {
+          //       final pickedFile = await ImagePicker().getImage(
+          //         source: ImageSource.gallery,
+          //         maxWidth: 300,
+          //         maxHeight: 300,
+          //         imageQuality: 30,
+          //       );
+          //       state.setState(() {
+          //         QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
+          //           _data = value;
+          //           userModel.qrcodeDetail=_data;
+          //           userModel.update();
+          //         });
+          //
+          //       });
+          //     } catch (e) {
+          //       globalShowInSnackBar(scaffoldMessengerKey,"Invalid File!!");
+          //       state.setState(() {
+          //         _data = '';
+          //       });
+          //     }
+          //   }
+          // }),
+          // DrawerActionModel(Icons.settings, "Settings", ()async{
+          //   Navigator.pop(masterContext);
+          //   Navigator.of(masterContext).push(CupertinoPageRoute(builder: (settingsContext)=>SettingsPage()));
+          // }),
         ],
       ),
     );

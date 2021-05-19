@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/tokenModel.dart';
@@ -207,4 +208,19 @@ Future<List<VideoIndexModel>> getAllVideos() async {
     });
   }
   return videos;
+}
+
+///gets list of registers enlisted in the account.
+Future<List<CourseModel>> getAllCoursesModels(String coursesType) async {
+  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/$coursesType/').once();
+  List<CourseModel> courses = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      CourseModel course = CourseModel.fromJson(jsonDecode(jsonEncode(value)),key);
+      course.setId(databaseReference.child('${GlobalClass.user.uid}/$coursesType/' + key));
+      courses.add(course);
+    });
+  }
+  courses.sort((a,b)=>a.title.compareTo(b.title));
+  return courses;
 }

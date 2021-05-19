@@ -3,6 +3,7 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/appBarVariables.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
@@ -19,6 +20,7 @@ import 'package:sms/sms.dart';
 import '../../Models/clientModel.dart';
 import '../../Widgets/clientList.dart';
 import '../../Widgets/registerNewClientWidget.dart';
+import '../notificationsPage.dart';
 import 'clientInformationPage.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
@@ -74,21 +76,7 @@ class _ClientPageState extends State<ClientPage> {
       this.icon = new Icon(
         Icons.search,
       );
-      this.appBarTitle = GestureDetector(child: Container(
-        child: RichText(
-          textAlign: TextAlign.center,
-          text: TextSpan(
-            children: [
-              WidgetSpan(child: Text(widget.register.name)),
-              WidgetSpan(
-                  child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
-              ),
-            ],
-          ),
-        ),),
-        onTap: (){
-        showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));
-        },);
+      this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
       _isSearching = false;
       _searchController.clear();
     });
@@ -200,20 +188,7 @@ class _ClientPageState extends State<ClientPage> {
                 this.clients = clients;
                 _counter++;
                 _isLoading=false;
-                this.appBarTitle = GestureDetector(child: Container(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        WidgetSpan(child: Text(widget.register.name)),
-
-                        WidgetSpan(
-                            child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
-                        ),
-                      ],
-                    ),
-                  ),),
-                  onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+                this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
               });
             });
           }
@@ -247,19 +222,7 @@ class _ClientPageState extends State<ClientPage> {
         this.clients = clients;
         _counter++;
         _isLoading=false;
-        this.appBarTitle = GestureDetector(child: Container(
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              children: [
-                WidgetSpan(child: Text(widget.register.name)),
-                WidgetSpan(
-                    child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
-                ),
-              ],
-            ),
-          ),),
-          onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+        this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
       })
     });
   }
@@ -267,7 +230,7 @@ class _ClientPageState extends State<ClientPage> {
     if(selectedList.length < 1)
       return AppBar(
         title: appBarTitle,
-        leading: IconButton(onPressed: () { if(!_isSearching)widget.scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
+        // leading: IconButton(onPressed: () { if(!_isSearching)widget.scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
         actions: [
           new IconButton(icon: icon, onPressed:(){
             setState(() {
@@ -278,6 +241,11 @@ class _ClientPageState extends State<ClientPage> {
                 _handleSearchStart();
               }
               else _handleSearchEnd();
+            });
+          }),
+          new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+            setState(() {
+              Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
             });
           }),
           PopupMenuButton<ModalOptionModel>(
@@ -400,20 +368,7 @@ class _ClientPageState extends State<ClientPage> {
                           renameRegister(widget.register,widget.register.id);
                           renameRegisterTextEditingController.clear();
                           Navigator.of(_).pop();
-                          this.appBarTitle = GestureDetector(child: Container(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                children: [
-                                  WidgetSpan(child: Text(widget.register.name)),
-
-                                  WidgetSpan(
-                                      child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
-                                  ),
-                                ],
-                              ),
-                            ),),
-                            onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+                          this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
 
                         });
                         globalShowInSnackBar(scaffoldMessengerKey, "Register Renamed to ${widget.register.name}!!");
@@ -703,47 +658,68 @@ class _ClientPageState extends State<ClientPage> {
     super.initState();
     _isLoading = false;
     getClientModels();
-    appBarTitle=GestureDetector(child: Container(
-      child: RichText(
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          children: [
-            WidgetSpan(child: Text(widget.register.name)),
-            WidgetSpan(
-                child: Padding(child: Icon(Icons.swap_horizontal_circle_rounded),padding: EdgeInsets.only(left: 3),)
-            ),
-          ],
-        ),
-      ),),
-      onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+    appBarTitle=AppBarVariables.appBarLeading(widget.mainScreenContext);
   }
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       appBar: getAppBar(),
-      body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: _isSearching?
-        Provider.value(
-            value: _counter,
-            updateShouldNotify: (oldValue, newValue) => true,
-            child: ClientList(listItems:this.searchResult,
-                refreshIndicatorKey: refreshIndicatorKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                scrollController:scrollController,
-                scaffoldMessengerKey:scaffoldMessengerKey,
-                onTapList:(index){
-                  if(selectedList.length<1)
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        ClientInformationPage(client:this.searchResult[index]))).then((value) {
-                      setState(() {if(value==null){}else{
-                        this.clients.remove(this.searchResult[index]);
-                        this.searchResult.remove(this.searchResult[index]);
-                      }});
-                    });
-                  else {
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+        if(!_isSearching)GestureDetector(
+            onTap: (){
+              showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},
+          child: Container(
+            padding: EdgeInsets.only(left:10,top: 0,bottom: 30),
+            child: RichText(
+              textAlign: TextAlign.start,
+              text: TextSpan(
+                children: [
+                  WidgetSpan(child: Text(widget.register.name,textScaleFactor:1,style: TextStyle(fontSize: 25),)),
+                  WidgetSpan(
+                      child: Padding(child: Icon(Icons.arrow_drop_down_sharp,size: 30,),padding: EdgeInsets.only(left: 3),)
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Expanded(child: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
+          Expanded(child: _isSearching?
+          Provider.value(
+              value: _counter,
+              updateShouldNotify: (oldValue, newValue) => true,
+              child: ClientList(listItems:this.searchResult,
+                  refreshIndicatorKey: refreshIndicatorKey,
+                  refreshData: (){
+                    return refreshData();
+                  },
+                  scrollController:scrollController,
+                  scaffoldMessengerKey:scaffoldMessengerKey,
+                  onTapList:(index){
+                    if(selectedList.length<1)
+                      Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
+                          ClientInformationPage(client:this.searchResult[index]))).then((value) {
+                        setState(() {if(value==null){}else{
+                          this.clients.remove(this.searchResult[index]);
+                          this.searchResult.remove(this.searchResult[index]);
+                        }});
+                      });
+                    else {
+                      setState(() {
+                        searchResult[index].isSelected=!searchResult[index].isSelected;
+                        if (searchResult[index].isSelected) {
+                          selectedList.add(searchResult[index]);
+                        } else {
+                          selectedList.remove(searchResult[index]);
+                        }
+                      });
+                    }
+                  },
+                  onLongPressed:(index)
+                  {
                     setState(() {
                       searchResult[index].isSelected=!searchResult[index].isSelected;
                       if (searchResult[index].isSelected) {
@@ -752,60 +728,60 @@ class _ClientPageState extends State<ClientPage> {
                         selectedList.remove(searchResult[index]);
                       }
                     });
+                  },
+                  onDoubleTapList:(index){
+                    if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                      title: Text("Confirm Delete"),
+                      content: Text("Are you sure to delete ${searchResult[index].name}?"),
+                      actions: [
+                        ActionChip(label: Text("Yes"), onPressed: (){
+                          setState(() {
+                            deleteDatabaseNode(searchResult[index].id);
+                            globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
+                            searchResult.removeAt(index);
+                            Navigator.of(_).pop();
+                          });
+                        }),
+                        ActionChip(label: Text("No"), onPressed: (){
+                          setState(() {
+                            Navigator.of(_).pop();
+                          });
+                        })
+                      ],
+                    ));
                   }
-                },
-                onLongPressed:(index)
-                {
-                  setState(() {
-                    searchResult[index].isSelected=!searchResult[index].isSelected;
-                    if (searchResult[index].isSelected) {
-                      selectedList.add(searchResult[index]);
-                    } else {
-                      selectedList.remove(searchResult[index]);
-                    }
-                  });
-                },
-                onDoubleTapList:(index){
-                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-                    title: Text("Confirm Delete"),
-                    content: Text("Are you sure to delete ${searchResult[index].name}?"),
-                    actions: [
-                      ActionChip(label: Text("Yes"), onPressed: (){
+              )):
+          Provider.value(
+              value: _counter,
+              updateShouldNotify: (oldValue, newValue) => true,
+              child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
+                  refreshData: (){
+                    return refreshData();
+                  },
+                  refreshIndicatorKey: refreshIndicatorKey,
+                  scrollController: scrollController,
+                  onTapList:(index){
+                    if(selectedList.length<1)
+                      Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
+                          ClientInformationPage(client:this.clients[index]))).then((value){
                         setState(() {
-                          deleteDatabaseNode(searchResult[index].id);
-                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${searchResult[index].name} deleted!!");
-                          searchResult.removeAt(index);
-                          Navigator.of(_).pop();
+                          if(value==null) {}
+                          else this.clients.remove(this.clients[index]);
                         });
-                      }),
-                      ActionChip(label: Text("No"), onPressed: (){
-                        setState(() {
-                          Navigator.of(_).pop();
-                        });
-                      })
-                    ],
-                  ));
-                }
-            )):
-        Provider.value(
-            value: _counter,
-            updateShouldNotify: (oldValue, newValue) => true,
-            child: ClientList(listItems:this.clients,scaffoldMessengerKey:scaffoldMessengerKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                refreshIndicatorKey: refreshIndicatorKey,
-                scrollController: scrollController,
-                onTapList:(index){
-                  if(selectedList.length<1)
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        ClientInformationPage(client:this.clients[index]))).then((value){
-                      setState(() {
-                        if(value==null) {}
-                        else this.clients.remove(this.clients[index]);
                       });
-                    });
-                  else {
+                    else {
+                      setState(() {
+                        clients[index].isSelected=!clients[index].isSelected;
+                        if (clients[index].isSelected) {
+                          selectedList.add(clients[index]);
+                        } else {
+                          selectedList.remove(clients[index]);
+                        }
+                      });
+                    }
+                  },
+                  onLongPressed:(index)
+                  {
                     setState(() {
                       clients[index].isSelected=!clients[index].isSelected;
                       if (clients[index].isSelected) {
@@ -814,46 +790,35 @@ class _ClientPageState extends State<ClientPage> {
                         selectedList.remove(clients[index]);
                       }
                     });
+                  },
+                  onDoubleTapList:(index){
+                    if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
+                      title: Text("Confirm Delete"),
+                      content: Text("Are you sure to delete ${clients[index].name}?"),
+                      actions: [
+                        ActionChip(label: Text("Yes"), onPressed: (){
+                          setState(() {
+                            deleteDatabaseNode(clients[index].id);
+                            globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${clients[index].name}, deleted!!");
+                            clients.removeAt(index);
+                            Navigator.of(_).pop();
+                          });
+                        }),
+                        ActionChip(label: Text("No"), onPressed: (){
+                          setState(() {
+                            Navigator.of(_).pop();
+                          });
+                        })
+                      ],
+                    ));
                   }
-                },
-                onLongPressed:(index)
-                {
-                  setState(() {
-                    clients[index].isSelected=!clients[index].isSelected;
-                    if (clients[index].isSelected) {
-                      selectedList.add(clients[index]);
-                    } else {
-                      selectedList.remove(clients[index]);
-                    }
-                  });
-                },
-                onDoubleTapList:(index){
-                  if(selectedList.length<1)showDialog(context: context, builder: (_)=>new AlertDialog(
-                    title: Text("Confirm Delete"),
-                    content: Text("Are you sure to delete ${clients[index].name}?"),
-                    actions: [
-                      ActionChip(label: Text("Yes"), onPressed: (){
-                        setState(() {
-                          deleteDatabaseNode(clients[index].id);
-                          globalShowInSnackBar(scaffoldMessengerKey,"Client Data ${clients[index].name}, deleted!!");
-                          clients.removeAt(index);
-                          Navigator.of(_).pop();
-                        });
-                      }),
-                      ActionChip(label: Text("No"), onPressed: (){
-                        setState(() {
-                          Navigator.of(_).pop();
-                        });
-                      })
-                    ],
-                  ));
-                }
-            )
-        )),
-      ]):
-      LoaderWidget(),
+              )
+          )),
+        ]):
+        LoaderWidget(),)
+      ],),
       floatingActionButton:(selectedList.length < 1)?
-      RegisterNewClientWidget(this.newClientModel):
+      RegisterNewClientWidget(this.newClientModel,widget.mainScreenContext):
       FloatingActionButton(onPressed: () async {
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Type the message you want to send"),

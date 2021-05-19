@@ -1,7 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:chronicle/Models/userModel.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
+import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
 import 'package:chronicle/PdfModule/model/customer.dart';
 import 'package:chronicle/PdfModule/model/invoice.dart';
@@ -9,15 +14,20 @@ import 'package:chronicle/PdfModule/model/supplier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import '../Modules/auth.dart';
-import '../customColors.dart';
-import 'routingPage.dart';
-import '../globalClass.dart';
+import '../../Modules/auth.dart';
+import '../../appBarVariables.dart';
+import '../../customColors.dart';
+import '../TutorPages/qrCodePage.dart';
+import '../notificationsPage.dart';
+import '../routingPage.dart';
+import '../../globalClass.dart';
 
 class UserInfoScreen extends StatefulWidget {
   final BuildContext mainScreenContext;
@@ -413,12 +423,68 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child:Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),
-        title: Text("Account"),
+        // leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),
+        title: AppBarVariables.appBarLeading(widget.mainScreenContext),
         actions: [
-          if(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.userDetail.canAccess==0)IconButton(icon: Icon(Icons.payment), onPressed: ()async{
-            openCheckout();
-          })
+          new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+            setState(() {
+              Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
+            });
+          }),
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                if(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.userDetail.canAccess==0)ModalOptionModel(particulars: "Yearly Subscription Payment",icon: Icons.payment_outlined,iconColor:CustomColors.addPaymentIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  openCheckout();
+                }),
+                ModalOptionModel(particulars: "My Qr Code",icon: Icons.qr_code_outlined,iconColor:CustomColors.qrcodeIconColor,onTap: () async {
+                  Navigator.pop(popupContext);
+                  UserModel userModel=await getUserDetails();
+                  if(userModel.qrcodeDetail!=null){
+                    Navigator.of(context).push(new MaterialPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
+                  }
+                  else {
+                    String _data = '';
+                    try {
+                      final pickedFile = await ImagePicker().getImage(
+                        source: ImageSource.gallery,
+                        maxWidth: 300,
+                        maxHeight: 300,
+                        imageQuality: 30,
+                      );
+                      setState(() {
+                        QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
+                          _data = value;
+                          userModel.qrcodeDetail=_data;
+                          userModel.update();
+                        });
+
+                      });
+                    } catch (e) {
+                      globalShowInSnackBar(scaffoldMessengerKey,"Invalid File!!");
+                      setState(() {
+                        _data = '';
+                      });
+                    }
+                  }
+                }),
+                ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help,iconColor:CustomColors.helpIconColor,onTap: () async {
+                  Navigator.pop(popupContext);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
+                }),
+                ModalOptionModel(particulars: "Settings",icon: Icons.settings,iconColor:CustomColors.settingsIconColor,onTap: () async {
+                  Navigator.pop(popupContext);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (settingsContext)=>SettingsPage()));
+                }),
+              ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
         ],
       ),
       body: SafeArea(
