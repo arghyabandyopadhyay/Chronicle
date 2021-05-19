@@ -1,13 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:sms/sms.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'database.dart';
@@ -138,13 +140,35 @@ smsModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMesse
   }
   else globalShowInSnackBar(scaffoldMessengerKey,"No Mobile no present!!");
 }
-registerAppModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
-  var url = "mailto:<chroniclebusinesssolutions@gmail.com>?subject=Register Chronicle ${GlobalClass.user.email}&body= Respected Sir, \nPlease register my account. My token is ${GlobalClass.user.uid}";
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    globalShowInSnackBar(scaffoldMessengerKey,"Access Denied for sending email!!");
+Future<void> sendRegisterAppEmail(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,File pdfFile) async {
+  String platformResponse;
+  final MailOptions mailOptions = MailOptions(
+    body: 'Respected Sir, \nPlease register my account. My token is ${GlobalClass.user.uid}',
+    subject: 'Register Chronicle ${GlobalClass.user.email}',
+    recipients: ['chroniclebusinesssolutions@gmail.com'],
+    isHTML: false,
+    attachments: [ pdfFile.path, ],
+  );
+
+  final MailerResponse response = await FlutterMailer.send(mailOptions);
+  switch (response) {
+    case MailerResponse.saved: /// ios only
+      platformResponse = 'mail was saved to draft';
+      break;
+    case MailerResponse.sent: /// ios only
+      platformResponse = 'mail was sent';
+      break;
+    case MailerResponse.cancelled: /// ios only
+      platformResponse = 'mail was cancelled';
+      break;
+    case MailerResponse.android:
+      platformResponse = 'Registration Successful, Wait for the admin to grant access..';
+      break;
+    default:
+      platformResponse = 'Something went wrong!!';
+      break;
   }
+  globalShowInSnackBar(scaffoldMessengerKey, platformResponse);
 }
 List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSorted){
   List<ClientModel> sortedList=[];

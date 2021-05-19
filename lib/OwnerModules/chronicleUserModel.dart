@@ -9,12 +9,14 @@ class ChronicleUserModel
   String email;
   String uid;
   int cloudStorageSize;
+  int cloudStorageSizeLimit;
   int canAccess;
-  ChronicleUserModel({this.displayName,this.email,this.uid,this.canAccess,this.cloudStorageSize});
+  ChronicleUserModel({this.displayName,this.email,this.uid,this.canAccess,this.cloudStorageSize,this.cloudStorageSizeLimit});
   factory ChronicleUserModel.fromJson(Map<String, dynamic> json1) {
     return ChronicleUserModel(
         displayName: json1['DisplayName'],
         cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
+        cloudStorageSizeLimit:json1['CloudStorageSizeLimit']!=null?json1['CloudStorageSizeLimit']:10000000000,
         email: json1['Email'],
         uid: json1['UID'],
         canAccess: json1['CanAccess'],
@@ -34,6 +36,7 @@ class ChronicleUserModel
         "Email":this.email,
         "UID":this.uid,
         "CanAccess":this.canAccess,
-        "CloudStorageSize":this.cloudStorageSize!=null?this.cloudStorageSize:0
+        "CloudStorageSize":this.cloudStorageSize!=null?this.cloudStorageSize:0,
+        "CloudStorageSizeLimit":this.cloudStorageSizeLimit!=null?this.cloudStorageSizeLimit:10000000000
       };
 }

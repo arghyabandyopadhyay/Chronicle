@@ -1,19 +1,29 @@
-import 'package:chronicle/Models/userModel.dart';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
-import 'package:chronicle/Modules/database.dart';
+import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
+import 'package:chronicle/PdfModule/model/customer.dart';
+import 'package:chronicle/PdfModule/model/invoice.dart';
+import 'package:chronicle/PdfModule/model/supplier.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:qr_code_tools/qr_code_tools.dart';
-
+import 'package:flutter/rendering.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'dart:async';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import '../Modules/auth.dart';
 import '../customColors.dart';
 import 'routingPage.dart';
 import '../globalClass.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  const UserInfoScreen({Key key}):super(key: key);
+  final BuildContext mainScreenContext;
+  final bool hideStatus;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const UserInfoScreen({Key key, this.mainScreenContext, this.hideStatus, this.scaffoldKey}):super(key: key);
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -21,8 +31,10 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
-
+  Razorpay razorpay;
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
+  static const androidMethodChannel = const MethodChannel('team.native.io/screenshot');
+  static GlobalKey previewContainer = new GlobalKey();
   Route _routeToRoutingPage() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => RoutingPage(),
@@ -45,77 +57,402 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   @override
   void initState() {
     super.initState();
+    razorpay = new Razorpay();
+
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlerErrorFailure);
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
+  }
+  void openCheckout(){
+    var options = {
+      "key" : "rzp_test_q6cu1m0YjMEw86",
+      "amount" : GlobalClass.userDetail.yearlyPaymentPrice*100,
+      "name" : "Chronicle",
+      "description" : "Chronicle yearly payment",
+      "prefill" : {
+        "email" : GlobalClass.userDetail.email
+      },
+      "external" : {
+        "wallets" : ["paytm"]
+      }
+    };
+
+    try{
+      razorpay.open(options);
+
+    }catch(e){
+      debugPrint('Error: e');
+    }
+
+  }
+  @override
+  void dispose() {
+    super.dispose();
+    razorpay.clear();
+  }
+
+  Future<void> handlerPaymentSuccess(PaymentSuccessResponse response) async {
+    globalShowInSnackBar(scaffoldMessengerKey,"SUCCESS: " + response.paymentId);
+    final date = DateTime.now();
+    final dueDate = date.add(Duration(days: 7));
+
+    final invoice = Invoice(
+      title: "Chronicle Yearly Payment ${DateTime.now().year}",
+      supplier: Supplier(
+        name: 'Chronicle Business Solutions',
+        address: 'Smriti nagar, Bhilai',
+        email: 'chroniclebusinesssolutions@gmail.com',
+      ),
+      customer: Customer(
+        name: GlobalClass.userDetail.displayName,
+        email: GlobalClass.userDetail.email,
+      ),
+      info: InvoiceInfo(
+        date: date,
+        dueDate: dueDate,
+        description: 'My description...',
+        number: '${DateTime.now().year}-9999',
+      ),
+      items: [
+        InvoiceItem(
+          description: 'Coffee',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 5.99,
+        ),
+        InvoiceItem(
+          description: 'Water',
+          date: DateTime.now(),
+          quantity: 8,
+          vat: 0.19,
+          unitPrice: 0.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Orange',
+          date: DateTime.now(),
+          quantity: 3,
+          vat: 0.19,
+          unitPrice: 2.99,
+        ),
+        InvoiceItem(
+          description: 'Apple',
+          date: DateTime.now(),
+          quantity: 8,
+          vat: 0.19,
+          unitPrice: 3.99,
+        ),
+        InvoiceItem(
+          description: 'Mango',
+          date: DateTime.now(),
+          quantity: 1,
+          vat: 0.19,
+          unitPrice: 1.59,
+        ),
+        InvoiceItem(
+          description: 'Blue Berries',
+          date: DateTime.now(),
+          quantity: 5,
+          vat: 0.19,
+          unitPrice: 0.99,
+        ),
+        InvoiceItem(
+          description: 'Lemon',
+          date: DateTime.now(),
+          quantity: 4,
+          vat: 0.19,
+          unitPrice: 1.29,
+        ),
+      ],
+    );
+
+    final pdfFile = await PdfInvoiceApi.generate(invoice);
+    sendRegisterAppEmail(scaffoldMessengerKey,pdfFile);
+    // PdfApi.openFile(pdfFile);
+  }
+
+  void handlerErrorFailure(PaymentFailureResponse response){
+    globalShowInSnackBar(scaffoldMessengerKey,"ERROR: " + response.code.toString() + " - " + response.message);
+  }
+
+  void handlerExternalWallet(ExternalWalletResponse response){
+    globalShowInSnackBar(scaffoldMessengerKey,"EXTERNAL_WALLET: " + response.walletName);
   }
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child:Scaffold(
       appBar: AppBar(
-
-        title: Text("My Profile"),
+        leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),
+        title: Text("Account"),
         actions: [
-          IconButton(icon: Icon(Icons.payment), onPressed: ()async{
-            UserModel userModel=await getUserDetails();
-            if(userModel.qrcodeDetail!=null){
-              Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
-            }
-            else {
-              String _data = '';
-              try {
-                final pickedFile = await ImagePicker().getImage(
-                  source: ImageSource.gallery,
-                  maxWidth: 300,
-                  maxHeight: 300,
-                  imageQuality: 30,
-                );
-                setState(() {
-                  QrCodeToolsPlugin.decodeFrom(pickedFile.path).then((value) {
-                    _data = value;
-                    userModel.qrcodeDetail=_data;
-                    userModel.update();
-
-                  });
-
-                });
-              } catch (e) {
-                globalShowInSnackBar(scaffoldMessengerKey,e);
-                setState(() {
-                  _data = '';
-                });
-              }
-            }
+          if(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.userDetail.canAccess==0)IconButton(icon: Icon(Icons.payment), onPressed: ()async{
+            openCheckout();
           })
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            bottom: 20.0,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+        child: ListView(
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              bottom: 20.0,
+            ),
             children: [
               SizedBox(height: 50.0),
-              GlobalClass.user.photoURL != null
-                  ? ClipOval(
-                child: Material(
-                  color: CustomColors.firebaseGrey.withOpacity(0.3),
-                  child: Image.network(
-                    GlobalClass.user.photoURL,
-                    fit: BoxFit.fitHeight,
+              CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.transparent,
+                child: GlobalClass.user.photoURL != null
+                    ? ClipOval(
+                  child: Material(
+                    color: CustomColors.firebaseGrey.withOpacity(0.3),
+                    child: Image.network(
+                      GlobalClass.user.photoURL,
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
-                ),
-              )
-                  : ClipOval(
-                child: Material(
-                  color: CustomColors.firebaseGrey.withOpacity(0.3),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Icon(
-                      Icons.person,
-                      size: 60,
-                      color: CustomColors.firebaseGrey,
+                )
+                    : ClipOval(
+                  child: Material(
+                    color: CustomColors.firebaseGrey.withOpacity(0.3),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Icon(
+                        Icons.person,
+                        size: 60,
+                        color: CustomColors.firebaseGrey,
+                      ),
                     ),
                   ),
                 ),
@@ -123,111 +460,62 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               SizedBox(height: 20.0),
               Text(
                 GlobalClass.user.displayName,
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: CustomColors.firebaseYellow,
                   fontSize: 26,
                 ),
               ),
               SizedBox(height: 8.0),
               Text(
-                '( ${GlobalClass.user.email} )',
+                '${GlobalClass.user.email}',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: CustomColors.firebaseOrange,
                   fontSize: 20,
                   letterSpacing: 0.5,
                 ),
               ),
-              SizedBox(height: 24.0),
-              Text(
-                'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontSize: 14,
-                    letterSpacing: 0.2),
-              ),
+
               SizedBox(height: 16.0),
-              // _isSigningOut
-              //     ? CircularProgressIndicator(
-              //   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              // )
-              //     : ElevatedButton(
-              //   style: ButtonStyle(
-              //     backgroundColor: MaterialStateProperty.all(
-              //       Colors.redAccent,
-              //     ),
-              //     shape: MaterialStateProperty.all(
-              //       RoundedRectangleBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //       ),
-              //     ),
-              //   ),
-              //   onPressed: () async {
-              //     setState(() {
-              //       _isSigningOut = true;
-              //     });
-              //     await Authentication.signOut(context: context);
-              //     setState(() {
-              //       _isSigningOut = false;
-              //     });
-              //     Navigator.of(context).popUntil((route) => route.isFirst);
-              //     Navigator.of(context).pushReplacement(_routeToRoutingPage());
-              //   },
-              //   child: Padding(
-              //     padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-              //     child: Text(
-              //       'Sign Out',
-              //       style: TextStyle(
-              //         fontSize: 20,
-              //         fontWeight: FontWeight.bold,
-              //         color: Colors.white,
-              //         letterSpacing: 2,
-              //       ),
-              //     ),
-              //   ),
-              // ),
+              if(GlobalClass.userDetail.isAppRegistered==0)GestureDetector(
+                onTap: (){
+                  openCheckout();
+                },
+                child: Container(color:Colors.transparent,child: Text(
+                  'Become an Instructor',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 20,
+                      letterSpacing: 0.2),
+                ),),
+              ),
+              SizedBox(height: 24.0),
+              _isSigningOut?CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ):GestureDetector(
+                onTap:() async {
+                  setState(() {
+                    _isSigningOut = true;
+                  });
+                  await Authentication.signOut(context: context);
+                  setState(() {
+                    _isSigningOut = false;
+                  });
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(widget.mainScreenContext).pushReplacement(_routeToRoutingPage());
+                },
+                child: Container(color:Colors.transparent,child: Text(
+                  'Sign out',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontSize: 20,
+                      letterSpacing: 0.2),
+                ),),
+              )
             ],
           ),
         ),
-      ),
-      floatingActionButton: _isSigningOut
-          ? CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      )
-          : ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(
-            Colors.redAccent,
-          ),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ),
-        onPressed: () async {
-          setState(() {
-            _isSigningOut = true;
-          });
-          await Authentication.signOut(context: context);
-          setState(() {
-            _isSigningOut = false;
-          });
-          Navigator.of(context).popUntil((route) => route.isFirst);
-          Navigator.of(context).pushReplacement(_routeToRoutingPage());
-        },
-        child: Padding(
-          padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-          child: Text(
-            'Sign Out',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-              letterSpacing: 2,
-            ),
-          ),
-        ),
-      ),
     ),key:scaffoldMessengerKey);
   }
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/tokenModel.dart';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';

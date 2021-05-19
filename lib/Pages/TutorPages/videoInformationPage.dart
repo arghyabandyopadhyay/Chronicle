@@ -1,7 +1,7 @@
 import 'package:chronicle/Formatters/indNumberTextInputFormatter.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Modules/database.dart';

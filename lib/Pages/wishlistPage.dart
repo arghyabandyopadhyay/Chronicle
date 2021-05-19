@@ -2,16 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
-class HomePage extends StatefulWidget {
-  final BuildContext menuScreenContext;
+class WishlistPage extends StatefulWidget {
+  final BuildContext mainScreenContext;
   final bool hideStatus;
   final GlobalKey<ScaffoldState> scaffoldKey;
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
-  const HomePage({ Key key,this.menuScreenContext,this.hideStatus,this.scaffoldKey,this.scaffoldMessengerKey}) : super(key: key);
+  const WishlistPage({ Key key,this.mainScreenContext,this.hideStatus,this.scaffoldKey}) : super(key: key);
   @override
-  _HomePageState createState() => _HomePageState();
+  _WishlistPageState createState() => _WishlistPageState();
 }
-class _HomePageState extends State<HomePage> {
+class _WishlistPageState extends State<WishlistPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
 
   @override
@@ -22,10 +21,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        title: Text("Wishlist"),
         leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),),
       body: Center(
-        child: Text("This is the Home"),
+        child: Text("Coming Soon..."),
       ),
     );
   }

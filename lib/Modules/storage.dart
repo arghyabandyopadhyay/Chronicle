@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;

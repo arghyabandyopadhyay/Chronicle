@@ -1,22 +1,30 @@
 import 'package:chronicle/Models/DrawerActionModel.dart';
-import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/StudentPages/coursesPage.dart';
-import 'package:chronicle/globalClass.dart';
+import 'package:chronicle/Models/registerIndexModel.dart';
+import 'package:chronicle/Pages/TutorPages/clientPage.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
+import 'package:chronicle/Pages/userInfoScreen.dart';
 import 'package:chronicle/Widgets/drawerContent.dart';
+import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-import 'homePage.dart';
 
-class MasterPage extends StatefulWidget {
-  MasterPage({Key key,}) : super(key: key);
+import '../globalClass.dart';
+import 'searchCoursesPage.dart';
+import 'homePage.dart';
+import 'wishlistPage.dart';
+
+class ChronicleMasterPage extends StatefulWidget {
+  final RegisterIndexModel register;
+  final bool isTutor;
+  ChronicleMasterPage({Key key,this.register,this.isTutor}) : super(key: key);
   @override
-  _MasterPageState createState() => _MasterPageState();
+  _ChronicleMasterPageState createState() => _ChronicleMasterPageState();
 }
-class _MasterPageState extends State<MasterPage> {
+class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
   PersistentTabController _controller;
   GlobalKey<ScaffoldState> masterPageScaffoldKey=new GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> masterScaffoldMessengerKey=new GlobalKey<ScaffoldMessengerState>();
@@ -27,19 +35,48 @@ class _MasterPageState extends State<MasterPage> {
   }
   List<Widget> _buildScreens() {
     return [
+      if(widget.isTutor)ClientPage(
+        register:widget.register,
+        scaffoldKey: masterPageScaffoldKey,
+        mainScreenContext: context,
+      ),
+      if(widget.isTutor)TutorCoursesPage(
+        scaffoldKey: masterPageScaffoldKey,
+        mainScreenContext: context,
+      ),
       HomePage(
         scaffoldKey: masterPageScaffoldKey,
-        scaffoldMessengerKey: masterScaffoldMessengerKey,
+        mainScreenContext: context,
       ),
-      CoursesPage(
+      SearchCoursesPage(
         scaffoldKey: masterPageScaffoldKey,
-        scaffoldMessengerKey: masterScaffoldMessengerKey,
+        mainScreenContext: context,
       ),
+      WishlistPage(
+        scaffoldKey: masterPageScaffoldKey,
+        mainScreenContext: context,
+      ),
+      UserInfoScreen(
+        scaffoldKey: masterPageScaffoldKey,
+        mainScreenContext: context,
+      )
     ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
+      if(widget.isTutor)PersistentBottomNavBarItem(
+        icon: Icon(Icons.supervised_user_circle_outlined),
+        title: "Clients",
+        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: CustomColors.primaryColor,
+      ),
+      if(widget.isTutor)PersistentBottomNavBarItem(
+        icon: Icon(Icons.subscriptions_outlined),
+        title: "Courses By Me",
+        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: CustomColors.primaryColor,
+      ),
       PersistentBottomNavBarItem(
         icon: Icon(Icons.home_outlined),
         title: "Home",
@@ -47,8 +84,20 @@ class _MasterPageState extends State<MasterPage> {
         activeColorPrimary: CustomColors.primaryColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(FontAwesomeIcons.bookOpen),
-        title: "Courses",
+        icon: Icon(Icons.search),
+        title: "Search",
+        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: CustomColors.primaryColor,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(FontAwesomeIcons.heart),
+        title: "Wishlist",
+        inactiveColorPrimary: Colors.grey,
+        activeColorPrimary: CustomColors.primaryColor,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.account_circle_sharp),
+        title: "Account",
         inactiveColorPrimary: Colors.grey,
         activeColorPrimary: CustomColors.primaryColor,
       ),
@@ -58,29 +107,22 @@ class _MasterPageState extends State<MasterPage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       key: masterPageScaffoldKey,
-      endDrawerEnableOpenDragGesture: false,
       resizeToAvoidBottomInset: false,
-      drawer: Drawer(
+      drawer: (GlobalClass.userDetail.isAppRegistered==1)?UniversalDrawerWidget(scaffoldMessengerKey: masterScaffoldMessengerKey,state: this,isNotRegisterPage: true,masterContext: context,):Drawer(
           child: DrawerContent(
             scaffoldMessengerKey: masterScaffoldMessengerKey,
             drawerItems:
             [
               DrawerActionModel(
                 Icons.home,"Home",(){
-                  Navigator.pop(context);
-                  _controller.jumpToTab(0);
-                },
-              ),
-              DrawerActionModel(
-                FontAwesomeIcons.bookOpen,"Courses",(){
                 Navigator.pop(context);
-                _controller.jumpToTab(1);
+                _controller.jumpToTab(0);
               },
               ),
-              if(GlobalClass.userDetail.isAppRegistered==0)DrawerActionModel(
-                Icons.app_registration,"Register as an Owner",(){
+              DrawerActionModel(
+                Icons.search,"Search",(){
                 Navigator.pop(context);
-                registerAppModule(masterScaffoldMessengerKey);
+                _controller.jumpToTab(1);
               },
               ),
             ],
@@ -93,15 +135,14 @@ class _MasterPageState extends State<MasterPage> {
         items: _navBarsItems(),
         confineInSafeArea: true,
         handleAndroidBackButtonPress: true,
-        resizeToAvoidBottomInset: true,
+        resizeToAvoidBottomInset: false,
         stateManagement: true,
         hideNavigationBarWhenKeyboardShows: true,
         hideNavigationBar: false,
-        margin: EdgeInsets.symmetric(horizontal:2,vertical: 0),
+        margin: EdgeInsets.symmetric(horizontal:0,vertical: 0),
         popActionScreens: PopActionScreensType.once,
-        bottomScreenMargin: 0.0,
+        bottomScreenMargin: MediaQuery.of(context).viewInsets.bottom==0?56:0,
         decoration: NavBarDecoration(
-            colorBehindNavBar: Colors.white,
             //   borderRadius: BorderRadius.circular(20.0),
             // border: Border.all(width: 0.1)
             boxShadow: [BoxShadow(

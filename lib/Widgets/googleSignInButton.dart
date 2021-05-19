@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:chronicle/Models/tokenModel.dart';
-import 'package:chronicle/Pages/StudentPages/masterPage.dart';
+import 'package:chronicle/Pages/chronicleMasterPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';
@@ -120,7 +120,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                           context,
                           CupertinoPageRoute(
                               builder: (context) => RegistersPage()))
-                      else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>MasterPage()))
+                      else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(isTutor:false)))
                     }
                     else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
 

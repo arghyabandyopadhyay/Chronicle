@@ -23,9 +23,11 @@ class UserModel
   String smsMobileNo;
   String smsAccessToken;
   int cloudStorageSize;
+  int cloudStorageSizeLimit;
   int isAppRegistered;
+  double yearlyPaymentPrice;
   List<TokenModel> tokens;
-  UserModel({this.displayName,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.tokens,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered,this.repo,this.smsApiUrl,this.smsMobileNo,this.smsUserId,this.smsAccessToken,this.cloudStorageSize});
+  UserModel({this.displayName,this.cloudStorageSizeLimit,this.yearlyPaymentPrice,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.tokens,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered,this.repo,this.smsApiUrl,this.smsMobileNo,this.smsUserId,this.smsAccessToken,this.cloudStorageSize});
   factory UserModel.fromJson(Map<String, dynamic> json1,String idKey) {
     String decrypt(String encryptedPassword){
       String decryptedPassword = utf8.decode(base64Decode(encryptedPassword));
@@ -58,6 +60,8 @@ class UserModel
         repo:json1['Repo'],
         reminderMessage:json1['ReminderMessage'],
         cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
+        cloudStorageSizeLimit:json1['CloudStorageSizeLimit']!=null?json1['CloudStorageSizeLimit']:10000000000,
+        yearlyPaymentPrice:json1['YearlyPaymentPrice']!=null?json1['YearlyPaymentPrice']:1000,
         isAppRegistered: json1['IsAppRegistered']!=null?json1['IsAppRegistered']:0
     );
   }
@@ -82,5 +86,6 @@ class UserModel
         "SmsUserId":this.smsUserId!=null?encrypt(this.smsUserId):null,
         "SmsMobileNo":this.smsMobileNo,
         "SmsAccessToken":this.smsAccessToken!=null?encrypt(this.smsAccessToken):null,
+        "CloudStorageSizeLimit":this.cloudStorageSizeLimit!=null?this.cloudStorageSizeLimit:10000000000
       };
 }

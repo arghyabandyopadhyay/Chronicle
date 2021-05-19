@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:chronicle/Models/modalOptionModel.dart';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/storage.dart';
@@ -359,7 +359,7 @@ class _VideosPageState extends State<VideosPage> {
     return ScaffoldMessenger(child: Scaffold(
       appBar: getAppBar(),
       body: this.videos!=null?this.videos.length==0?NoDataError():Column(children: <Widget>[
-        Center(child: Text("Storage Occupied: ${classifySize(GlobalClass.userDetail.cloudStorageSize)}"),),
+        Center(child: Text("Storage Occupied: ${classifySize(GlobalClass.userDetail.cloudStorageSize)} of ${classifySize(GlobalClass.userDetail.cloudStorageSizeLimit)}",style: TextStyle(color: GlobalClass.userDetail.cloudStorageSize>GlobalClass.userDetail.cloudStorageSizeLimit?Colors.red:null),),),
         Expanded(child: _isSearching?
         Provider.value(
             value: _counter,

@@ -22,7 +22,7 @@ class DrawerContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisAlignment:MainAxisAlignment.start,children: [Text("Chronicle",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.start,),Text("      Version 2021.1",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 10),textAlign: TextAlign.end,)],),
+        title: Column(crossAxisAlignment:CrossAxisAlignment.start,mainAxisAlignment:MainAxisAlignment.start,children: [Text("Chronicle",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),textAlign: TextAlign.start,),Text("      Version 2021.2",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 10),textAlign: TextAlign.end,)],),
         automaticallyImplyLeading: false,
       ),
       body: ListView(
@@ -99,7 +99,7 @@ class DrawerContent extends StatelessWidget {
                   context: context,
                   applicationIcon: Image.asset("assets/icon.png",width: 40,height: 40,),
                   applicationName: 'Chronicle',
-                  applicationVersion: 'Version 2021.1',
+                  applicationVersion: 'Version 2021.2',
                   applicationLegalese: '\u{a9} 2021 Chronicle Business Solutions',
                   children: aboutBoxChildren,
                 );

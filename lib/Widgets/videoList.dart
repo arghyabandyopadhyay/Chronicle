@@ -1,5 +1,5 @@
 import 'package:chronicle/Models/modalOptionModel.dart';
-import 'package:chronicle/Models/videoIndexModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/storage.dart';

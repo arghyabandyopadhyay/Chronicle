@@ -6,7 +6,7 @@ import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';
-import 'package:chronicle/Pages/TutorPages/tutorCoursesPage.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
 import 'package:chronicle/Pages/TutorPages/videosPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
@@ -50,10 +50,10 @@ class UniversalDrawerWidget extends StatelessWidget
             Navigator.pop(masterContext);
             Navigator.of(masterContext).push(CupertinoPageRoute(builder: (videosPageContext)=>VideosPage()));
           }),
-          DrawerActionModel(FontAwesomeIcons.bookOpen, "Courses", ()async{
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (tutorTestContext)=>TutorCoursesPage()));
-          }),
+          // DrawerActionModel(FontAwesomeIcons.bookOpen, "Courses", ()async{
+          //   Navigator.pop(masterContext);
+          //   Navigator.of(masterContext).push(CupertinoPageRoute(builder: (tutorTestContext)=>TutorCoursesPage()));
+          // }),
           DrawerActionModel(Icons.qr_code, "QR code", ()async{
             Navigator.pop(masterContext);
             UserModel userModel=await getUserDetails();
@@ -84,28 +84,6 @@ class UniversalDrawerWidget extends StatelessWidget
                 });
               }
             }
-          }),
-          DrawerActionModel(Icons.account_circle, "Profile", ()async{
-            Navigator.pop(masterContext);
-            Navigator.of(masterContext).push(CupertinoPageRoute(builder: (userInfoContext)=>UserInfoScreen()));
-          }),
-          DrawerActionModel(Icons.logout, "Log out", ()async{
-            await Authentication.signOut(context: masterContext);
-            Navigator.popUntil(masterContext, (route) => route.isFirst);
-            Navigator.of(masterContext).pushReplacement(PageRouteBuilder(
-              pageBuilder: (routingPageContext, animation, secondaryAnimation) => RoutingPage(),
-              transitionsBuilder: (routingPageContext, animation, secondaryAnimation, child) {
-                var begin = Offset(-1.0, 0.0);
-                var end = Offset.zero;
-                var curve = Curves.ease;
-                var tween =
-                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
-                );
-              },
-            ));
           }),
           DrawerActionModel(Icons.settings, "Settings", ()async{
             Navigator.pop(masterContext);

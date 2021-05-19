@@ -33,8 +33,10 @@ import '../../customColors.dart';
 
 class ClientPage extends StatefulWidget {
   final RegisterIndexModel register;
-
-  ClientPage(this.register);
+  final BuildContext mainScreenContext;
+  final bool hideStatus;
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  ClientPage({Key key,this.register,this.mainScreenContext,this.scaffoldKey,this.hideStatus});
 
   @override
   _ClientPageState createState() => _ClientPageState();
@@ -46,7 +48,7 @@ class _ClientPageState extends State<ClientPage> {
   int _counter=0;
   bool _isLoading;
   String _filePath;
-  GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+  // GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   bool _isSearching=false;
   int sortVal=1;
@@ -85,14 +87,13 @@ class _ClientPageState extends State<ClientPage> {
           ),
         ),),
         onTap: (){
-        showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));
+        showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));
         },);
       _isSearching = false;
       _searchController.clear();
     });
   }
-  void searchOperation(String searchText)
-  {
+  void searchOperation(String searchText) {
     searchResult.clear();
     if(_isSearching){
       searchResult=clients.where((ClientModel element) => (element.masterFilter).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
@@ -212,7 +213,7 @@ class _ClientPageState extends State<ClientPage> {
                       ],
                     ),
                   ),),
-                  onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+                  onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
               });
             });
           }
@@ -258,7 +259,7 @@ class _ClientPageState extends State<ClientPage> {
               ],
             ),
           ),),
-          onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+          onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
       })
     });
   }
@@ -266,7 +267,7 @@ class _ClientPageState extends State<ClientPage> {
     if(selectedList.length < 1)
       return AppBar(
         title: appBarTitle,
-        leading: IconButton(onPressed: () { if(!_isSearching)scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
+        leading: IconButton(onPressed: () { if(!_isSearching)widget.scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
         actions: [
           new IconButton(icon: icon, onPressed:(){
             setState(() {
@@ -285,7 +286,7 @@ class _ClientPageState extends State<ClientPage> {
                 ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
                 Navigator.pop(popupContext);
                 showModalBottomSheet(
-                    context: context,
+                    context: widget.mainScreenContext,
                     builder: (BuildContext alertDialogContext) {
                       return OptionModalBottomSheet(
                         appBarText: "Sort Options",
@@ -412,7 +413,7 @@ class _ClientPageState extends State<ClientPage> {
                                 ],
                               ),
                             ),),
-                            onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+                            onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
 
                         });
                         globalShowInSnackBar(scaffoldMessengerKey, "Register Renamed to ${widget.register.name}!!");
@@ -653,7 +654,7 @@ class _ClientPageState extends State<ClientPage> {
           ),
           IconButton(
             onPressed: () async {
-              showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: true,selectedClients:this.selectedList)).then((value) =>
+              showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: true,selectedClients:this.selectedList)).then((value) =>
               {
                 refreshIndicatorKey.currentState.show(),
               });
@@ -714,14 +715,12 @@ class _ClientPageState extends State<ClientPage> {
           ],
         ),
       ),),
-      onTap: (){showModalBottomSheet(context: context, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
+      onTap: (){showModalBottomSheet(context: widget.mainScreenContext, builder: (_)=>RegisterOptionBottomSheet(isAddToRegister: false));},);
   }
 
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
-      key:scaffoldKey,
-      drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: true,masterContext: context,),
       appBar: getAppBar(),
       body: this.clients!=null?this.clients.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: _isSearching?
@@ -739,11 +738,11 @@ class _ClientPageState extends State<ClientPage> {
                   if(selectedList.length<1)
                     Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
                         ClientInformationPage(client:this.searchResult[index]))).then((value) {
-                          setState(() {if(value==null){}else{
-                            this.clients.remove(this.searchResult[index]);
-                            this.searchResult.remove(this.searchResult[index]);
-                          }});
-                        });
+                      setState(() {if(value==null){}else{
+                        this.clients.remove(this.searchResult[index]);
+                        this.searchResult.remove(this.searchResult[index]);
+                      }});
+                    });
                   else {
                     setState(() {
                       searchResult[index].isSelected=!searchResult[index].isSelected;
@@ -801,11 +800,11 @@ class _ClientPageState extends State<ClientPage> {
                   if(selectedList.length<1)
                     Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
                         ClientInformationPage(client:this.clients[index]))).then((value){
-                          setState(() {
-                            if(value==null) {}
-                            else this.clients.remove(this.clients[index]);
-                          });
-                        });
+                      setState(() {
+                        if(value==null) {}
+                        else this.clients.remove(this.clients[index]);
+                      });
+                    });
                   else {
                     setState(() {
                       clients[index].isSelected=!clients[index].isSelected;
@@ -850,7 +849,7 @@ class _ClientPageState extends State<ClientPage> {
                   ));
                 }
             )
-            )),
+        )),
       ]):
       LoaderWidget(),
       floatingActionButton:(selectedList.length < 1)?
@@ -978,6 +977,6 @@ class _ClientPageState extends State<ClientPage> {
         child: Icon(Icons.message_outlined),
         tooltip: "Send Message",
       ),
-    ),key:scaffoldMessengerKey);
+    ),key: scaffoldMessengerKey,);
   }
 }

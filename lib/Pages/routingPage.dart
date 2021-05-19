@@ -1,7 +1,6 @@
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
-import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/googleSignInButton.dart';
 import 'package:connectivity/connectivity.dart';
@@ -11,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import '../Modules/database.dart';
 import '../customColors.dart';
-import 'StudentPages/masterPage.dart';
+import 'chronicleMasterPage.dart';
 import 'errorDisplayPage.dart';
 import 'TutorPages/registersPage.dart';
 
@@ -56,7 +55,7 @@ class _RoutingPageState extends State<RoutingPage> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: ClientPage(lastRegisterModels.first))
+                          home: ChronicleMasterPage(register:lastRegisterModels.first,isTutor: true))
                       else widget=MaterialApp(
                           title: 'Chronicle',
                           debugShowCheckedModeBanner: false,
@@ -74,7 +73,7 @@ class _RoutingPageState extends State<RoutingPage> {
                       theme: lightThemeData,
                       darkTheme: darkThemeData,
                       themeMode: ThemeMode.system,
-                      home: MasterPage())
+                      home: ChronicleMasterPage(isTutor: false,))
                 }
               }
               else{
