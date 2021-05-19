@@ -52,7 +52,7 @@ class _RegistersPageState extends State<RegistersPage> {
     return ScaffoldMessenger(child: Scaffold(
       key:scaffoldKey,
       appBar: AppBar(title: Text("Registers"),),
-      drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: false,masterContext: context),
+      // drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: false,masterContext: context),
       body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
         Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey)),
       ]):

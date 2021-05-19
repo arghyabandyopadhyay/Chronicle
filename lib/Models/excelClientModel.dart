@@ -46,7 +46,6 @@ class ExcelClientModel
       else return null;
     }
     String getCaste(String string){
-      //'General', 'OBC', 'SC/ST'
       string=string.toLowerCase().replaceAll(" ", "");
       if(string.length>0)
       {
@@ -94,7 +93,7 @@ class ExcelClientModel
     int months=getNoOfPayments(json1['NoOfPayments']);
     DateTime startDate;
     if(json1['StartDate(DDMMYYYY)']!=null){
-      startDate=getDate(json1['StartDate(DDMMYYYY)'].toString());
+      startDate=getDate(json1['StartDate(DDMMYYYY)']);
       if(startDate==null){
         DateTime now=DateTime.now();
         startDate=DateTime(now.year,now.month,now.day);
@@ -105,24 +104,24 @@ class ExcelClientModel
       startDate=DateTime(now.year,now.month,now.day);
     }
     DateTime endDate = DateTime(startDate.year,startDate.month+months,startDate.day);
-    String name=json1['Name']!=null?json1['Name'].toString():"";
-    String mobile=json1['MobileNo']!=null?getFormattedMobileNo(json1['MobileNo'].toString()):null;
+    String name=json1['Name']!=null?json1['Name']:"";
+    String mobile=json1['MobileNo']!=null?getFormattedMobileNo(json1['MobileNo']):null;
     return ExcelClientModel(
-        registrationId: json1['RegistrationId']!=null?json1['RegistrationId'].toString():null,
+        registrationId: json1['RegistrationId'],
         name: name,
-        fathersName: json1['FathersName']!=null?json1['FathersName'].toString():null,
+        fathersName: json1['FathersName'],
         mobileNo: mobile,
-        education: json1['Education']!=null?json1['Education'].toString():null,
-        occupation: json1['Occupation']!=null?json1['Occupation'].toString():null,
-        address: json1['Address']!=null?json1['Address'].toString():null,
-        injuries: json1['Injuries']!=null?json1['Injuries'].toString():null,
-        sex: json1['Sex']!=null?getSex(json1['Sex'].toString()):null,
-        caste: json1['Caste']!=null?getCaste(json1['Caste'].toString()):null,
+        education: json1['Education'],
+        occupation: json1['Occupation'],
+        address: json1['Address'],
+        injuries: json1['Injuries'],
+        sex: json1['Sex']!=null?getSex(json1['Sex']):null,
+        caste: json1['Caste']!=null?getCaste(json1['Caste']):null,
         startDate: startDate,
         endDate: endDate,
-        dob: json1['Dob(DDMMYYYY)']!=null?getDate(json1['Dob(DDMMYYYY)'].toString()):null,
-        height: json1['Height']!=null?double.parse(json1['Height'].toString()):null,
-        weight: json1['Weight']!=null?double.parse(json1['Weight'].toString()):null,
+        dob: json1['Dob(DDMMYYYY)']!=null?getDate(json1['Dob(DDMMYYYY)']):null,
+        height: json1['Height']!=null?double.parse(json1['Height']):null,
+        weight: json1['Weight']!=null?double.parse(json1['Weight']):null,
         noOfPayments: months,
         masterFilter: null
     );

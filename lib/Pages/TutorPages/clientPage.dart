@@ -97,7 +97,7 @@ class _ClientPageState extends State<ClientPage> {
     return dic + "ClientUploadExcelFile"+ "." + type;
   }
   void getFilePath() async {
-    try {
+    // try {
       FilePickerResult filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
       String filePath=filePickerResult.paths[0];
       if (filePath == '') {
@@ -110,32 +110,52 @@ class _ClientPageState extends State<ClientPage> {
       List<dynamic> keys = [];
       List<Map<String, dynamic>> json = [];
       for (var table in excel.tables.keys) {
-        for (var row in excel.tables[table].rows) {
+        for (List<Data> row in excel.tables[table].rows) {
           if (i == 0) {
             keys = row;
             i++;
-          } else {
+          }
+          else {
             Map<String, dynamic> temp = Map<String, dynamic>();
             int j = 0;
             String tk = '';
-            for (var key in keys) {
-              tk = key;
-              temp[tk] = (row[j].runtimeType==String)?row[j].toString():row[j];
+            for (Data key in keys) {
+              tk = key.value;
+              temp[tk] = row[j]!=null?row[j].value.toString():null;
               j++;
             }
             json.add(temp);
           }
         }
       }
+
+      // for (var table in excel.tables.keys) {
+      //   for (var row in excel.tables[table].rows) {
+      //     if (i == 0) {
+      //       keys = row;
+      //       i++;
+      //     } else {
+      //       Map<String, dynamic> temp = Map<String, dynamic>();
+      //       int j = 0;
+      //       String tk = '';
+      //       for (String key in keys) {
+      //         tk = key;
+      //         temp[tk] = (row[j].runtimeType==String)?row[j].toString():row[j];
+      //         j++;
+      //       }
+      //       json.add(temp);
+      //     }
+      //   }
+      // }
       json.forEach((jsonItem)
       {
         ExcelClientModel excelClientModel=ExcelClientModel.fromJson(jsonItem);
         ClientModel temp=excelClientModel.toClientModel();
         newClientModel(temp);
       });
-    } catch (e) {
-      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!"+e.toString());
-    }
+    // } catch (e) {
+    //   globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!"+e.toString());
+    // }
   }
   fileExists(String type, String assetPath) async {
     String fileName = await fileLocalName(type, assetPath);
