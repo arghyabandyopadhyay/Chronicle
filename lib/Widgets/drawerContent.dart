@@ -77,30 +77,30 @@ class DrawerContent extends StatelessWidget {
                   );
                 }
             ),
-            ListTile(
-              leading: Icon(Icons.help),
-              title: Text("Help and Feedback"),
-              onTap: ()async{
-              Navigator.pop(context);
-              Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>HelpAndFeedbackPage()));
-              },
-            ),
-            if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
-              leading: Icon(Icons.send),
-              title: Text("Dispatch Notification"),
-              onTap: ()async{
-                Navigator.of(context).pop();
-                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
-              },
-            ),
-            if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
-              leading: Icon(Icons.account_box),
-              title: Text("Users Access"),
-              onTap: ()async{
-                Navigator.of(context).pop();
-                Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.help),
+            //   title: Text("Help and Feedback"),
+            //   onTap: ()async{
+            //   Navigator.pop(context);
+            //   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>HelpAndFeedbackPage()));
+            //   },
+            // ),
+            // if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
+            //   leading: Icon(Icons.send),
+            //   title: Text("Dispatch Notification"),
+            //   onTap: ()async{
+            //     Navigator.of(context).pop();
+            //     Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
+            //   },
+            // ),
+            // if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ListTile(
+            //   leading: Icon(Icons.account_box),
+            //   title: Text("Users Access"),
+            //   onTap: ()async{
+            //     Navigator.of(context).pop();
+            //     Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
+            //   },
+            // ),
           ]
       ),
     );

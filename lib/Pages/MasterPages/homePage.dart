@@ -1,32 +1,20 @@
-import 'dart:io';
 
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
-import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
-import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/wishlistPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
-import 'package:chronicle/Widgets/videoList.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 import '../../appBarVariables.dart';
 import '../../customColors.dart';
-import '../../globalClass.dart';
-import '../TutorPages/videoPlayerPage.dart';
 import '../courseHomePage.dart';
 import '../notificationsPage.dart';
 

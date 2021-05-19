@@ -1,10 +1,10 @@
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/OwnerModules/clientAccessEditPage.dart';
+import 'package:chronicle/OwnerModules/dispatchNotificationConsole.dart';
 import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
@@ -18,9 +18,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:qr_code_tools/qr_code_tools.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'dart:async';
-import 'dart:ui' as ui;
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../Modules/auth.dart';
 import '../../appBarVariables.dart';
 import '../../customColors.dart';
@@ -43,8 +40,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
   Razorpay razorpay;
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
-  static const androidMethodChannel = const MethodChannel('team.native.io/screenshot');
-  static GlobalKey previewContainer = new GlobalKey();
   Route _routeToRoutingPage() {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => RoutingPage(),
@@ -442,7 +437,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Navigator.pop(popupContext);
                   UserModel userModel=await getUserDetails();
                   if(userModel.qrcodeDetail!=null){
-                    Navigator.of(context).push(new MaterialPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
+                    Navigator.of(widget.mainScreenContext).push(new MaterialPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
                   }
                   else {
                     String _data = '';
@@ -469,14 +464,24 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     }
                   }
                 }),
-                ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help,iconColor:CustomColors.helpIconColor,onTap: () async {
+                ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help_outline,iconColor:CustomColors.helpIconColor,onTap: () async {
                   Navigator.pop(popupContext);
-                  Navigator.of(context).push(MaterialPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
+                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
                 }),
                 ModalOptionModel(particulars: "Settings",icon: Icons.settings,iconColor:CustomColors.settingsIconColor,onTap: () async {
                   Navigator.pop(popupContext);
-                  Navigator.of(context).push(MaterialPageRoute(builder: (settingsContext)=>SettingsPage()));
+                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (settingsContext)=>SettingsPage()));
                 }),
+                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Dispatch Notification",icon: Icons.send,iconColor:CustomColors.sendIconColor,onTap: () async {
+                    Navigator.of(popupContext).pop();
+                    Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>DispatchNotificationConsole()));
+                  },
+                ),
+                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Users Access",icon: Icons.account_box_outlined,iconColor:CustomColors.sendIconColor,onTap: () async {
+                    Navigator.of(context).pop();
+                    Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>ClientAccessEditPage()));
+                  },
+                ),
               ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
                   value: choice,

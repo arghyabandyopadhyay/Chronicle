@@ -8,7 +8,6 @@ import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
-import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';

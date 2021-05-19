@@ -15,7 +15,6 @@ class VideoCardWidget extends StatefulWidget {
 }
 
 class _VideoCardWidgetState extends State<VideoCardWidget> {
-  String name;
   // var uint8list;
   // getThumbnail()  async{
   //   uint8list = await VideoThumbnail.thumbnailData(
@@ -28,7 +27,6 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
   @override
   void initState() {
     super.initState();
-    name=this.widget.item.name.substring(this.widget.item.name.indexOf("_")+1);
     // getThumbnail();
   }
   @override
@@ -47,7 +45,7 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
             ):null,
             selectedTileColor: Colors.grey.withOpacity(0.1),
             selected: this.widget.item.isSelected,
-            title: Text(name,style: TextStyle(fontWeight: FontWeight.w900),),
+            title: Text(this.widget.item.name,style: TextStyle(fontWeight: FontWeight.w900),),
             subtitle: Text(this.widget.item.sharedRegisterKeys,style: TextStyle(fontWeight: FontWeight.w900),),)
       );
   }

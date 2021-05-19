@@ -338,7 +338,7 @@ class _VideosPageState extends State<VideosPage> {
       });
       await task2;
       String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
-      newVideoIndexModel(new VideoIndexModel(cloudStorageSize:fileSize,thumbnailSize:thumbnailFileSize,name:storageId,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
+      newVideoIndexModel(new VideoIndexModel(cloudStorageSize:fileSize,thumbnailSize:thumbnailFileSize,name:name,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
       GlobalClass.userDetail.cloudStorageSize=GlobalClass.userDetail.cloudStorageSize+thumbnailFileSize+fileSize;
       GlobalClass.userDetail.update();
       globalShowInSnackBar(scaffoldMessengerKey,"Upload complete!!");

@@ -1,7 +1,6 @@
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/userModel.dart';
-import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
@@ -11,7 +10,6 @@ import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../customColors.dart';
 import 'ownerDatabaseModule.dart';

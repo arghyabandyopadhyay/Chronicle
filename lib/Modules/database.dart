@@ -45,7 +45,9 @@ void renameRegister(RegisterIndexModel registerIndex, DatabaseReference id) asyn
   DatabaseReference id2 = databaseReference.child('${GlobalClass.user.uid}/registers/${registerIndex.uid}/');
   id2.update({"Name":registerIndex.name});
 }
-
+void renameVideo(VideoIndexModel videoIndexModel, DatabaseReference id) async{
+  id.update(videoIndexModel.toJson());
+}
 
 void deleteDatabaseNode(DatabaseReference id) {
   databaseReference.child(id.path).remove();

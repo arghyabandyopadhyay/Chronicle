@@ -1,5 +1,7 @@
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/storage.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/videoInformationPage.dart';
 import 'package:chronicle/Widgets/videoCardWidget.dart';
 import 'package:chronicle/customColors.dart';
@@ -25,6 +27,7 @@ class VideoList extends StatefulWidget {
 
 class _VideoListState extends State<VideoList> {
   final TextEditingController alertTextController=new TextEditingController();
+  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   bool isLoading;
   @override
   void initState()
@@ -81,10 +84,40 @@ class _VideoListState extends State<VideoList> {
                     ),
                     secondaryActions: <Widget>[
                       IconSlideAction(
-                        caption: 'Information',
-                        iconWidget: Icon(Icons.info_outline,color: CustomColors.addPaymentIconColor,),
+                        caption: 'Rename',
+                        iconWidget: Icon(Icons.edit_outlined,color: CustomColors.editIconColor,),
                         onTap: () {
-                          Navigator.of(context).push(CupertinoPageRoute(builder: (videoPlayerContext)=>VideoInformationPage(video: this.widget.listItems[index])));
+                          showDialog(context: context, builder: (_)=>new AlertDialog(
+                            title: Text("Rename Register"),
+                            content: TextField(controller: renameRegisterTextEditingController,
+                              textCapitalization: TextCapitalization.words,
+                              textInputAction: TextInputAction.done,
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: "Name of the Register",
+                                contentPadding:
+                                EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                              ),
+                            ),
+                            actions: [ActionChip(label: Text("Rename"), onPressed: (){
+                              if(renameRegisterTextEditingController.text!=""){
+                                setState(() {
+                                  this.widget.listItems[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
+                                  renameVideo(this.widget.listItems[index],this.widget.listItems[index].id);
+                                  renameRegisterTextEditingController.clear();
+                                  Navigator.of(_).pop();
+                                });
+                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Register Renamed to ${this.widget.listItems[index].name}!!");
+                              }
+                              else{
+                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                                Navigator.of(_).pop();
+                              }
+                            }),
+                              ActionChip(label: Text("Cancel"), onPressed: (){
+                                Navigator.of(_).pop();
+                              }),],
+                          ));
                         },
                         closeOnTap: false,
                       ),

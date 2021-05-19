@@ -1,21 +1,15 @@
-import 'package:chronicle/Models/drawerActionModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
 import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
-import 'package:chronicle/Widgets/drawerContent.dart';
-import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
-import '../../globalClass.dart';
 import 'searchCoursesPage.dart';
 import 'homePage.dart';
-import '../wishlistPage.dart';
 
 class ChronicleMasterPage extends StatefulWidget {
   final RegisterIndexModel register;
@@ -98,26 +92,26 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
     return ScaffoldMessenger(child: Scaffold(
       key: masterPageScaffoldKey,
       resizeToAvoidBottomInset: false,
-      drawer: (GlobalClass.userDetail.isAppRegistered==1)?UniversalDrawerWidget(scaffoldMessengerKey: masterScaffoldMessengerKey,state: this,isNotRegisterPage: true,masterContext: context,):Drawer(
-          child: DrawerContent(
-            scaffoldMessengerKey: masterScaffoldMessengerKey,
-            drawerItems:
-            [
-              DrawerActionModel(
-                Icons.home,"Home",(){
-                Navigator.pop(context);
-                _controller.jumpToTab(0);
-              },
-              ),
-              DrawerActionModel(
-                Icons.search,"Search",(){
-                Navigator.pop(context);
-                _controller.jumpToTab(1);
-              },
-              ),
-            ],
-          )
-      ),
+      // drawer: (GlobalClass.userDetail.isAppRegistered==1)?UniversalDrawerWidget(scaffoldMessengerKey: masterScaffoldMessengerKey,state: this,isNotRegisterPage: true,masterContext: context,):Drawer(
+      //     child: DrawerContent(
+      //       scaffoldMessengerKey: masterScaffoldMessengerKey,
+      //       drawerItems:
+      //       [
+      //         DrawerActionModel(
+      //           Icons.home,"Home",(){
+      //           Navigator.pop(context);
+      //           _controller.jumpToTab(0);
+      //         },
+      //         ),
+      //         DrawerActionModel(
+      //           Icons.search,"Search",(){
+      //           Navigator.pop(context);
+      //           _controller.jumpToTab(1);
+      //         },
+      //         ),
+      //       ],
+      //     )
+      // ),
       body: PersistentTabView(
         context,
         controller: _controller,
