@@ -66,14 +66,14 @@ class _VideoListState extends State<VideoList> {
                 controller: widget.scrollController,
                 physics: AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(bottom: 100),
-                itemCount: this.widget.listItems.length,
+                itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return Slidable(
                     actionPane: SlidableDrawerActionPane(),
                     actionExtentRatio: 0.25,
                     child:VideoCardWidget(
-                      key: ObjectKey(this.widget.listItems[index].id.key),
-                      item: this.widget.listItems[index],
+                      key: ObjectKey(displayList[index].id.key),
+                      item: displayList[index],
                       index: index,
                       onTapList: (index){
                         widget.onTapList(index);
@@ -88,13 +88,13 @@ class _VideoListState extends State<VideoList> {
                         iconWidget: Icon(Icons.edit_outlined,color: CustomColors.editIconColor,),
                         onTap: () {
                           showDialog(context: context, builder: (_)=>new AlertDialog(
-                            title: Text("Rename Register"),
+                            title: Text("Rename Video"),
                             content: TextField(controller: renameRegisterTextEditingController,
                               textCapitalization: TextCapitalization.words,
                               textInputAction: TextInputAction.done,
                               decoration: InputDecoration(
                                 border: const OutlineInputBorder(),
-                                labelText: "Name of the Register",
+                                labelText: "Name of the Video",
                                 contentPadding:
                                 EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                               ),
@@ -102,15 +102,15 @@ class _VideoListState extends State<VideoList> {
                             actions: [ActionChip(label: Text("Rename"), onPressed: (){
                               if(renameRegisterTextEditingController.text!=""){
                                 setState(() {
-                                  this.widget.listItems[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
-                                  renameVideo(this.widget.listItems[index],this.widget.listItems[index].id);
+                                  displayList[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
+                                  renameVideo(displayList[index],displayList[index].id);
                                   renameRegisterTextEditingController.clear();
                                   Navigator.of(_).pop();
                                 });
-                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Register Renamed to ${this.widget.listItems[index].name}!!");
+                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Video Renamed to ${displayList[index].name}!!");
                               }
                               else{
-                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your register!!");
+                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your video!!");
                                 Navigator.of(_).pop();
                               }
                             }),
@@ -126,8 +126,9 @@ class _VideoListState extends State<VideoList> {
                         iconWidget: Icon(Icons.delete,color: CustomColors.addDueIconColor,),
                         onTap: () async {
                           setState(() {
-                            deleteFromStorageModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
-                            this.widget.listItems.remove(this.widget.listItems[index]);
+                            deleteFromStorageModule(displayList[index],widget.scaffoldMessengerKey);
+                            displayList.remove(displayList[index]);
+                            widget.listItems.remove(displayList[index]);
                           });
                         },
                         closeOnTap: false,

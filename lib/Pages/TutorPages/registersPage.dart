@@ -4,7 +4,6 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/registerList.dart';
-import 'package:chronicle/Widgets/universalDrawer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -17,7 +16,7 @@ class RegistersPage extends StatefulWidget {
 }
 
 class _RegistersPageState extends State<RegistersPage> {
-  GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   void newRegisterModel(RegisterModel register) {
     register.setId(addRegister(register.name));
@@ -50,7 +49,6 @@ class _RegistersPageState extends State<RegistersPage> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
-      key:scaffoldKey,
       appBar: AppBar(title: Text("Registers"),),
       // drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: false,masterContext: context),
       body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[

@@ -68,14 +68,14 @@ class _ClientListState extends State<ClientList> {
                 physics: AlwaysScrollableScrollPhysics(),
                 controller: widget.scrollController,
                 padding: EdgeInsets.only(bottom: 100),
-                itemCount: this.widget.listItems.length,
+                itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return Slidable(
                     actionPane: SlidableDrawerActionPane(),
                     actionExtentRatio: 0.25,
                     child:ClientCardWidget(
-                      key: ObjectKey(this.widget.listItems[index].id.key),
-                      item: this.widget.listItems[index],
+                      key: ObjectKey(displayList[index].id.key),
+                      item: displayList[index],
                       index: index,
                       onTapList: (index){
                         widget.onTapList(index);
@@ -88,11 +88,11 @@ class _ClientListState extends State<ClientList> {
                       },
                     ),
                     secondaryActions: <Widget>[
-                      if(this.widget.listItems[index].due>-1)IconSlideAction(
+                      if(displayList[index].due>-1)IconSlideAction(
                         caption: 'Add Due',
                         iconWidget: Icon(Icons.more_time,color: CustomColors.addDueIconColor,),
                         onTap: () async {
-                          addDueModule(this.widget.listItems[index],this);
+                          addDueModule(displayList[index],this);
                         },
                         closeOnTap: false,
                       ),
@@ -100,7 +100,7 @@ class _ClientListState extends State<ClientList> {
                         caption: 'Add Payment',
                         iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor,),
                         onTap: () {
-                          addPaymentModule(this.widget.listItems[index],context,widget.scaffoldMessengerKey,this);
+                          addPaymentModule(displayList[index],context,widget.scaffoldMessengerKey,this);
                         },
                         closeOnTap: false,
                       ),
@@ -110,7 +110,7 @@ class _ClientListState extends State<ClientList> {
                         caption: 'Call',
                         iconWidget: Icon(Icons.call,color: CustomColors.callIconColor,),
                         onTap: () async {
-                          callModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                          callModule(displayList[index],widget.scaffoldMessengerKey);
                         },
                       ),
                       IconSlideAction(
@@ -132,7 +132,7 @@ class _ClientListState extends State<ClientList> {
                                           content: Text("Are you sure to send a reminder to ${widget.listItems[index].name}?"),
                                           actions: [
                                             ActionChip(label: Text("Yes"), onPressed: (){
-                                              smsModule(this.widget.listItems[index],widget.scaffoldMessengerKey);
+                                              smsModule(displayList[index],widget.scaffoldMessengerKey);
                                               Navigator.of(_).pop();
                                             }),
                                             ActionChip(label: Text("No"), onPressed: (){
@@ -188,7 +188,7 @@ class _ClientListState extends State<ClientList> {
                         caption: 'WhatsApp',
                         iconWidget: Icon(FontAwesomeIcons.whatsappSquare,color:CustomColors.whatsAppGreen),
                         onTap: () async {
-                          whatsAppModule(this.widget.listItems[index], widget.scaffoldMessengerKey);
+                          whatsAppModule(displayList[index], widget.scaffoldMessengerKey);
                         },
                       ),
                     ],

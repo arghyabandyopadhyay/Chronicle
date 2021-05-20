@@ -81,14 +81,12 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         "wallets" : ["paytm"]
       }
     };
-
     try{
       razorpay.open(options);
 
     }catch(e){
       debugPrint('Error: e');
     }
-
   }
   @override
   void dispose() {
@@ -437,7 +435,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Navigator.pop(popupContext);
                   UserModel userModel=await getUserDetails();
                   if(userModel.qrcodeDetail!=null){
-                    Navigator.of(widget.mainScreenContext).push(new MaterialPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
+                    Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>QrCodePage(qrCode: userModel.qrcodeDetail)));
                   }
                   else {
                     String _data = '';
@@ -466,20 +464,20 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 }),
                 ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help_outline,iconColor:CustomColors.helpIconColor,onTap: () async {
                   Navigator.pop(popupContext);
-                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
+                  Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
                 }),
                 ModalOptionModel(particulars: "Settings",icon: Icons.settings,iconColor:CustomColors.settingsIconColor,onTap: () async {
                   Navigator.pop(popupContext);
-                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (settingsContext)=>SettingsPage()));
+                  Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (settingsContext)=>SettingsPage()));
                 }),
                 if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Dispatch Notification",icon: Icons.send,iconColor:CustomColors.sendIconColor,onTap: () async {
                     Navigator.of(popupContext).pop();
-                    Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>DispatchNotificationConsole()));
+                    Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
                   },
                 ),
                 if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Users Access",icon: Icons.account_box_outlined,iconColor:CustomColors.sendIconColor,onTap: () async {
                     Navigator.of(context).pop();
-                    Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>ClientAccessEditPage()));
+                    Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
                   },
                 ),
               ].map((ModalOptionModel choice){

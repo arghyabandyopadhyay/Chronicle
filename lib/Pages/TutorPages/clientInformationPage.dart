@@ -42,7 +42,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
   DateTime startDateTemp;
   String sexDropDown;
   String casteDropDown;
-  bool isLoading=false;
   final focus = FocusNode();
   int counter=0;
   String _validateName(String value) {
@@ -82,9 +81,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                           actions: [
                             ActionChip(label: Text("Yes"), onPressed: (){
                               Navigator.pop(context2);
-                              setState(() {
-                                isLoading=true;
-                              });
                               widget.client.sex=sexDropDown;
                               widget.client.caste=casteDropDown;
                               updateClient(widget.client,widget.client.id);
@@ -119,9 +115,6 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                 actions: [
                   ActionChip(label: Text("Yes"), onPressed: (){
                     Navigator.pop(context1);
-                    setState(() {
-                      isLoading=true;
-                    });
                     widget.client.sex=sexDropDown;
                     widget.client.caste=casteDropDown;
                     updateClient(widget.client,widget.client.id);

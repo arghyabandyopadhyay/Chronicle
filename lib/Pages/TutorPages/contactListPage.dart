@@ -110,7 +110,7 @@ class _ContactListPageState extends State<ContactListPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Contacts",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();

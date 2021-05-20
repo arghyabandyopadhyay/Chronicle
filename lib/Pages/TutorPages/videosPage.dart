@@ -21,7 +21,9 @@ import '../../customColors.dart';
 import '../../globalClass.dart';
 
 class VideosPage extends StatefulWidget {
-  const VideosPage({ Key key}) : super(key: key);
+  final bool isPreview;
+  final bool isAddVideoToCourse;
+  const VideosPage(this.isPreview,this.isAddVideoToCourse);
   @override
   _VideosPageState createState() => _VideosPageState();
 }
@@ -30,10 +32,10 @@ class _VideosPageState extends State<VideosPage> {
   List<VideoIndexModel> selectedList=[];
   int _counter=0;
   bool _isLoading;
-  GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   bool _isSearching=false;
-  int sortVal=1;
+
   List<VideoIndexModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
@@ -56,7 +58,7 @@ class _VideosPageState extends State<VideosPage> {
       this.icon = new Icon(
         Icons.search,
       );
-      this.appBarTitle = Text("Videos");
+      this.appBarTitle = Text(widget.isPreview?"Select Preview Video":widget.isAddVideoToCourse?"Add Videos":"Videos");
       _isSearching = false;
       _searchController.clear();
     });
@@ -100,7 +102,7 @@ class _VideosPageState extends State<VideosPage> {
                 this.videos = videos;
                 _counter++;
                 _isLoading=false;
-                this.appBarTitle = Text("Videos");
+                this.appBarTitle = Text(widget.isPreview?"Select Preview Video":widget.isAddVideoToCourse?"Add Videos":"Videos");
               });
             });
           }
@@ -134,7 +136,7 @@ class _VideosPageState extends State<VideosPage> {
         this.videos = videos;
         _counter++;
         _isLoading=false;
-        this.appBarTitle = Text("Videos");
+        this.appBarTitle = Text(widget.isPreview?"Select Preview Video":widget.isAddVideoToCourse?"Add Videos":"Videos");
       })
     });
   }
@@ -144,13 +146,13 @@ class _VideosPageState extends State<VideosPage> {
   void initState() {
     super.initState();
     getVideoIndexModels();
-    this.appBarTitle = Text("Videos");
+    this.appBarTitle = Text(widget.isPreview?"Select Preview Video":widget.isAddVideoToCourse?"Add Videos":"Videos");
   }
   getAppBar(){
     if(selectedList.length < 1)
       return AppBar(
         title: appBarTitle,
-        leading: IconButton(onPressed: () { if(!_isSearching)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:Icons.arrow_back),),
+        leading: IconButton(onPressed: () { if(!_isSearching&&!isUploading&&!widget.isPreview&&!widget.isAddVideoToCourse)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:widget.isPreview?Icons.preview_outlined:widget.isAddVideoToCourse?Icons.video_collection_outlined:Icons.arrow_back),),
         bottom: PreferredSize(
           child: (isUploading)?LinearProgressIndicator(value: progressValue,minHeight: 2,):Container(width: 0.0, height: 0.0), preferredSize: Size(double.infinity,2),
         ),
@@ -160,7 +162,7 @@ class _VideosPageState extends State<VideosPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Your Videos",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();
@@ -246,6 +248,29 @@ class _VideosPageState extends State<VideosPage> {
                 }
               });
             },
+          ),
+          if(widget.isAddVideoToCourse)IconButton(
+            onPressed: () async {
+              showDialog(context: context, builder: (_)=>new AlertDialog(
+                title: Text("Confirm Add"),
+                content: Text("Are you sure to add all the selected videos?"),
+                actions: [
+                  ActionChip(label: Text("Yes"), onPressed: (){
+                    setState(() {
+                      Navigator.of(_).pop();
+                      Navigator.of(context).pop(selectedList);
+                    });
+                  }),
+                  ActionChip(label: Text("No"), onPressed: (){
+                    setState(() {
+                      Navigator.of(_).pop();
+                    });
+                  })
+                ],
+              ));
+
+            },
+            icon: Icon(Icons.add_to_photos_outlined),
           ),
           IconButton(
             onPressed: () async {
@@ -356,7 +381,30 @@ class _VideosPageState extends State<VideosPage> {
   }
   @override
   Widget build(BuildContext context) {
-    return ScaffoldMessenger(child: Scaffold(
+    return WillPopScope(onWillPop: () {
+      if(!isUploading) {
+        if(widget.isAddVideoToCourse) {
+          if(selectedList.length==0)Navigator.of(context).pop();
+          else{
+            scaffoldMessengerKey.currentState.hideCurrentSnackBar();
+            scaffoldMessengerKey.currentState.showSnackBar(new SnackBar(content: Text("Press add button to add the selected videos to the course."),action: SnackBarAction(label: "Leave anyway",textColor:CustomColors.snackBarActionTextColor,onPressed: (){
+              Navigator.of(context).pop();
+            },),));
+          }
+        }
+        else{
+          Navigator.of(context).pop();
+        }
+      }
+      else{
+        scaffoldMessengerKey.currentState.hideCurrentSnackBar();
+        scaffoldMessengerKey.currentState.showSnackBar(new SnackBar(content: Text("Video is being uploaded."),action: SnackBarAction(label: "Leave anyway",textColor:CustomColors.snackBarActionTextColor,onPressed: (){
+          Navigator.of(context).pop();
+        },),));
+      }
+      return new Future(() => false);
+    },
+    child: ScaffoldMessenger(child: Scaffold(
       appBar: getAppBar(),
       body: this.videos!=null?this.videos.length==0?NoDataError():Column(children: <Widget>[
         Center(child: Text("Storage Occupied: ${classifySize(GlobalClass.userDetail.cloudStorageSize)} of ${classifySize(GlobalClass.userDetail.cloudStorageSizeLimit)}",style: TextStyle(color: GlobalClass.userDetail.cloudStorageSize>GlobalClass.userDetail.cloudStorageSizeLimit?Colors.red:null),),),
@@ -365,30 +413,19 @@ class _VideosPageState extends State<VideosPage> {
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: VideoList(listItems:this.searchResult,
-                refreshIndicatorKey: refreshIndicatorKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                scrollController:scrollController,
-                scaffoldMessengerKey:scaffoldMessengerKey,
-                onTapList:(index) async {
-                  if(selectedList.length<1){
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        VideoPlayerPage(video:this.searchResult[index])));
-                  }
-                  else {
-                    setState(() {
-                      searchResult[index].isSelected=!searchResult[index].isSelected;
-                      if (searchResult[index].isSelected) {
-                        selectedList.add(searchResult[index]);
-                      } else {
-                        selectedList.remove(searchResult[index]);
-                      }
-                    });
-                  }
-                },
-                onLongPressed:(index)
-                {
+              refreshIndicatorKey: refreshIndicatorKey,
+              refreshData: (){
+                return refreshData();
+              },
+              scrollController:scrollController,
+              scaffoldMessengerKey:scaffoldMessengerKey,
+              onTapList:(index) async {
+                if(selectedList.length<1){
+                  if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.searchResult[index]]);
+                  else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      VideoPlayerPage(video:this.searchResult[index])));
+                }
+                else {
                   setState(() {
                     searchResult[index].isSelected=!searchResult[index].isSelected;
                     if (searchResult[index].isSelected) {
@@ -397,35 +434,36 @@ class _VideosPageState extends State<VideosPage> {
                       selectedList.remove(searchResult[index]);
                     }
                   });
-                },
+                }
+              },
+              onLongPressed:(index)
+              {
+                if(!widget.isPreview)setState(() {
+                  searchResult[index].isSelected=!searchResult[index].isSelected;
+                  if (searchResult[index].isSelected) {
+                    selectedList.add(searchResult[index]);
+                  } else {
+                    selectedList.remove(searchResult[index]);
+                  }
+                });
+              },
             )):
         Provider.value(
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: VideoList(listItems:this.videos,scaffoldMessengerKey:scaffoldMessengerKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                refreshIndicatorKey: refreshIndicatorKey,
-                scrollController: scrollController,
-                onTapList:(index) async {
-                  if(selectedList.length<1){
-                    Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                        VideoPlayerPage(video:this.videos[index])));
-                  }
-                  else {
-                    setState(() {
-                      videos[index].isSelected=!videos[index].isSelected;
-                      if (videos[index].isSelected) {
-                        selectedList.add(videos[index]);
-                      } else {
-                        selectedList.remove(videos[index]);
-                      }
-                    });
-                  }
-                },
-                onLongPressed:(index)
-                {
+              refreshData: (){
+                return refreshData();
+              },
+              refreshIndicatorKey: refreshIndicatorKey,
+              scrollController: scrollController,
+              onTapList:(index) async {
+                if(selectedList.length<1){
+                  if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.videos[index]]);
+                  else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      VideoPlayerPage(video:this.videos[index])));
+                }
+                else {
                   setState(() {
                     videos[index].isSelected=!videos[index].isSelected;
                     if (videos[index].isSelected) {
@@ -434,11 +472,23 @@ class _VideosPageState extends State<VideosPage> {
                       selectedList.remove(videos[index]);
                     }
                   });
-                },
+                }
+              },
+              onLongPressed:(index)
+              {
+                if(!widget.isPreview)setState(() {
+                  videos[index].isSelected=!videos[index].isSelected;
+                  if (videos[index].isSelected) {
+                    selectedList.add(videos[index]);
+                  } else {
+                    selectedList.remove(videos[index]);
+                  }
+                });
+              },
             )
         )),
       ]):
       LoaderWidget(),
-    ),key: scaffoldMessengerKey,);
+    ),key: scaffoldMessengerKey,),);
   }
 }

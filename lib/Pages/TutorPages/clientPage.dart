@@ -49,10 +49,10 @@ class _ClientPageState extends State<ClientPage> {
   int _counter=0;
   bool _isLoading;
   String _filePath;
-  // GlobalKey<ScaffoldState> scaffoldKey=GlobalKey<ScaffoldState>();
+  //
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   bool _isSearching=false;
-  int sortVal=1;
+
   List<ClientModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
@@ -256,7 +256,7 @@ class _ClientPageState extends State<ClientPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Clients",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();
@@ -719,7 +719,7 @@ class _ClientPageState extends State<ClientPage> {
                   scaffoldMessengerKey:scaffoldMessengerKey,
                   onTapList:(index){
                     if(selectedList.length<1)
-                      Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
+                      Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
                           ClientInformationPage(client:this.searchResult[index]))).then((value) {
                         setState(() {if(value==null){}else{
                           this.clients.remove(this.searchResult[index]);
@@ -781,7 +781,7 @@ class _ClientPageState extends State<ClientPage> {
                   scrollController: scrollController,
                   onTapList:(index){
                     if(selectedList.length<1)
-                      Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
+                      Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
                           ClientInformationPage(client:this.clients[index]))).then((value){
                         setState(() {
                           if(value==null) {}

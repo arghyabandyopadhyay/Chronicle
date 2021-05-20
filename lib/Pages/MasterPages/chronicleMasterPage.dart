@@ -39,7 +39,6 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
         mainScreenContext: context,
       ),
       HomePage(
-        scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
       ),
       SearchCoursesPage(

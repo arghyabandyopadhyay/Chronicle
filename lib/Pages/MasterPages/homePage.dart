@@ -1,12 +1,13 @@
-
-import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/videosPage.dart';
 import 'package:chronicle/Pages/wishlistPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,26 +16,24 @@ import 'package:provider/provider.dart';
 
 import '../../appBarVariables.dart';
 import '../../customColors.dart';
-import '../courseHomePage.dart';
 import '../notificationsPage.dart';
+import '../purchasedCoursePage.dart';
 
 
 class HomePage extends StatefulWidget {
   final BuildContext mainScreenContext;
   final bool hideStatus;
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  const HomePage({ Key key,this.mainScreenContext,this.hideStatus,this.scaffoldKey,}) : super(key: key);
+  const HomePage({ Key key,this.mainScreenContext,this.hideStatus,}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
 class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
-  List<CourseModel> courses;
   int _counter=0;
   bool _isLoading;
   bool _isSearching=false;
-  int sortVal=1;
-  List<CourseModel> searchResult = [];
+
+  List<CourseIndexModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
   );
@@ -67,7 +66,7 @@ class _HomePageState extends State<HomePage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=courses.where((CourseModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=GlobalClass.myPurchasedCourses.where((CourseIndexModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }
@@ -82,11 +81,9 @@ class _HomePageState extends State<HomePage> {
         {
           if(!_isLoading){
             _isLoading=true;
-            return getAllCoursesModels("Course").then((courses) {
+            return getAllCourseIndexes("Courses",false).then((courses) {
               if(mounted)this.setState(() {
-                this.courses = courses;
-                CourseModel courseModel=CourseModel(title: "My Videos",description: "Videos uploaded by you.");
-                courses.add(courseModel);
+                GlobalClass.myPurchasedCourses = courses;
                 _counter++;
                 _isLoading=false;
                 this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
@@ -116,12 +113,10 @@ class _HomePageState extends State<HomePage> {
       return;
     }
   }
-
   void getCourseModels() {
-    getAllCoursesModels("Course").then((courses) => {
+    getAllCourseIndexes("Courses",false).then((courses) => {
       if(mounted)this.setState(() {
-        this.courses = courses;
-        courses.add(CourseModel(title: "My Videos",description: "Videos uploaded by you."));
+        GlobalClass.myPurchasedCourses = courses;
         _counter++;
         _isLoading=false;
         this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
@@ -145,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                 if(this.icon.icon == Icons.search)
                 {
                   this.icon=new Icon(Icons.close);
-                  this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                  this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Owned Courses",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                   _handleSearchStart();
                 }
                 else _handleSearchEnd();
@@ -161,7 +156,7 @@ class _HomePageState extends State<HomePage> {
                 return [
                   ModalOptionModel(particulars: "Wishlist",icon: FontAwesomeIcons.heart,iconColor:CustomColors.wishlistIconColor,onTap: () async {
                     Navigator.pop(popupContext);
-                    Navigator.of(context).push(new MaterialPageRoute(builder: (qrCodePageContext)=>WishlistPage()));
+                    Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>WishlistPage()));
                   }),
                 ].map((ModalOptionModel choice){
                   return PopupMenuItem<ModalOptionModel>(
@@ -172,41 +167,53 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ],),
-        body: this.courses!=null?this.courses.length==0?NoDataError():Column(children: <Widget>[
-          Expanded(child: _isSearching?
-          Provider.value(
-              value: _counter,
-              updateShouldNotify: (oldValue, newValue) => true,
-              child: CourseList(listItems:this.searchResult,
-                refreshIndicatorKey: refreshIndicatorKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                scrollController:scrollController,
-                scaffoldMessengerKey:scaffoldMessengerKey,
-                onTapList:(index) async {
-                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
-                      CourseHomePage(course:this.searchResult[index])));
+        body: Column(
+          children: [
+            if(GlobalClass.userDetail.isAppRegistered==1)ListTile(
+              onTap: () {
+                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    VideosPage(false,false)));
+              },
+              leading: Icon(Icons.video_collection_outlined),
+              title: Text("My Videos"),
+              subtitle: Text("The Videos uploaded by you"),),
+            Expanded(child: GlobalClass.myPurchasedCourses!=null?GlobalClass.myPurchasedCourses.length==0?NoDataError():Column(children: <Widget>[
+              Expanded(child: _isSearching?
+              Provider.value(
+                  value: _counter,
+                  updateShouldNotify: (oldValue, newValue) => true,
+                  child: CourseList(listItems:this.searchResult,
+                    refreshIndicatorKey: refreshIndicatorKey,
+                    refreshData: (){
+                      return refreshData();
+                    },
+                    scrollController:scrollController,
+                    scaffoldMessengerKey:scaffoldMessengerKey,
+                    onTapList:(index) async {
+                      Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                          PurchaseCoursePage(course:this.searchResult[index])));
 
-                },
-              )):
-          Provider.value(
-              value: _counter,
-              updateShouldNotify: (oldValue, newValue) => true,
-              child: CourseList(listItems:this.courses,scaffoldMessengerKey:scaffoldMessengerKey,
-                refreshData: (){
-                  return refreshData();
-                },
-                refreshIndicatorKey: refreshIndicatorKey,
-                scrollController: scrollController,
-                onTapList:(index) async {
-                  Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
-                      CourseHomePage(course:this.courses[index])));
+                    },
+                  )):
+              Provider.value(
+                  value: _counter,
+                  updateShouldNotify: (oldValue, newValue) => true,
+                  child: CourseList(listItems:GlobalClass.myPurchasedCourses,scaffoldMessengerKey:scaffoldMessengerKey,
+                    refreshData: (){
+                      return refreshData();
+                    },
+                    refreshIndicatorKey: refreshIndicatorKey,
+                    scrollController: scrollController,
+                    onTapList:(index) async {
+                      Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                          PurchaseCoursePage(course:GlobalClass.myPurchasedCourses[index])));
 
-                },
-              )
-          )),
-        ]): LoaderWidget()
+                    },
+                  )
+              )),
+            ]): LoaderWidget())
+          ],
+        )
     ),);
   }
 }

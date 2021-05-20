@@ -1,4 +1,4 @@
-import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,7 +6,7 @@ import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 import 'courseCardWidget.dart';
 
 class CourseList extends StatefulWidget {
-  final List<CourseModel> listItems;
+  final List<CourseIndexModel> listItems;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
   final Function onTapList;
   final Function refreshData;
@@ -57,11 +57,11 @@ class _CourseListState extends State<CourseList> {
                 controller: widget.scrollController,
                 physics: AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.only(bottom: 100),
-                itemCount: this.widget.listItems.length,
+                itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return CourseCardWidget(
-                    key: this.widget.listItems[index].id!=null?ObjectKey(this.widget.listItems[index].id.key):UniqueKey(),
-                    item: this.widget.listItems[index],
+                    key: displayList[index].id!=null?ObjectKey(displayList[index].id.key):UniqueKey(),
+                    item: displayList[index],
                     index: index,
                     onTapList: (index){
                       widget.onTapList(index);

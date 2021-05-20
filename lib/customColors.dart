@@ -29,10 +29,10 @@ class CustomColors{
   static const Color qrcodeIconColor= Colors.black;
   static const Color helpIconColor= Colors.indigoAccent;
   static const Color settingsIconColor= Colors.blueGrey;
+  static const Color previewIconColor= Colors.green;
 
 
-
-
+  static const Color snackBarActionTextColor= Colors.white;
   static const Color lastMonthTextColor = Colors.orangeAccent;
   static const Color paidTextColor = Colors.green;
   static const Color dueTextColor = Colors.red;

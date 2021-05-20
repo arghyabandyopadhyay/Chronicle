@@ -147,7 +147,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Notifications",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();

@@ -1,3 +1,4 @@
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -10,12 +11,11 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../appBarVariables.dart';
 import '../../../customColors.dart';
-import '../../courseHomePage.dart';
 import '../../notificationsPage.dart';
 import 'addCoursesPage.dart';
+import 'editCoursesPage.dart';
 
 
 class TutorCoursesPage extends StatefulWidget {
@@ -29,14 +29,14 @@ class TutorCoursesPage extends StatefulWidget {
 class _TutorCoursesPageState extends State<TutorCoursesPage> {
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
-  List<CourseModel> courses;
+  List<CourseIndexModel> courses;
   int _counter=0;
   bool _isLoading;
   final TextEditingController _searchController = new TextEditingController();
   ScrollController scrollController = new ScrollController();
   bool _isSearching=false;
-  int sortVal=1;
-  List<CourseModel> searchResult = [];
+
+  List<CourseIndexModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
   );
@@ -65,7 +65,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
   void searchOperation(String searchText) {
     searchResult.clear();
     if(_isSearching){
-      searchResult=courses.where((CourseModel element) => (element.title).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=courses.where((CourseIndexModel element) => (element.title).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }
@@ -80,7 +80,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
         {
           if(!_isLoading){
             _isLoading=true;
-            return getAllCoursesModels("CoursesByMe").then((courses) {
+            return getAllCourseIndexes("CoursesByMe",false).then((courses) {
               if(mounted)this.setState(() {
                 this.courses = courses;
                 _counter++;
@@ -112,9 +112,15 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
       return;
     }
   }
+  void newCourse(CourseModel course) {
+    CourseIndexModel courseIndex=addCourse(course);
+    if(mounted)this.setState(() {
+      courses.add(courseIndex);
+    });
+  }
 
   void getCourseModels() {
-    getAllCoursesModels("CoursesByMe").then((courses) => {
+    getAllCourseIndexes("CoursesByMe",false).then((courses) => {
       if(mounted)this.setState(() {
         this.courses = courses;
         _counter++;
@@ -126,7 +132,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
         title: appBarTitle,
         // leading: IconButton(onPressed: () { if(!_isSearching)widget.scaffoldKey.currentState.openDrawer(); }, icon: Icon(_isSearching?Icons.search:Icons.menu),),
@@ -136,7 +142,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Courses By Me",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();
@@ -212,8 +218,14 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
               scrollController:scrollController,
               scaffoldMessengerKey:scaffoldMessengerKey,
               onTapList:(index) async {
-                Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
-                    CourseHomePage(course:this.searchResult[index])));
+                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    EditCoursesPage(course:this.searchResult[index]))).then((value) {
+                  setState(() {if(value==null){}
+                  else{
+                    this.courses.remove(this.searchResult[index]);
+                    this.searchResult.remove(this.searchResult[index]);
+                  }});
+                });
 
               },
             )):
@@ -227,17 +239,22 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
               refreshIndicatorKey: refreshIndicatorKey,
               scrollController: scrollController,
               onTapList:(index) async {
-                Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>
-                    CourseHomePage(course:this.courses[index])));
+                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    EditCoursesPage(course:this.courses[index]))).then((value){
+                  setState(() {
+                    if(value==null) {}
+                    else this.courses.remove(this.courses[index]);
+                  });
+                });
 
               },
             )
         )),
       ]): LoaderWidget(),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){
-        Navigator.of(widget.mainScreenContext).push(MaterialPageRoute(builder: (context)=>AddCoursesPage()));
+        Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>AddCoursesPage(callback: this.newCourse,)));
       },
         label: Text("Add Course"),icon: Icon(Icons.add),),
-    );
+    ),key: scaffoldMessengerKey,);
   }
 }

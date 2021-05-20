@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
@@ -233,8 +234,8 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
   return sortedList;
 }
 
-List<CourseModel> sortCoursesModule(String sortType,List<CourseModel> listToBeSorted){
-  List<CourseModel> sortedList=[];
+List<CourseIndexModel> sortCoursesModule(String sortType,List<CourseIndexModel> listToBeSorted){
+  List<CourseIndexModel> sortedList=[];
   if(sortType=="A-Z"){
     listToBeSorted.sort((a,b)=>a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     sortedList=listToBeSorted;
@@ -264,6 +265,31 @@ deleteModule(ClientModel clientData,BuildContext context,state)async{
       })
     ],
   ));
+}
+deleteCourseModule(CourseIndexModel courseIndex,BuildContext context,state)async{
+  showDialog(context: context, builder: (_)=>new AlertDialog(
+    title: Text("Confirm Delete"),
+    content: Text("Are you sure to delete ${courseIndex.title}?\n The change is irreversible."),
+    actions: [
+      ActionChip(label: Text("Yes"), onPressed: (){
+        state.setState(() {
+          deleteCourseAsync(courseIndex);
+          Navigator.of(_).pop();
+          Navigator.of(context).pop(true);
+        });
+      }),
+      ActionChip(label: Text("No"), onPressed: (){
+        state.setState(() {
+          Navigator.of(_).pop();
+        });
+      })
+    ],
+  ));
+}
+deleteCourseAsync(CourseIndexModel courseIndexModel) async {
+  CourseModel course=await getCourse(courseIndexModel);
+  course.delete();
+  deleteDatabaseNode(courseIndexModel.id);
 }
 addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey, state,){
   showDialog(context: context, builder: (_) =>new AddQuantityDialog()
@@ -362,8 +388,6 @@ String classifySize(int inBytes) {
 void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)
 {
   FocusScopeNode currentFocus = FocusScope.of(context);
-  if (!currentFocus.hasPrimaryFocus) {
-    currentFocus.unfocus();
-  }
+  currentFocus.unfocus();
   globalShowInSnackBar(scaffoldMessengerKey,"Changes have been saved");
 }

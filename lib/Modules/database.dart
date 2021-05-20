@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
@@ -212,17 +213,76 @@ Future<List<VideoIndexModel>> getAllVideos() async {
   return videos;
 }
 
-///gets list of registers enlisted in the account.
-Future<List<CourseModel>> getAllCoursesModels(String coursesType) async {
-  DataSnapshot dataSnapshot = await databaseReference.child('${GlobalClass.user.uid}/$coursesType/').once();
-  List<CourseModel> courses = [];
+///gets list of courses enlisted in the account.
+Future<CourseModel> getCourse(CourseIndexModel courseIndex) async {
+  DataSnapshot dataSnapshot = await databaseReference.child(courseIndex.uid).once();
+  CourseModel course ;
+  if (dataSnapshot.value != null) {
+    course = CourseModel.fromJson(jsonDecode(jsonEncode(dataSnapshot.value)),courseIndex.uid);
+    course.setId(databaseReference.child(courseIndex.uid));
+  }
+  return course;
+}
+
+Future<List<CourseIndexModel>> getAllCourseIndexes(String coursesType,bool isGlobal) async {
+  DataSnapshot dataSnapshot = await databaseReference.child(isGlobal?('CourseIndexes/'):('${GlobalClass.user.uid}/$coursesType/')).once();
+  List<CourseIndexModel> courses = [];
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
-      CourseModel course = CourseModel.fromJson(jsonDecode(jsonEncode(value)),key);
-      course.setId(databaseReference.child('${GlobalClass.user.uid}/$coursesType/' + key));
+      CourseIndexModel course = CourseIndexModel.fromJson(jsonDecode(jsonEncode(value)),key);
+      course.setId(databaseReference.child((isGlobal?('CourseIndexes/'):('${GlobalClass.user.uid}/$coursesType/')) + key));
       courses.add(course);
     });
   }
   courses.sort((a,b)=>a.title.compareTo(b.title));
   return courses;
+}
+
+DatabaseReference addCoursesToOwnLists(String coursesType,CourseIndexModel courseIndex) {
+  var id = databaseReference.child(('${GlobalClass.user.uid}/$coursesType/')).push();
+  id.set(courseIndex.toJson());
+  if(GlobalClass.myPurchasedCourses!=null&&coursesType=="Courses"){
+    courseIndex.setId(id);
+    GlobalClass.myPurchasedCourses.add(courseIndex);
+  }
+  return id;
+}
+
+CourseIndexModel addCourse(CourseModel course)
+{
+  DateTime now=DateTime.now();
+  course.totalUsers=0;
+  course.sellingPrice=course.authorPrice+course.coursePackageDurationInMonths*100;
+  course.authorUid=GlobalClass.user.uid;
+  course.authorName=GlobalClass.user.displayName;
+  course.lastUpdated=DateTime(now.year,now.month,now.day);
+  var id=databaseReference.child('Courses/${GlobalClass.user.uid}').push();
+  id.set(course.toJson());
+  course.setId(id);
+  course.addVideoIndexes();
+  course.addPreviewVideoIndexes();
+  var id2=databaseReference.child('CourseIndexes/').push();
+  CourseIndexModel courseIndex=CourseIndexModel(uid: id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl);
+  id2.set(courseIndex.toJson());
+  course.id.update({"CourseIndexKey":id2.key});
+  var id3=databaseReference.child('${GlobalClass.user.uid}/CoursesByMe/').push();
+  id3.set(courseIndex.toJson());
+  courseIndex.setId(id3);
+  return courseIndex;
+}
+Future<CourseIndexModel> updateCourse(CourseModel course,CourseIndexModel courseByMe)async {
+  DateTime now=DateTime.now();
+  course.lastUpdated=DateTime(now.year,now.month,now.day);
+  course.id.update(course.toJson());
+  // course.updateVideoIndexes();
+  // course.updatePreviewVideoIndex();
+  CourseIndexModel courseIndexModel;
+  DataSnapshot dataSnapshot = await databaseReference.child('CourseIndexes/${course.courseIndexKey}').once();
+  if (dataSnapshot.value != null) {
+    courseIndexModel = CourseIndexModel.fromJson(jsonDecode(jsonEncode(dataSnapshot.value)),"");
+    courseIndexModel.setId(databaseReference.child('CourseIndexes/${course.courseIndexKey}'));
+    courseIndexModel.id.update(CourseIndexModel(uid: course.id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl).toJson());
+  }
+  courseByMe.id.update(CourseIndexModel(uid: course.id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl).toJson());
+  return courseByMe;
 }

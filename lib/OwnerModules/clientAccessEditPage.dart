@@ -33,12 +33,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
   //Controller
   final TextEditingController _searchController = new TextEditingController();
   //Widgets
-  Widget appBarTitle = Text("",
-    textScaleFactor: 1,
-    style: TextStyle(
-        fontSize: 24.0,
-        height: 2.5),
-  );
+  Widget appBarTitle = Text("");
   void _handleSearchStart() {
     setState(() {
       _isSearching = true;
@@ -158,7 +153,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
               if(this.icon.icon == Icons.search)
               {
                 this.icon=new Icon(Icons.close);
-                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search...",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Clients",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
                 _handleSearchStart();
               }
               else _handleSearchEnd();

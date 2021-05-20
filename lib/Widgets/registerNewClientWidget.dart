@@ -36,7 +36,7 @@ class _RegisterNewClientWidgetState extends State<RegisterNewClientWidget> {
       child: Icon(Icons.person_add),
       tooltip: "Register Clients",
       onPressed: (){
-        Navigator.of(widget.mainScreenContext).push(new MaterialPageRoute(builder: (context)=>RegisterClientPage(callback:this.click)));
+        Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (context)=>RegisterClientPage(callback:this.click)));
       },
     );
   }

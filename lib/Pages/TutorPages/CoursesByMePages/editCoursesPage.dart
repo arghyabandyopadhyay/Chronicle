@@ -1,39 +1,64 @@
+import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/modalOptionModel.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/videosPage.dart';
+import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/editCourseVideosList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../customColors.dart';
+import '../../coursePreviewPage.dart';
 
-class AddCoursesPage extends StatefulWidget {
-  final Function(CourseModel) callback;
-  const AddCoursesPage({ Key key,this.callback}) : super(key: key);
+
+class EditCoursesPage extends StatefulWidget {
+  final CourseIndexModel course;
+  const EditCoursesPage({ Key key,this.course}) : super(key: key);
   @override
-  _AddCoursesPageState createState() => _AddCoursesPageState();
+  _EditCoursesPageState createState() => _EditCoursesPageState();
 }
-class _AddCoursesPageState extends State<AddCoursesPage> {
+class _EditCoursesPageState extends State<EditCoursesPage> {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
-  CourseModel courseData = CourseModel();
+  CourseModel courseDetail;
   DateTime now,today;
   var monthsTextField=TextEditingController();
   var titleTextField=TextEditingController();
   var authorPriceTextField=TextEditingController();
   var descriptionTextField=TextEditingController();
   var whatWillTextField=TextEditingController();
+  var registrationIdTextField=TextEditingController();
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //Functions
-  void _handleSubmitted() {
+  Future<void> _handleSubmitted() async {
     final form = _formKey.currentState;
     if (!form.validate()) {// Start validating on every change.
     }
     else {
       form.save();
-      widget.callback(courseData);
-      Navigator.pop(context);
-      FocusScope.of(context).unfocus();
+      showDialog(context: context,
+          builder: (BuildContext context1){
+            return new AlertDialog(
+              title: Text("Confirm Save"),
+              content: Text("Are you sure to save changes?"),
+              actions: [
+                ActionChip(label: Text("Yes"), onPressed: () async {
+                  Navigator.pop(context1);
+                  await updateCourse(courseDetail,widget.course);
+                  changesSavedModule(context,scaffoldMessengerKey);
+                }),
+                ActionChip(label: Text("No"), onPressed: (){
+                  setState(() {
+                    Navigator.of(context1).pop();
+                  });
+                })
+              ],
+            );
+          }
+      );
     }
   }
   String _validateTitle(String value) {
@@ -47,19 +72,54 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
   //Overrides
   @override
   void initState() {
-    monthsTextField.text="1";
     now=DateTime.now();
     today=DateTime(now.year,now.month,now.day);
+    getCourseDetails();
     super.initState();
+  }
+
+  void getCourseDetails() {
+    getCourse(widget.course).then((courseDetail) => {
+      if(mounted)this.setState(() {
+        this.courseDetail = courseDetail;
+         monthsTextField.text=courseDetail.coursePackageDurationInMonths.toString();
+         titleTextField.text=courseDetail.title;
+         authorPriceTextField.text=courseDetail.authorPrice.toString();
+         descriptionTextField.text=courseDetail.description;
+         whatWillTextField.text=courseDetail.whatWillYouLearn;
+      })
+    });
   }
   @override
   Widget build(BuildContext context) {
     const sizedBoxSpace = SizedBox(height: 100);
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-        title: Text("Add Courses",),
+        title: Text(widget.course.title,),
+        actions: [
+          PopupMenuButton<ModalOptionModel>(
+            itemBuilder: (BuildContext popupContext){
+              return [
+                ModalOptionModel(particulars: "Preview Course",icon: Icons.preview_outlined,iconColor:CustomColors.previewIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
+                      CoursePreviewPage(course:this.widget.course)));
+                }),
+                ModalOptionModel(particulars: "Delete",icon: Icons.delete,iconColor:CustomColors.deleteIconColor,onTap: (){
+                  Navigator.pop(popupContext);
+                  deleteCourseModule(widget.course, context, this);
+                }),
+              ].map((ModalOptionModel choice){
+                return PopupMenuItem<ModalOptionModel>(
+                  value: choice,
+                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor,),onTap: choice.onTap,),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
-      body: Form(
+      body: courseDetail!=null?Form(
         key: _formKey,
         child: SingleChildScrollView(
           physics:BouncingScrollPhysics(),
@@ -83,6 +143,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                     ),
                     backgroundColor: Colors.transparent,
                   ),Expanded(child: TextFormField(
+                    enabled: false,
                     controller: monthsTextField,
                     textInputAction: TextInputAction.next,
                     autovalidateMode: AutovalidateMode.always,
@@ -116,7 +177,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                       try{
                         int months=int.parse(value);
                         months=months.abs();
-                        courseData.coursePackageDurationInMonths= months;
+                        courseDetail.coursePackageDurationInMonths= months;
                       }
                       catch(E){
                         globalShowInSnackBar(scaffoldMessengerKey, "Non numeric input not allowed.");
@@ -145,7 +206,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                     ),
                     validator: _validateTitle,
                     onSaved: (value) {
-                      courseData.title = value;
+                      courseDetail.title = value;
                     },
                   ),),]),
                 SizedBox(height: 8,),
@@ -177,7 +238,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                         ),
                         validator: _validateDescription,
                         onSaved: (value) {
-                          courseData.description = value;
+                          courseDetail.description = value;
                         },
                       )
                   ),),]),
@@ -209,10 +270,10 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                         ),
                         validator: _validateDescription,
                         onSaved: (value) {
-                          courseData.whatWillYouLearn = value;
+                          courseDetail.whatWillYouLearn = value;
                         },
                       )
-                  )),]),
+                  ),),]),
                 SizedBox(height: 8,),
                 Row(children:[
                   CircleAvatar(
@@ -223,6 +284,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                     ),
                     backgroundColor: Colors.transparent,
                   ),Expanded(child: TextFormField(
+                    enabled: false,
                     controller: authorPriceTextField,
                     keyboardType:TextInputType.number,
                     textInputAction: TextInputAction.next,
@@ -236,50 +298,52 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                       contentPadding:
                       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                     ),
-                    validator: _validateDescription,
                     onSaved: (value) {
-                      if(value.isNotEmpty)courseData.authorPrice = double.parse(value);
+                      if(value.isNotEmpty)courseDetail.authorPrice = double.parse(value);
                     },
                   ),),]),
                 SizedBox(height: 8,),
-                Row(children: [Expanded(child:Text("  Add Preview Video:",style: TextStyle(fontWeight: FontWeight.bold),) ),IconButton(icon: Icon((this.courseData.previewVideo!=null)?Icons.swap_horizontal_circle_outlined:Icons.add),onPressed: (){
+                Row(children: [Expanded(child:Text("  Add Preview Video:",style: TextStyle(fontWeight: FontWeight.bold),) ),IconButton(icon: Icon((this.courseDetail.previewVideo!=null)?Icons.swap_horizontal_circle_outlined:Icons.add),onPressed: (){
                   showModalBottomSheet(context: context, builder: (addVideosBottomSheet){
                     return VideosPage(true,true);
                   }).then((value) {
                     if(value!=null)setState(() {
-                      courseData.previewVideo=value.first;
-                      courseData.previewThumbnailUrl=courseData.previewVideo.thumbnailUrl;
+                      courseDetail.previewVideo=value.first;
+                      this.courseDetail.updatePreviewVideoIndex();
+                      courseDetail.previewThumbnailUrl=courseDetail.previewVideo.thumbnailUrl;
                     });
                   });
                 },)],),
                 SizedBox(height: 8,),
-                if(this.courseData.previewVideo!=null)EditCourseVideosList(
-                  listItems:[this.courseData.previewVideo],
+                if(this.courseDetail.previewVideo!=null)EditCourseVideosList(
+                  listItems:[this.courseDetail.previewVideo],
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
                     setState(() {
-                      this.courseData.previewVideo=null;
+                      this.courseDetail.deletePreviewVideoIndexes();
+                      this.courseDetail.previewVideo=null;
                     });
                   },
                 ),
                 SizedBox(height: 8,),
                 Row(children: [Expanded(child:Text("  Add Videos:",style: TextStyle(fontWeight: FontWeight.bold),) ),IconButton(icon: Icon(Icons.add),onPressed: (){
                   showModalBottomSheet(context: context, builder: (addVideosBottomSheet){
-                    return VideosPage(false,true);
-                  }).then((value) {
-                    if(value!=null)setState(() {
-                      if(this.courseData.videos!=null)this.courseData.videos.addAll(value.toList());
-                      else this.courseData.videos=value;
-                    });
-                  });
+                        return VideosPage(false,true);
+                      }).then((value) {
+                        if(value!=null)setState(() {
+                          value.forEach((element){
+                            this.courseDetail.addVideoIndex(element);
+                          });
+                        });
+                      });
                 },)],),
                 SizedBox(height: 8,),
-                if(this.courseData.videos!=null)EditCourseVideosList(
-                  listItems:this.courseData.videos,
+                if(this.courseDetail.videos!=null)EditCourseVideosList(
+                  listItems:this.courseDetail.videos,
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
                     setState(() {
-                      this.courseData.videos.removeAt(index);
+                      this.courseDetail.deleteVideoIndex(this.courseDetail.videos[index]);
                     });
                   },
                 ),
@@ -289,10 +353,10 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
             ),
           ),
         ),
-      ),
+      ):LoaderWidget(),
       floatingActionButton:FloatingActionButton.extended(
-        icon: Icon(Icons.drive_folder_upload),
-        label: Text("Upload",),
+        icon: Icon(Icons.save_outlined),
+        label: Text("Save",),
         onPressed: _handleSubmitted,
       ),
       floatingActionButtonLocation:
