@@ -5,7 +5,7 @@ import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
+import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
 import 'package:chronicle/PdfModule/api/pdfApi.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
 import 'package:chronicle/PdfModule/model/customer.dart';
@@ -477,7 +477,9 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
     final pdfFile = await PdfInvoiceApi.generate(invoice);
     PdfApi.openFile(pdfFile);
     widget.course.totalUsers++;
+    courseDetail.totalUsers++;
     widget.course.id.update(widget.course.toJson());
+    courseDetail.id.update(courseDetail.toJson());
     addCoursesToOwnLists("Courses",widget.course);
   }
 

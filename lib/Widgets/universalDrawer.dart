@@ -7,7 +7,7 @@ import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
 import 'package:chronicle/Pages/TutorPages/registersPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
-import 'package:chronicle/Pages/TutorPages/videosPage.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:chronicle/Pages/routingPage.dart';

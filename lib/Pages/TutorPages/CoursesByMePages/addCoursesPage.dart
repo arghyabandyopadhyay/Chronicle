@@ -1,6 +1,6 @@
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/videosPage.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
 import 'package:chronicle/Widgets/editCourseVideosList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -5,7 +5,7 @@ import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/videoPlayerPage.dart';
+import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseHomePageVideoList.dart';
 import 'package:chronicle/Widgets/videoCardWidget.dart';

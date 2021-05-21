@@ -69,6 +69,7 @@ dependencies:
   pdf: ^3.3.0
   razorpay_flutter: ^1.2.6
   flutter_mailer: ^2.0.0
+  chewie: ^1.0.0
 
 dev_dependencies:
   flutter_test:
