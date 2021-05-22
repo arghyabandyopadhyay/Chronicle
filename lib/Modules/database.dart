@@ -259,8 +259,8 @@ CourseIndexModel addCourse(CourseModel course)
   var id=databaseReference.child('Courses/${GlobalClass.user.uid}').push();
   id.set(course.toJson());
   course.setId(id);
-  course.addVideoIndexes();
-  course.addPreviewVideoIndexes();
+  course.addCourseVideoIndexes();
+  course.addCoursePreviewVideoIndex();
   var id2=databaseReference.child('CourseIndexes/').push();
   CourseIndexModel courseIndex=CourseIndexModel(uid: id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl);
   id2.set(courseIndex.toJson());

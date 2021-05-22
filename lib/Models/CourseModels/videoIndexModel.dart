@@ -6,18 +6,19 @@ import 'package:firebase_database/firebase_database.dart';
 import '../../globalClass.dart';
 
 class VideoIndexModel {
-  final String directory;
+  String directory;
   String downloadUrl;
   String thumbnailUrl;
   String name;
-  String sharedRegisterKeys;
+  String description;
+  String masterFilter;
   int cloudStorageSize;
   int thumbnailSize;
   bool isSelected=false;
   DatabaseReference id;
   List<DoubtModel> doubts;
 
-  VideoIndexModel({this.directory, this.name,this.sharedRegisterKeys,this.downloadUrl,this.thumbnailSize,this.thumbnailUrl,this.cloudStorageSize,this.doubts});
+  VideoIndexModel({this.directory, this.name,this.description,this.masterFilter,this.downloadUrl,this.thumbnailSize,this.thumbnailUrl,this.cloudStorageSize,this.doubts});
 
   factory VideoIndexModel.fromJson(Map<String, dynamic> json1,String idKey) {
     List<DoubtModel> getDoubts(Map<String, dynamic> jsonList){
@@ -34,7 +35,8 @@ class VideoIndexModel {
     return VideoIndexModel(
       directory: json1['Directory'],
       name: json1['Name'],
-      sharedRegisterKeys:json1['Registers'],
+      description: json1['Description'],
+      masterFilter: json1['MasterFilter'],
       downloadUrl:json1['DownloadUrl'],
       cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
       thumbnailSize:json1['ThumbnailSize']!=null?json1['ThumbnailSize']:0,
@@ -51,8 +53,9 @@ class VideoIndexModel {
   Map<String,dynamic> toJson() =>
       {
         "Name":this.name,
+        "Description":this.description,
+        "MasterFilter":this.masterFilter,
         "Directory":this.directory,
-        "Registers":this.sharedRegisterKeys,
         "DownloadUrl":this.downloadUrl,
         "CloudStorageSize":this.cloudStorageSize,
         "ThumbnailSize":this.thumbnailSize,

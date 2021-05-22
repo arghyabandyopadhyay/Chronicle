@@ -82,6 +82,9 @@ class _PurchaseCoursePageState extends State<PurchaseCoursePage> {
     getCourse(widget.course).then((courseDetail) => {
       if(mounted)this.setState(() {
         this.courseDetail = courseDetail;
+        if(courseDetail==null){
+          this.courseDetail=CourseModel(videos: null);
+        }
         _counter++;
         _isLoading=false;
       })
@@ -104,13 +107,12 @@ class _PurchaseCoursePageState extends State<PurchaseCoursePage> {
             onRefresh: (){
               return refreshData();
             },
-            child:this.courseDetail!=null?ListView(
+            child:this.courseDetail!=null?this.courseDetail.videos!=null&&this.courseDetail.videos.length!=0?ListView(
               padding: EdgeInsets.symmetric(horizontal: 20),
               physics: AlwaysScrollableScrollPhysics(),
               children: [
-                if(this.courseDetail.videos!=null)Text("Videos",style: TextStyle(fontWeight: FontWeight.bold),),
+                Text("Videos",style: TextStyle(fontWeight: FontWeight.bold),),
                 SizedBox(height: 8,),
-                this.courseDetail.videos!=null?this.courseDetail.videos.length==0?NoDataError():
                 Provider.value(
                     value: _counter,
                     updateShouldNotify: (oldValue, newValue) => true,
@@ -120,9 +122,9 @@ class _PurchaseCoursePageState extends State<PurchaseCoursePage> {
                             VideoPlayerPage(video:this.courseDetail.videos[index])));
                       },
                     )
-                ):NoDataError(),
+                ),
               ],
-            ):LoaderWidget()
+            ):NoDataError():LoaderWidget()
         )
 
     ),key: scaffoldMessengerKey,);

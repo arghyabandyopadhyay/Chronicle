@@ -571,7 +571,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
               SizedBox(height: 8,),
               Text(this.courseDetail.whatWillYouLearn),
               SizedBox(height: 8,),
-              if(this.courseDetail.videos!=null&&this.courseDetail.videos.length==0)Text("Videos",style: TextStyle(fontWeight: FontWeight.bold),),
+              if(this.courseDetail.videos!=null&&this.courseDetail.videos.length!=0)Text("Videos",style: TextStyle(fontWeight: FontWeight.bold),),
               SizedBox(height: 8,),
               this.courseDetail.videos!=null&&this.courseDetail.videos.length==0?Container(height: 0,width: 0,):_isSearching?
               Provider.value(

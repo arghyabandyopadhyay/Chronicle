@@ -40,13 +40,37 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
             widget.onLongPressed(widget.index);
           },
           child: ListTile(
-            leading: this.widget.item.thumbnailUrl!=null?Image.network(
+            contentPadding: EdgeInsets.only(left: 10),
+            isThreeLine: true,
+            title: this.widget.item.thumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
               this.widget.item.thumbnailUrl,
-            ):null,
-            selectedTileColor: Colors.grey.withOpacity(0.1),
+              fit: BoxFit.fitWidth,alignment: Alignment.topCenter,
+            ),):null,
+            selectedTileColor: Colors.grey.withOpacity(0.2),
             selected: this.widget.item.isSelected,
-            title: Text(this.widget.item.name,style: TextStyle(fontWeight: FontWeight.w900),),
-            subtitle: Text(this.widget.item.sharedRegisterKeys,style: TextStyle(fontWeight: FontWeight.w900),),)
+            leading: this.widget.item.isSelected?Icon(Icons.verified):null,
+            subtitle: Text(" "+this.widget.item.name+"\n "+((this.widget.item.description!=null)?this.widget.item.description:""),),)
       );
   }
 }
+//Card(
+//             color: this.widget.item.isSelected?Colors.grey.withOpacity(0.1):Colors.transparent,
+//             elevation: 5,
+//             child:
+//             Container(
+//               decoration:BoxDecoration(
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//               clipBehavior: Clip.antiAlias,
+//               child: Stack(
+//                 children: [
+//                   this.widget.item.thumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
+//                     this.widget.item.thumbnailUrl,
+//                     filterQuality: FilterQuality.medium,
+//                     fit: BoxFit.cover,alignment: Alignment.topCenter,
+//                   ),):null,
+//                   AspectRatio(aspectRatio: 16/9,child: Align(alignment: Alignment.bottomLeft,child: Text("  "+this.widget.item.name,textAlign:TextAlign.center,style: TextStyle(fontWeight: FontWeight.w900),),),)
+//                 ],
+//               ),
+//
+//           ),)

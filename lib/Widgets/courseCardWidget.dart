@@ -20,15 +20,25 @@ class _CourseCardWidgetState extends State<CourseCardWidget> {
   }
   @override
   Widget build(BuildContext context) {
-    return
-      ListTile(
-        onTap: () {
-          widget.onTapList(widget.index);
-        },
-        leading: this.widget.item.previewThumbnailUrl!=null?Image.network(
-          this.widget.item.previewThumbnailUrl,
-        ):null,
-        title: Text(this.widget.item.title),
-        subtitle: Text(this.widget.item.authorName,),);
+    return ListTile(
+      onTap: () {
+        widget.onTapList(widget.index);
+      },
+      contentPadding: EdgeInsets.only(left: 10),
+      isThreeLine: true,
+      title: this.widget.item.previewThumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
+        this.widget.item.previewThumbnailUrl,
+        fit: BoxFit.fitWidth,alignment: Alignment.topCenter,
+      ),):null,
+      subtitle: Text(" "+this.widget.item.title+"\n "+((this.widget.item.authorName!=null)?this.widget.item.authorName:""),),);
+      // ListTile(
+      //   onTap: () {
+      //     widget.onTapList(widget.index);
+      //   },
+      //   leading: this.widget.item.previewThumbnailUrl!=null?Image.network(
+      //     this.widget.item.previewThumbnailUrl,
+      //   ):null,
+      //   title: Text(this.widget.item.title),
+      //   subtitle: Text(this.widget.item.authorName,),);
   }
 }

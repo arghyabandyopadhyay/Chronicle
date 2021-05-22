@@ -24,6 +24,9 @@ class CourseHomePageVideoList extends StatelessWidget {
           onTapList: (index){
             onTapList(index);
           },
+          onLongPressed: (index){
+            onTapList(index);
+          },
         );
       },
     );

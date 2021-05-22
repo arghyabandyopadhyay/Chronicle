@@ -1,5 +1,6 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
@@ -12,6 +13,7 @@ import 'package:flutter/services.dart';
 
 import '../../../customColors.dart';
 import '../../coursePreviewPage.dart';
+import 'editVideoPage.dart';
 
 
 class EditCoursesPage extends StatefulWidget {
@@ -77,7 +79,15 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
     getCourseDetails();
     super.initState();
   }
-
+  updateVideoDetails(VideoIndexModel videoIndexModel,int index)
+  {
+    setState(() {
+      renameVideo(videoIndexModel,videoIndexModel.id);
+      if(index!=-3)this.courseDetail.videos[index]=videoIndexModel;
+      else this.courseDetail.previewVideo=videoIndexModel;
+    });
+    globalShowInSnackBar(scaffoldMessengerKey, "Video Renamed to ${videoIndexModel.name}!!");
+  }
   void getCourseDetails() {
     getCourse(widget.course).then((courseDetail) => {
       if(mounted)this.setState(() {
@@ -308,9 +318,9 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                     return VideosPage(true,true);
                   }).then((value) {
                     if(value!=null)setState(() {
-                      courseDetail.previewVideo=value.first;
-                      this.courseDetail.updatePreviewVideoIndex();
-                      courseDetail.previewThumbnailUrl=courseDetail.previewVideo.thumbnailUrl;
+                      this.courseDetail.updateCoursePreviewVideoIndex(value.first);
+                      // courseDetail.previewVideo=value.first;
+                      // courseDetail.previewThumbnailUrl=courseDetail.previewVideo.thumbnailUrl;
                     });
                   });
                 },)],),
@@ -319,9 +329,13 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                   listItems:[this.courseDetail.previewVideo],
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (editPageContext)=>
+                            EditVideoPage(callback:this.updateVideoDetails,videoIndex: this.courseDetail.previewVideo,index:-3)));
+                  },
+                  onButtonTapped: (index){
                     setState(() {
-                      this.courseDetail.deletePreviewVideoIndexes();
-                      this.courseDetail.previewVideo=null;
+                      this.courseDetail.deleteCoursePreviewVideoIndex();
                     });
                   },
                 ),
@@ -332,7 +346,7 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                       }).then((value) {
                         if(value!=null)setState(() {
                           value.forEach((element){
-                            this.courseDetail.addVideoIndex(element);
+                            this.courseDetail.addCourseVideoIndex(element);
                           });
                         });
                       });
@@ -342,8 +356,13 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
                   listItems:this.courseDetail.videos,
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
+                    Navigator.of(context).push(CupertinoPageRoute(
+                        builder: (editPageContext)=>
+                            EditVideoPage(callback:this.updateVideoDetails,videoIndex: this.courseDetail.videos[index],index:index)));
+                  },
+                  onButtonTapped: (index){
                     setState(() {
-                      this.courseDetail.deleteVideoIndex(this.courseDetail.videos[index]);
+                      this.courseDetail.deleteCourseVideoIndex(this.courseDetail.videos[index]);
                     });
                   },
                 ),

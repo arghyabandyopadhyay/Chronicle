@@ -2,6 +2,7 @@ import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/editVideoPage.dart';
 import 'package:chronicle/Pages/TutorPages/videoInformationPage.dart';
 import 'package:chronicle/Widgets/videoCardWidget.dart';
 import 'package:chronicle/customColors.dart';
@@ -27,7 +28,6 @@ class VideoList extends StatefulWidget {
 
 class _VideoListState extends State<VideoList> {
   final TextEditingController alertTextController=new TextEditingController();
-  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   bool isLoading;
   @override
   void initState()
@@ -50,6 +50,16 @@ class _VideoListState extends State<VideoList> {
       currentLength = displayList.length;
     });
   }
+
+  updateVideoDetails(VideoIndexModel videoIndexModel,int index)
+  {
+    setState(() {
+      renameVideo(videoIndexModel,videoIndexModel.id);
+      displayList[index]=videoIndexModel;
+    });
+    globalShowInSnackBar(widget.scaffoldMessengerKey, "Video Renamed to ${videoIndexModel.name}!!");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,40 +94,12 @@ class _VideoListState extends State<VideoList> {
                     ),
                     secondaryActions: <Widget>[
                       IconSlideAction(
-                        caption: 'Rename',
+                        caption: 'Edit',
                         iconWidget: Icon(Icons.edit_outlined,color: CustomColors.editIconColor,),
                         onTap: () {
-                          showDialog(context: context, builder: (_)=>new AlertDialog(
-                            title: Text("Rename Video"),
-                            content: TextField(controller: renameRegisterTextEditingController,
-                              textCapitalization: TextCapitalization.words,
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                labelText: "Name of the Video",
-                                contentPadding:
-                                EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                              ),
-                            ),
-                            actions: [ActionChip(label: Text("Rename"), onPressed: (){
-                              if(renameRegisterTextEditingController.text!=""){
-                                setState(() {
-                                  displayList[index].name=renameRegisterTextEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),"");
-                                  renameVideo(displayList[index],displayList[index].id);
-                                  renameRegisterTextEditingController.clear();
-                                  Navigator.of(_).pop();
-                                });
-                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Video Renamed to ${displayList[index].name}!!");
-                              }
-                              else{
-                                globalShowInSnackBar(widget.scaffoldMessengerKey, "Please enter a valid name for your video!!");
-                                Navigator.of(_).pop();
-                              }
-                            }),
-                              ActionChip(label: Text("Cancel"), onPressed: (){
-                                Navigator.of(_).pop();
-                              }),],
-                          ));
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (editPageContext)=>
+                                  EditVideoPage(callback:this.updateVideoDetails,videoIndex: displayList[index],index:index)));
                         },
                         closeOnTap: false,
                       ),

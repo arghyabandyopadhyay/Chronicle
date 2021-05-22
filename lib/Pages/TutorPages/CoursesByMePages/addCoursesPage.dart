@@ -1,5 +1,8 @@
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
+import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/CoursesByMePages/editVideoPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
 import 'package:chronicle/Widgets/editCourseVideosList.dart';
 import 'package:flutter/cupertino.dart';
@@ -257,6 +260,8 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                   listItems:[this.courseData.previewVideo],
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
+                  },
+                  onButtonTapped: (index){
                     setState(() {
                       this.courseData.previewVideo=null;
                     });
@@ -278,6 +283,8 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
                   listItems:this.courseData.videos,
                   scaffoldMessengerKey: scaffoldMessengerKey,
                   onTapList: (index){
+                  },
+                  onButtonTapped: (index){
                     setState(() {
                       this.courseData.videos.removeAt(index);
                     });

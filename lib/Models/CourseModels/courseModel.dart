@@ -68,42 +68,54 @@ class CourseModel {
   {
     this.id=id;
   }
-  void addVideoIndexes(){
+  //For the add course screen
+  void addCourseVideoIndexes(){
     this.videos.forEach((element) {
       var courseId=this.id.child("Videos").push();
       courseId.set(element.toJson());
+      databaseReference.child(element.id.path).remove();
     });
   }
-  void addVideoIndex(VideoIndexModel video){
-    var courseId=this.id.child("Videos/").push();
+  //Add Course screen
+  void addCoursePreviewVideoIndex(){
+    var courseId=this.id.child("PreviewVideo").push();
+    courseId.set(this.previewVideo.toJson());
+    databaseReference.child(this.previewVideo.id.path).remove();
+    this.previewVideo.setId(courseId);
+  }
+
+  //For Edit course screen
+  void addCourseVideoIndex(VideoIndexModel video){
+    var courseId=this.id.child("Videos").push();
     courseId.set(video.toJson());
+    databaseReference.child(video.id.path).remove();
     video.setId(courseId);
     this.videos.add(video);
   }
-  void deleteVideoIndex(VideoIndexModel video){
-    print(video.id.path);
-    print(id.path);
+
+  //Deleting videos in edit screen
+  void deleteCourseVideoIndex(VideoIndexModel video){
     deleteDatabaseNode(video.id);
+    if(previewVideo==null||video.directory!=previewVideo.directory)addVideoIndex(video);
     this.videos.remove(video);
   }
-  void addPreviewVideoIndexes(){
-    var courseId=this.id.child("PreviewVideo").push();
-    courseId.set(this.previewVideo.toJson());
-  }
-  void deletePreviewVideoIndexes(){
-    print(this.previewVideo.id.path);
+
+  //Deleting preview videos in edit screen
+  void deleteCoursePreviewVideoIndex(){
     deleteDatabaseNode(this.previewVideo.id);
+    if(this.videos.where((element) => element.directory==this.previewVideo.directory).length==0)addVideoIndex(this.previewVideo);
+    this.previewVideo=null;
   }
-  void updateVideoIndexes(){
-    deleteDatabaseNode(this.id.child("Videos"));
-    addVideoIndexes();
-  }
-  void updatePreviewVideoIndex(){
-    deleteDatabaseNode(this.id.child("PreviewVideo"));
+
+  void updateCoursePreviewVideoIndex(VideoIndexModel videoIndexModel){
+    // deleteDatabaseNode(this.id.child("PreviewVideo"));
+    if(this.previewVideo!=null)deleteCoursePreviewVideoIndex();
+    this.previewVideo=videoIndexModel;
+    this.previewThumbnailUrl=this.previewVideo.thumbnailUrl;
     this.id.update({"PreviewThumbnailUrl":this.previewThumbnailUrl});
     var tempId=databaseReference.child("CourseIndexes/${this.courseIndexKey}");
     tempId.update({"PreviewThumbnailUrl":this.previewThumbnailUrl});
-    addPreviewVideoIndexes();
+    addCoursePreviewVideoIndex();
   }
   void delete(){
     var tempId=databaseReference.child("CourseIndexes/${this.courseIndexKey}");

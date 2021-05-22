@@ -19,6 +19,7 @@ import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../customColors.dart';
 import '../../../globalClass.dart';
+import 'addVideoPage.dart';
 
 class VideosPage extends StatefulWidget {
   final bool isPreview;
@@ -43,7 +44,6 @@ class _VideosPageState extends State<VideosPage> {
   //Controller
   final TextEditingController _searchController = new TextEditingController();
   final TextEditingController textEditingController=new TextEditingController();
-  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   ScrollController scrollController = new ScrollController();
   //Widgets
@@ -152,7 +152,29 @@ class _VideosPageState extends State<VideosPage> {
     if(selectedList.length < 1)
       return AppBar(
         title: appBarTitle,
-        leading: IconButton(onPressed: () { if(!_isSearching&&!isUploading&&!widget.isPreview&&!widget.isAddVideoToCourse)Navigator.of(context).pop(); }, icon: Icon(_isSearching?Icons.search:widget.isPreview?Icons.preview_outlined:widget.isAddVideoToCourse?Icons.video_collection_outlined:Icons.arrow_back),),
+        leading: IconButton(onPressed: () {
+          if(_isSearching) {}
+          else if(!isUploading) {
+            if(widget.isAddVideoToCourse) {
+              if(selectedList.length==0)Navigator.of(context).pop();
+              else{
+                scaffoldMessengerKey.currentState.hideCurrentSnackBar();
+                scaffoldMessengerKey.currentState.showSnackBar(new SnackBar(content: Text("Press add button to add the selected videos to the course."),action: SnackBarAction(label: "Leave anyway",textColor:CustomColors.snackBarActionTextColor,onPressed: (){
+                  Navigator.of(context).pop();
+                },),));
+              }
+            }
+            else{
+              Navigator.of(context).pop();
+            }
+          }
+          else{
+            scaffoldMessengerKey.currentState.hideCurrentSnackBar();
+            scaffoldMessengerKey.currentState.showSnackBar(new SnackBar(content: Text("Video is being uploaded."),action: SnackBarAction(label: "Leave anyway",textColor:CustomColors.snackBarActionTextColor,onPressed: (){
+              Navigator.of(context).pop();
+            },),));
+          }
+          }, icon: Icon(_isSearching?Icons.search:widget.isPreview?Icons.preview_outlined:widget.isAddVideoToCourse?Icons.video_collection_outlined:Icons.arrow_back),),
         bottom: PreferredSize(
           child: (isUploading)?LinearProgressIndicator(value: progressValue,minHeight: 2,):Container(width: 0.0, height: 0.0), preferredSize: Size(double.infinity,2),
         ),
@@ -181,34 +203,35 @@ class _VideosPageState extends State<VideosPage> {
                 }),
                 ModalOptionModel(particulars: "Upload",icon:Icons.video_call_outlined,iconColor:CustomColors.uploadIconColor, onTap: () async {
                   Navigator.pop(popupContext);
-                  final file = await ImagePicker().getVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 300),);
-                  if(file!=null)showDialog(context: context, builder: (_)=>new AlertDialog(
-                    title: Text("Name the video"),
-                    content: TextField(controller: textEditingController,
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.done,
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        labelText: "Name of the Video",
-                        contentPadding:
-                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
-                      ),
-                    ),
-                    actions: [ActionChip(label: Text("Upload"), onPressed: () async {
-                      if(textEditingController.text!=""){
-                        Navigator.pop(_);
-                        await uploadFile(file.path,textEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),""));
-                        textEditingController.clear();
-                      }
-                      else{
-                        globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your video!!");
-                        Navigator.of(_).pop();
-                      }
-                    }),
-                      ActionChip(label: Text("Cancel"), onPressed: (){
-                        Navigator.of(_).pop();
-                      }),],
-                  ));
+                  // final file = await ImagePicker().getVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 300),);
+                  // if(file!=null)showDialog(context: context, builder: (_)=>new AlertDialog(
+                  //   title: Text("Name the video"),
+                  //   content: TextField(controller: textEditingController,
+                  //     textCapitalization: TextCapitalization.words,
+                  //     textInputAction: TextInputAction.done,
+                  //     decoration: InputDecoration(
+                  //       border: const OutlineInputBorder(),
+                  //       labelText: "Name of the Video",
+                  //       contentPadding:
+                  //       EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                  //     ),
+                  //   ),
+                  //   actions: [ActionChip(label: Text("Upload"), onPressed: () async {
+                  //     if(textEditingController.text!=""){
+                  //       Navigator.pop(_);
+                  //       // await uploadFile(file.path,textEditingController.text.replaceAll(new RegExp(r'[^\s\w]+'),""));
+                  //       textEditingController.clear();
+                  //     }
+                  //     else{
+                  //       globalShowInSnackBar(scaffoldMessengerKey, "Please enter a valid name for your video!!");
+                  //       Navigator.of(_).pop();
+                  //     }
+                  //   }),
+                  //     ActionChip(label: Text("Cancel"), onPressed: (){
+                  //       Navigator.of(_).pop();
+                  //     }),],
+                  // ));
+                  Navigator.of(context).push(new CupertinoPageRoute(builder: (context)=>AddVideoPage(callback:this.uploadFile)));
                 }),
               ].map((ModalOptionModel choice){
                 return PopupMenuItem<ModalOptionModel>(
@@ -308,7 +331,7 @@ class _VideosPageState extends State<VideosPage> {
         ],
       );
   }
-  Future<void> uploadFile(String filePath,String name) async {
+  Future<void> uploadFile(String filePath,String name,String description,String masterFilter) async {
     try {
       progressValue=0;
       final DateTime now = DateTime.now();
@@ -343,7 +366,7 @@ class _VideosPageState extends State<VideosPage> {
         video: url,
         thumbnailPath: (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.WEBP,
-        maxHeight: 100, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+        maxWidth: 1000, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
         quality: 75,
       );
       File thumbnailFile=File(thumbnailFilePath);
@@ -363,7 +386,7 @@ class _VideosPageState extends State<VideosPage> {
       });
       await task2;
       String thumbnailUrl=await downloadURL('${GlobalClass.user.uid}/$today/thumbnail_$storageId');
-      newVideoIndexModel(new VideoIndexModel(cloudStorageSize:fileSize,thumbnailSize:thumbnailFileSize,name:name,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,sharedRegisterKeys: "",thumbnailUrl: thumbnailUrl));
+      newVideoIndexModel(new VideoIndexModel(cloudStorageSize:fileSize,thumbnailSize:thumbnailFileSize,name:name,description:description,masterFilter:masterFilter,directory:'${GlobalClass.user.uid}/$today/$storageId',downloadUrl: url,thumbnailUrl: thumbnailUrl));
       GlobalClass.userDetail.cloudStorageSize=GlobalClass.userDetail.cloudStorageSize+thumbnailFileSize+fileSize;
       GlobalClass.userDetail.update();
       globalShowInSnackBar(scaffoldMessengerKey,"Upload complete!!");
