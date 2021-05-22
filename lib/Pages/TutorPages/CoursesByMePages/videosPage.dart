@@ -67,7 +67,7 @@ class _VideosPageState extends State<VideosPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=videos.where((VideoIndexModel element) => (element.name.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=videos.where((VideoIndexModel element) => (element.masterFilter).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }

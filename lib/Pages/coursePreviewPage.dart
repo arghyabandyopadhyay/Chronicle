@@ -69,7 +69,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=courseDetail.videos.where((VideoIndexModel element) => (element.name.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=courseDetail.videos.where((VideoIndexModel element) => (element.masterFilter).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }

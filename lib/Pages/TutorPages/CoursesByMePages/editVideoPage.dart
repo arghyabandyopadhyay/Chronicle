@@ -31,16 +31,16 @@ class _EditVideoPageState extends State<EditVideoPage> {
       VideoIndexModel video=VideoIndexModel(
           name: nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),
           description: descriptionTextField.text,
-          masterFilter: keyWordsTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),
+          masterFilter: keyWordsTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),""),
           downloadUrl: widget.videoIndex.downloadUrl,
           thumbnailUrl: widget.videoIndex.thumbnailUrl,
           thumbnailSize: widget.videoIndex.thumbnailSize,
           cloudStorageSize: widget.videoIndex.cloudStorageSize,
           directory: widget.videoIndex.directory
       );
-
       video.setId(widget.videoIndex.id);
       widget.callback(video,widget.index);
+      Navigator.of(context).pop();
       FocusScope.of(context).unfocus();
     }
   }

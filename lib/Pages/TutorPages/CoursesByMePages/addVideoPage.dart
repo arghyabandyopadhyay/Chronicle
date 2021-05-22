@@ -31,7 +31,7 @@ class _AddVideoPageState extends State<AddVideoPage> {
     }
     else {
       form.save();
-      widget.callback(fileTextField.text,nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),descriptionTextField.text,keyWordsTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""));
+      widget.callback(fileTextField.text,nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),descriptionTextField.text,keyWordsTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),""));
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
     }

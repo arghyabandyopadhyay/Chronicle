@@ -86,7 +86,7 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
       if(index!=-3)this.courseDetail.videos[index]=videoIndexModel;
       else this.courseDetail.previewVideo=videoIndexModel;
     });
-    globalShowInSnackBar(scaffoldMessengerKey, "Video Renamed to ${videoIndexModel.name}!!");
+    globalShowInSnackBar(scaffoldMessengerKey, "Changes made to ${videoIndexModel.name} has been saved!!");
   }
   void getCourseDetails() {
     getCourse(widget.course).then((courseDetail) => {
