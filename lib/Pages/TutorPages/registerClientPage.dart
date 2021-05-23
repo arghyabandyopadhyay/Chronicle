@@ -546,6 +546,7 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
         ),
       ),
       floatingActionButton:FloatingActionButton.extended(
+        heroTag: "registerClientsRegisterClientPageHeroTag",
         icon: Icon(Icons.person_add),
         label: Text("Register",),
         onPressed: _handleSubmitted,

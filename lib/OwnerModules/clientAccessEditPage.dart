@@ -220,7 +220,9 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
         },scrollController)),
       ]):
       LoaderWidget(),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: "registerChronicleUserHeroTag",
+        onPressed: (){
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Enter the UID"),
           content: TextField(controller: textEditingController,

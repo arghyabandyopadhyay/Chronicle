@@ -58,6 +58,7 @@ class _AboutsPageState extends State<HelpAndFeedbackPage> {
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "helpAndFeedbackHeroTag",
         icon: Icon(Icons.contact_mail),
         label: Text("Contact Us",),
         onPressed: ()async {

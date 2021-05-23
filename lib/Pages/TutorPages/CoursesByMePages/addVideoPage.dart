@@ -215,6 +215,7 @@ class _AddVideoPageState extends State<AddVideoPage> {
         ),
       ),
       floatingActionButton:FloatingActionButton.extended(
+        heroTag: "uploadVideoHeroTag",
         icon: Icon(Icons.add),
         label: Text("Upload",),
         onPressed: _handleSubmitted,

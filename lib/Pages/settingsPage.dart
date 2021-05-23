@@ -150,6 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "saveSettingsHeroTag",
         onPressed:handleSubmitted, label: Text("Save"),icon: Icon(Icons.save,),),
     ),key: scaffoldMessengerKey,);
   }

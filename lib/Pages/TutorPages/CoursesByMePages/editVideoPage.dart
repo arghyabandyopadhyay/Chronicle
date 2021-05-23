@@ -160,6 +160,7 @@ class _EditVideoPageState extends State<EditVideoPage> {
         ),
       ),
       floatingActionButton:FloatingActionButton.extended(
+        heroTag: "saveEditVideoHeroTag",
         icon: Icon(Icons.save_outlined),
         label: Text("Save",),
         onPressed: _handleSubmitted,

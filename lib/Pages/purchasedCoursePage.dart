@@ -158,7 +158,7 @@ class _PurchaseCoursePageState extends State<PurchaseCoursePage> {
                     child: CourseHomePageVideoList(listItems:this.courseDetail.videos,scaffoldMessengerKey:scaffoldMessengerKey,
                       onTapList:(index) async {
                         Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                            VideoPlayerPage(isTutor:widget.isTutor,video:this.courseDetail.videos[index])));
+                            VideoPlayerPage(isDoubtEnabled:true,isTutor:widget.isTutor,video:this.courseDetail.videos[index])));
                       },
                     )
                 ),

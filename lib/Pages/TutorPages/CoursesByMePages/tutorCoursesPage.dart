@@ -252,7 +252,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
             )
         )),
       ]): LoaderWidget(),
-      floatingActionButton: FloatingActionButton(onPressed: (){
+      floatingActionButton: FloatingActionButton(heroTag: "tutorCoursePageHeroTag",onPressed: (){
         Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>AddCoursesPage(callback: this.newCourse,)));
       },
         child:Icon(Icons.add),),

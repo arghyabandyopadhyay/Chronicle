@@ -37,7 +37,9 @@ class _QrCodePageState extends State<QrCodePage> {
           backgroundColor: Colors.white,
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () async {
+      floatingActionButton: FloatingActionButton(
+        heroTag: "qrCodePageHeroTag",
+        onPressed: () async {
         String _data = '';
         try {
           final pickedFile = await ImagePicker().getImage(

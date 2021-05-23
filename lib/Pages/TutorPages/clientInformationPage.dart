@@ -767,6 +767,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "saveClientInformationHeroTag",
         onPressed: (){
           _handleSubmitted();
         }, label: Text("Save"),icon: Icon(Icons.save,),),

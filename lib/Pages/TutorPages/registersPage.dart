@@ -65,7 +65,9 @@ class _RegistersPageState extends State<RegistersPage> {
         Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey,widget.mainScreenContext)),
       ]):
       LoaderWidget(),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: "registerPageHeroTag",
+        onPressed: (){
         // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>AddRegisterPage(user:widget.user)));
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Name your Register"),

@@ -97,6 +97,7 @@ class _DispatchNotificationConsoleState extends State<DispatchNotificationConsol
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "dispatchNotificationHeroTag",
         icon: Icon(Icons.send),
         label: Text("Dispatch Notification",),
         onPressed: ()async {

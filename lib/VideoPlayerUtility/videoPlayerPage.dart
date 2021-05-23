@@ -161,7 +161,8 @@ import 'package:video_player/video_player.dart';
 class VideoPlayerPage extends StatefulWidget {
   final VideoIndexModel video;
   final bool isTutor;
-  const VideoPlayerPage({@required this.video,@required this.isTutor});
+  final bool isDoubtEnabled;
+  const VideoPlayerPage({@required this.video,@required this.isTutor,@required this.isDoubtEnabled});
 
   @override
   _VideoPlayerPageState createState() => _VideoPlayerPageState();
@@ -232,10 +233,10 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   : LoaderWidget(),
             ),
           ),
-          SizedBox(height: 5,),
-          if(widget.video.doubts!=null)Center(child: Text("Doubts",style: TextStyle(fontWeight: FontWeight.bold),),),
-          if(widget.video.doubts!=null)Container(height: 300,child: DoubtList(isTutor:widget.isTutor,listItems: widget.video.doubts,scaffoldMessengerKey:scaffoldMessengerKey,scrollController: scrollController,textEditingController: textController,),),
-          if(!widget.isTutor)Row(children:[
+          if(widget.isDoubtEnabled)SizedBox(height: 5,),
+          if(widget.video.doubts!=null&&widget.isDoubtEnabled)Center(child: Text("Doubts",style: TextStyle(fontWeight: FontWeight.bold),),),
+          if(widget.video.doubts!=null&&widget.isDoubtEnabled)Container(height: 300,child: DoubtList(isTutor:widget.isTutor,listItems: widget.video.doubts,scaffoldMessengerKey:scaffoldMessengerKey,scrollController: scrollController,textEditingController: textController,),),
+          if(!widget.isTutor&&widget.isDoubtEnabled)Row(children:[
             CircleAvatar(
               radius: 25,
               child: Image.asset(

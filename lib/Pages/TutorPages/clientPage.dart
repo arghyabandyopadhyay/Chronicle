@@ -835,7 +835,9 @@ class _ClientPageState extends State<ClientPage> {
       ],),
       floatingActionButton:(selectedList.length < 1)?
       RegisterNewClientWidget(this.newClientModel,widget.mainScreenContext):
-      FloatingActionButton(onPressed: () async {
+      FloatingActionButton(
+        heroTag: "sendMessageClientPageHeroTag",
+        onPressed: () async {
         showDialog(context: context, builder: (_)=>new AlertDialog(
           title: Text("Type the message you want to send"),
           content: Container(

@@ -120,13 +120,33 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
         GlobalClass.myPurchasedCourses = courses;
       })
     });
-    getCourse(widget.course).then((courseDetail) => {
-      if(mounted)this.setState(() {
-        this.courseDetail = courseDetail;
-        _counter++;
-        _isLoading=false;
-        this.appBarTitle = Text("");
-      })
+    getCourse(widget.course).then((courseDetail) =>{
+      if(courseDetail!=null){
+        if(mounted)this.setState(() {
+          this.courseDetail = courseDetail;
+          if(courseDetail.previewThumbnailUrl!=widget.course.previewThumbnailUrl){
+            CourseIndexModel temp=courseDetail.toCourseIndexModel();
+            temp.setId(widget.course.id);
+            temp.update();
+          }
+          if(courseDetail==null){
+            this.courseDetail=CourseModel(videos: null);
+          }
+          _counter++;
+          _isLoading=false;
+        })
+      }
+      else{
+        Navigator.pop(context)
+      }
+    //   if(courseDetail!=null){
+    //     if(mounted)this.setState(() {
+    //     this.courseDetail = courseDetail;
+    //     _counter++;
+    //     _isLoading = false;
+    //     this.appBarTitle = Text("");
+    //   })
+    // }
     });
   }
   @override
@@ -557,7 +577,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
                 index: 0,
                 onTapList: (index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(isTutor:false,video:this.courseDetail.previewVideo)));
+                      VideoPlayerPage(isDoubtEnabled:false,isTutor:false,video:this.courseDetail.previewVideo)));
                 },
               ),
               SizedBox(height: 8,),
@@ -592,7 +612,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
           )
       ):LoaderWidget(),
       floatingActionButton:
-      (GlobalClass.myPurchasedCourses!=null&&GlobalClass.myPurchasedCourses.where((element) => element.uid==widget.course.uid).length==0)?FloatingActionButton.extended(onPressed:(){
+      (GlobalClass.myPurchasedCourses!=null&&GlobalClass.myPurchasedCourses.where((element) => element.uid==widget.course.uid).length==0)?FloatingActionButton.extended(heroTag: "purchaseCourseHeroTag",onPressed:(){
         openCheckout();
     }, label: Text("Purchase Course"),icon: Icon(Icons.payment_outlined),):null
     ),key: scaffoldMessengerKey,);

@@ -351,6 +351,7 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
         ),
       ):LoaderWidget(),
       floatingActionButton:FloatingActionButton.extended(
+        heroTag: "saveEditCourseHeroTag",
         icon: Icon(Icons.save_outlined),
         label: Text("Save",),
         onPressed: _handleSubmitted,

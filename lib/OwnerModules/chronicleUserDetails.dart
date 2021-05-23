@@ -163,6 +163,7 @@ class _ChronicleUserDetailsPageState extends State<ChronicleUserDetailsPage> {
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: "sendReminderHeroTag",
         icon: Icon(Icons.contact_mail),
         label: Text("Send Reminder",),
         onPressed: ()async {

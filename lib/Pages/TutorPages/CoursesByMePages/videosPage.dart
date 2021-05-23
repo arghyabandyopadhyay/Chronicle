@@ -446,7 +446,7 @@ class _VideosPageState extends State<VideosPage> {
                 if(selectedList.length<1){
                   if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.searchResult[index]]);
                   else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(isTutor:true,video:this.searchResult[index])));
+                      VideoPlayerPage(isDoubtEnabled:true,isTutor:true,video:this.searchResult[index])));
                 }
                 else {
                   setState(() {
@@ -484,7 +484,7 @@ class _VideosPageState extends State<VideosPage> {
                 if(selectedList.length<1){
                   if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.videos[index]]);
                   else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(isTutor:true,video:this.videos[index])));
+                      VideoPlayerPage(isDoubtEnabled:true,isTutor:true,video:this.videos[index])));
                 }
                 else {
                   setState(() {

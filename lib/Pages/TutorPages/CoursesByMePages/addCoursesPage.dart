@@ -295,6 +295,7 @@ class _AddCoursesPageState extends State<AddCoursesPage> {
         ),
       ),
       floatingActionButton:FloatingActionButton.extended(
+        heroTag: "uploadCourseHeroTag",
         icon: Icon(Icons.drive_folder_upload),
         label: Text("Upload",),
         onPressed: _handleSubmitted,
