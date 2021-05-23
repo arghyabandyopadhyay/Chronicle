@@ -148,25 +148,32 @@
 // }
 
 import 'package:chewie/chewie.dart';
+import 'package:chronicle/Models/CourseModels/doubtModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/doubtList.dart';
+import 'package:chronicle/globalClass.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerPage extends StatefulWidget {
   final VideoIndexModel video;
-  const VideoPlayerPage({@required this.video});
+  final bool isTutor;
+  const VideoPlayerPage({@required this.video,@required this.isTutor});
 
   @override
   _VideoPlayerPageState createState() => _VideoPlayerPageState();
 }
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
-  TargetPlatform _platform;
   VideoPlayerController _videoPlayerController1;
   ChewieController _chewieController;
-
+  TextEditingController doubtTextField=TextEditingController();
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
+  ScrollController scrollController = new ScrollController();
+  TextEditingController textController =new TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -208,7 +215,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return ScaffoldMessenger(key: scaffoldMessengerKey,child: Scaffold(
       appBar: AppBar(
         title: Text(widget.video.name),
       ),
@@ -225,8 +232,43 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                   : LoaderWidget(),
             ),
           ),
+          SizedBox(height: 5,),
+          if(widget.video.doubts!=null)Center(child: Text("Doubts",style: TextStyle(fontWeight: FontWeight.bold),),),
+          if(widget.video.doubts!=null)Container(height: 300,child: DoubtList(isTutor:widget.isTutor,listItems: widget.video.doubts,scaffoldMessengerKey:scaffoldMessengerKey,scrollController: scrollController,textEditingController: textController,),),
+          if(!widget.isTutor)Row(children:[
+            CircleAvatar(
+              radius: 25,
+              child: Image.asset(
+                'assets/address.png',
+                height: 30,
+              ),
+              backgroundColor: Colors.transparent,
+            ),Expanded(child: Container(
+                height: 70,
+                child: TextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                  maxLength: 200,
+                  controller: doubtTextField,
+                  textInputAction: TextInputAction.newline,
+                  style: TextStyle(),
+                  expands: true,
+                  decoration: InputDecoration(
+                    suffix: IconButton(icon: Icon(Icons.add_comment_outlined),onPressed: (){
+                      setState(() {
+                        if(doubtTextField.text.isNotEmpty)widget.video.addDoubtToVideo(DoubtModel(userName: GlobalClass.user.displayName,question: doubtTextField.text,answer: null));
+                      });
+                    },),
+                    border: const OutlineInputBorder(),
+                    labelText: "Doubt",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                )
+            ),),]),
         ],
       ),
-    );
+    ),);
   }
 }

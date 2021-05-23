@@ -11,7 +11,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../customColors.dart';
 import '../../coursePreviewPage.dart';
 import 'editVideoPage.dart';
 
@@ -106,28 +105,6 @@ class _EditCoursesPageState extends State<EditCoursesPage> {
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
         title: Text(widget.course.title,),
-        actions: [
-          PopupMenuButton<ModalOptionModel>(
-            itemBuilder: (BuildContext popupContext){
-              return [
-                ModalOptionModel(particulars: "Preview Course",icon: Icons.preview_outlined,iconColor:CustomColors.previewIconColor,onTap: (){
-                  Navigator.pop(popupContext);
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      CoursePreviewPage(course:this.widget.course)));
-                }),
-                ModalOptionModel(particulars: "Delete",icon: Icons.delete,iconColor:CustomColors.deleteIconColor,onTap: (){
-                  Navigator.pop(popupContext);
-                  deleteCourseModule(widget.course, context, this);
-                }),
-              ].map((ModalOptionModel choice){
-                return PopupMenuItem<ModalOptionModel>(
-                  value: choice,
-                  child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor,),onTap: choice.onTap,),
-                );
-              }).toList();
-            },
-          ),
-        ],
       ),
       body: courseDetail!=null?Form(
         key: _formKey,

@@ -11,7 +11,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../customColors.dart';
 import 'ownerDatabaseModule.dart';
 
 class ClientAccessEditPage extends StatefulWidget {
@@ -162,7 +161,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,onTap: (){
                   Navigator.pop(popupContext);
                   showModalBottomSheet(
                       context: context,
@@ -172,7 +171,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
                             appBarIcon: Icons.sort,
                             list: [
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"A-Z",
                                 onTap: (){setState(() {
                                   clients=sortChronicleUsersModule("A-Z", clients);
@@ -181,7 +180,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"Z-A",
                                 onTap: (){setState(() {
                                   clients=sortChronicleUsersModule("Z-A", clients);
@@ -194,7 +193,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
                       }
                   );
                 }),
-                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
                     scrollController.position.minScrollExtent,
@@ -202,7 +201,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
                     curve: Curves.fastOutSlowIn,
                   );
                 }),
-                ModalOptionModel(particulars: "Sync Cloud Occupied Data",icon:Icons.sync,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                ModalOptionModel(particulars: "Sync Cloud Occupied Data",icon:Icons.sync, onTap: () async {
                   Navigator.pop(popupContext);
                   synchronizeCloudStorageSizes();
                 }),

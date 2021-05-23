@@ -1,5 +1,4 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
-import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
@@ -9,8 +8,6 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../appBarVariables.dart';
 import '../coursePreviewPage.dart';
 
 

@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:sms/sms.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
-import '../customColors.dart';
 import 'TutorPages/clientInformationPage.dart';
 import '../globalClass.dart';
 
@@ -155,7 +154,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
           }),
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
-              return [ModalOptionModel(particulars: "Send Reminder",icon: Icons.send,iconColor: CustomColors.sendIconColor, onTap: ()async {
+              return [ModalOptionModel(particulars: "Send Reminder",icon: Icons.send, onTap: ()async {
                 Navigator.pop(popupContext);
                 showModalBottomSheet(context: context, builder: (_)=>
                     OptionModalBottomSheet(
@@ -164,7 +163,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       list: [
                         ModalOptionModel(
                             particulars: "Send Sms using Default Sim",
-                            icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
+                            icon: Icons.sim_card_outlined,
                             onTap: (){
                               Navigator.of(_).pop();
                               showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -190,7 +189,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             }),
                         ModalOptionModel(
                             particulars: "Send Sms using Sms Gateway",
-                            icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
+                            icon: FontAwesomeIcons.server,
                             onTap: (){
                               if(GlobalClass.userDetail.smsAccessToken!=null
                                   &&GlobalClass.userDetail.smsApiUrl!=null
@@ -229,7 +228,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                               }
                             }),],));
               }),
-                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,onTap: (){
                   Navigator.pop(popupContext);
                   showModalBottomSheet(
                       context: context,
@@ -240,7 +239,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                             list: [
                               ModalOptionModel(
                                 icon:Icons.more_time,
-                                iconColor: CustomColors.addDueIconColor,
+
                                 particulars:"Dues First",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Dues First", clients);
@@ -249,7 +248,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.hourglass_bottom_outlined,iconColor: CustomColors.lastMonthTextColor,
+                                icon:Icons.hourglass_bottom_outlined,
                                 particulars:"Last Months First",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Last Months First", clients);
@@ -258,7 +257,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.payment_outlined,iconColor: CustomColors.addPaymentIconColor,
+                                icon:Icons.payment_outlined,
                                 particulars:"Paid First",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Paid First", clients);
@@ -267,7 +266,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"A-Z",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("A-Z", clients);
@@ -276,7 +275,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"Z-A",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Z-A", clients);
@@ -285,7 +284,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                                icon:Icons.date_range_outlined,
                                 particulars:"Start Date Ascending",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Start Date Ascending", clients);
@@ -294,7 +293,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                                icon:Icons.date_range_outlined,
                                 particulars:"Start Date Descending",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("Start Date Descending", clients);
@@ -303,7 +302,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                                icon:Icons.date_range_outlined,
                                 particulars:"End Date Ascending",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("End Date Ascending", clients);
@@ -312,7 +311,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                                icon:Icons.date_range_outlined,
                                 particulars:"End Date Descending",
                                 onTap: (){setState(() {
                                   clients=sortClientsModule("End Date Descending", clients);
@@ -325,7 +324,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       }
                   );
                 }),
-                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
                     scrollController.position.minScrollExtent,

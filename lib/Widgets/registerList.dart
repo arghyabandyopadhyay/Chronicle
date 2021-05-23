@@ -2,7 +2,6 @@ import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/MasterPages/chronicleMasterPage.dart';
 import 'package:chronicle/globalClass.dart';
@@ -11,14 +10,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import '../customColors.dart';
 
 class RegisterList extends StatefulWidget {
   final List<ClientModel> selectedClients;
   final bool isDialog;
   final bool isAddToRegister;
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
-  RegisterList(this.isDialog,this.isAddToRegister,this.selectedClients,this.scaffoldMessengerKey);
+  final BuildContext mainScreenContext;
+  RegisterList(this.isDialog,this.isAddToRegister,this.selectedClients,this.scaffoldMessengerKey,this.mainScreenContext);
   @override
   _RegisterListState createState() => _RegisterListState();
 }
@@ -47,7 +46,7 @@ class _RegisterListState extends State<RegisterList> {
                         list: [
                           ModalOptionModel(
                               particulars: "Move",
-                              icon: Icons.drive_file_move,iconColor:CustomColors.moveIconColor,
+                              icon: Icons.drive_file_move,
                               onTap: (){
                                 moveClientsModule(widget.selectedClients, GlobalClass.registerList[index]);
                                 Navigator.of(context).pop();
@@ -56,7 +55,7 @@ class _RegisterListState extends State<RegisterList> {
                               }),
                           ModalOptionModel(
                               particulars: "Copy",
-                              icon: Icons.copy,iconColor:CustomColors.copyIconColor,
+                              icon: Icons.copy,
                               onTap: (){
                                 copyClientsModule(widget.selectedClients, GlobalClass.registerList[index]);
                                 Navigator.of(context).pop();
@@ -66,7 +65,7 @@ class _RegisterListState extends State<RegisterList> {
               }
               else{
                 if(widget.isDialog)Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(register:GlobalClass.registerList[index],isTutor: true, )));
+                Navigator.of(widget.mainScreenContext!=null?widget.mainScreenContext:context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(register:GlobalClass.registerList[index],isTutor: true, )));
                 GlobalClass.lastRegister=GlobalClass.registerList[index].id.key;
                 setLastRegister(GlobalClass.registerList[index].id.key);
               }

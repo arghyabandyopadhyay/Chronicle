@@ -1,23 +1,5 @@
-import 'package:chronicle/Models/drawerActionModel.dart';
-import 'package:chronicle/Models/userModel.dart';
-import 'package:chronicle/Modules/auth.dart';
-import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
-import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/qrCodePage.dart';
-import 'package:chronicle/Pages/TutorPages/registersPage.dart';
-import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
-import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
-import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Pages/notificationsPage.dart';
-import 'package:chronicle/Pages/routingPage.dart';
-import 'package:chronicle/Pages/settingsPage.dart';
-import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:qr_code_tools/qr_code_tools.dart';
 
 import 'drawerContent.dart';
 

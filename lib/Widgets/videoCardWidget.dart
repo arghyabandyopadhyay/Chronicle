@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 
 class VideoCardWidget extends StatefulWidget {
@@ -15,15 +17,6 @@ class VideoCardWidget extends StatefulWidget {
 }
 
 class _VideoCardWidgetState extends State<VideoCardWidget> {
-  // var uint8list;
-  // getThumbnail()  async{
-  //   uint8list = await VideoThumbnail.thumbnailData(
-  //     video: this.widget.item.downloadUrl,
-  //     imageFormat: ImageFormat.JPEG,
-  //     maxWidth: 128,
-  //     quality: 10,);
-  //   if(mounted)setState(() {});
-  // }
   @override
   void initState() {
     super.initState();
@@ -40,12 +33,35 @@ class _VideoCardWidgetState extends State<VideoCardWidget> {
             widget.onLongPressed(widget.index);
           },
           child: ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: EdgeInsets.symmetric(horizontal: 10),
             isThreeLine: true,
-            title: this.widget.item.thumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
-              this.widget.item.thumbnailUrl,
-              fit: BoxFit.fitWidth,alignment: Alignment.topCenter,
-            ),):null,
+            title: this.widget.item.thumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:CachedNetworkImage(
+              imageUrl: widget.item.thumbnailUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.fitWidth,
+                    alignment: Alignment.topCenter,
+                    //colorFilter:ColorFilter.mode(Colors.red, BlendMode.colorBurn)
+                  ),
+                ),
+              ),
+              placeholder: (context, url) => Container(
+                  child: Center(
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey[300].withOpacity(0.3),
+                      highlightColor: Colors.white,
+                      enabled: true,
+                      child: Container(
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            )):null,
             selectedTileColor: Colors.grey.withOpacity(0.2),
             selected: this.widget.item.isSelected,
             leading: this.widget.item.isSelected?Icon(Icons.verified):null,

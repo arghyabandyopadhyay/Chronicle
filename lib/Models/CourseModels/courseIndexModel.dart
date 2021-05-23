@@ -28,6 +28,9 @@ class CourseIndexModel {
   {
     this.id=id;
   }
+  void update(){
+    this.id.update(this.toJson());
+  }
 
   Map<String,dynamic> toJson() =>
       {

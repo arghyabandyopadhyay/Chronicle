@@ -262,7 +262,7 @@ CourseIndexModel addCourse(CourseModel course)
   course.addCourseVideoIndexes();
   course.addCoursePreviewVideoIndex();
   var id2=databaseReference.child('CourseIndexes/').push();
-  CourseIndexModel courseIndex=CourseIndexModel(uid: id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl);
+  CourseIndexModel courseIndex=course.toCourseIndexModel();
   id2.set(courseIndex.toJson());
   course.id.update({"CourseIndexKey":id2.key});
   var id3=databaseReference.child('${GlobalClass.user.uid}/CoursesByMe/').push();
@@ -274,15 +274,13 @@ Future<CourseIndexModel> updateCourse(CourseModel course,CourseIndexModel course
   DateTime now=DateTime.now();
   course.lastUpdated=DateTime(now.year,now.month,now.day);
   course.id.update(course.toJson());
-  // course.updateVideoIndexes();
-  // course.updatePreviewVideoIndex();
   CourseIndexModel courseIndexModel;
   DataSnapshot dataSnapshot = await databaseReference.child('CourseIndexes/${course.courseIndexKey}').once();
   if (dataSnapshot.value != null) {
     courseIndexModel = CourseIndexModel.fromJson(jsonDecode(jsonEncode(dataSnapshot.value)),"");
     courseIndexModel.setId(databaseReference.child('CourseIndexes/${course.courseIndexKey}'));
-    courseIndexModel.id.update(CourseIndexModel(uid: course.id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl).toJson());
+    courseIndexModel.id.update(course.toCourseIndexModel().toJson());
   }
-  courseByMe.id.update(CourseIndexModel(uid: course.id.path,authorName:GlobalClass.user.displayName,sellingPrice:course.sellingPrice,totalUsers:course.totalUsers,title: course.title,description: course.description,previewThumbnailUrl: course.previewThumbnailUrl).toJson());
+  courseByMe.id.update(course.toCourseIndexModel().toJson());
   return courseByMe;
 }

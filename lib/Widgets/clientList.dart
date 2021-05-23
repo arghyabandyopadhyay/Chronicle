@@ -98,7 +98,7 @@ class _ClientListState extends State<ClientList> {
                       ),
                       IconSlideAction(
                         caption: 'Add Payment',
-                        iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor,),
+                        iconWidget: Icon(Icons.payment,color: CustomColors.addPaymentIconColor),
                         onTap: () {
                           addPaymentModule(displayList[index],context,widget.scaffoldMessengerKey,this);
                         },
@@ -108,14 +108,14 @@ class _ClientListState extends State<ClientList> {
                     actions: <Widget>[
                       IconSlideAction(
                         caption: 'Call',
-                        iconWidget: Icon(Icons.call,color: CustomColors.callIconColor,),
+                        iconWidget: Icon(Icons.call),
                         onTap: () async {
                           callModule(displayList[index],widget.scaffoldMessengerKey);
                         },
                       ),
                       IconSlideAction(
                         caption: 'SMS',
-                        iconWidget: Icon(Icons.send,color: CustomColors.sendIconColor,),
+                        iconWidget: Icon(Icons.send),
                         onTap: () {
                           showModalBottomSheet(context: context, builder: (_)=>
                               OptionModalBottomSheet(
@@ -124,7 +124,7 @@ class _ClientListState extends State<ClientList> {
                                 list: [
                                   ModalOptionModel(
                                       particulars: "Send Sms using Default Sim",
-                                      icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
+                                      icon: Icons.sim_card_outlined,
                                       onTap: (){
                                         Navigator.of(_).pop();
                                         showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -144,7 +144,7 @@ class _ClientListState extends State<ClientList> {
                                       }),
                                   ModalOptionModel(
                                       particulars: "Send Sms using Sms Gateway",
-                                      icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
+                                      icon: FontAwesomeIcons.server,
                                       onTap: (){
                                         if(GlobalClass.userDetail.smsAccessToken!=null
                                             &&GlobalClass.userDetail.smsApiUrl!=null

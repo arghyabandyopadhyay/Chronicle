@@ -427,11 +427,11 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                if(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.userDetail.canAccess==0)ModalOptionModel(particulars: "Yearly Subscription Payment",icon: Icons.payment_outlined,iconColor:CustomColors.addPaymentIconColor,onTap: (){
+                if(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.userDetail.canAccess==0)ModalOptionModel(particulars: "Yearly Subscription Payment",icon: Icons.payment_outlined,onTap: (){
                   Navigator.pop(popupContext);
                   openCheckout();
                 }),
-                ModalOptionModel(particulars: "My Qr Code",icon: Icons.qr_code_outlined,iconColor:CustomColors.qrcodeIconColor,onTap: () async {
+                ModalOptionModel(particulars: "My Qr Code",icon: Icons.qr_code_outlined,onTap: () async {
                   Navigator.pop(popupContext);
                   UserModel userModel=await getUserDetails();
                   if(userModel.qrcodeDetail!=null){
@@ -462,20 +462,20 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                     }
                   }
                 }),
-                ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help_outline,iconColor:CustomColors.helpIconColor,onTap: () async {
+                ModalOptionModel(particulars: "Help and Feedback",icon: Icons.help_outline,onTap: () async {
                   Navigator.pop(popupContext);
                   Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (settingsContext)=>HelpAndFeedbackPage()));
                 }),
-                ModalOptionModel(particulars: "Settings",icon: Icons.settings,iconColor:CustomColors.settingsIconColor,onTap: () async {
+                ModalOptionModel(particulars: "Settings",icon: Icons.settings,onTap: () async {
                   Navigator.pop(popupContext);
                   Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (settingsContext)=>SettingsPage()));
                 }),
-                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Dispatch Notification",icon: Icons.send,iconColor:CustomColors.sendIconColor,onTap: () async {
+                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Dispatch Notification",icon: Icons.send,onTap: () async {
                     Navigator.of(popupContext).pop();
                     Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
                   },
                 ),
-                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Users Access",icon: Icons.account_box_outlined,iconColor:CustomColors.sendIconColor,onTap: () async {
+                if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Users Access",icon: Icons.account_box_outlined,onTap: () async {
                     Navigator.of(context).pop();
                     Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>ClientAccessEditPage()));
                   },

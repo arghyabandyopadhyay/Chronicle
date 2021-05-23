@@ -3,9 +3,7 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/editVideoPage.dart';
-import 'package:chronicle/Pages/TutorPages/videoInformationPage.dart';
 import 'package:chronicle/Widgets/videoCardWidget.dart';
-import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -95,7 +93,7 @@ class _VideoListState extends State<VideoList> {
                     secondaryActions: <Widget>[
                       IconSlideAction(
                         caption: 'Edit',
-                        iconWidget: Icon(Icons.edit_outlined,color: CustomColors.editIconColor,),
+                        iconWidget: Icon(Icons.edit_outlined),
                         onTap: () {
                           Navigator.of(context).push(CupertinoPageRoute(
                               builder: (editPageContext)=>
@@ -105,7 +103,7 @@ class _VideoListState extends State<VideoList> {
                       ),
                       IconSlideAction(
                         caption: 'Delete',
-                        iconWidget: Icon(Icons.delete,color: CustomColors.addDueIconColor,),
+                        iconWidget: Icon(Icons.delete),
                         onTap: () async {
                           setState(() {
                             deleteFromStorageModule(displayList[index],widget.scaffoldMessengerKey);

@@ -1,9 +1,7 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
-import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
-import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
 import 'package:chronicle/PdfModule/api/pdfApi.dart';
@@ -559,7 +557,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
                 index: 0,
                 onTapList: (index){
                   Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(video:this.courseDetail.previewVideo)));
+                      VideoPlayerPage(isTutor:false,video:this.courseDetail.previewVideo)));
                 },
               ),
               SizedBox(height: 8,),
@@ -580,8 +578,6 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
                   child: CourseHomePageVideoList(listItems:this.searchResult,
                     scaffoldMessengerKey:scaffoldMessengerKey,
                     onTapList:(index) async {
-                      // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      //     VideoPlayerPage(video:this.searchResult[index])));
                     },
                   )):
               Provider.value(
@@ -589,8 +585,6 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
                   updateShouldNotify: (oldValue, newValue) => true,
                   child: CourseHomePageVideoList(listItems:this.courseDetail.videos,scaffoldMessengerKey:scaffoldMessengerKey,
                     onTapList:(index) async {
-                      // Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      //     VideoPlayerPage(video:this.courseDetail.videos[index])));
                     },
                   )
               )

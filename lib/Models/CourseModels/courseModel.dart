@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../globalClass.dart';
+
+import 'courseIndexModel.dart';
 
 class CourseModel {
   DatabaseReference id;
@@ -29,7 +30,7 @@ class CourseModel {
       List<VideoIndexModel> clientsList = [];
       if (jsonList!= null) {
         jsonList.keys.forEach((key) {
-          VideoIndexModel clientModel = VideoIndexModel.fromJson(jsonDecode(jsonEncode(jsonList[key])),key);
+          VideoIndexModel clientModel = VideoIndexModel.fromJson(jsonDecode(jsonEncode(jsonList[key])),'$path/Videos/' + key);
           clientModel.setId(databaseReference.child('$path/Videos/' + key));
           clientsList.add(clientModel);
         });
@@ -137,4 +138,14 @@ class CourseModel {
         "SellingPrice":this.sellingPrice,
         "LastUpdated":(this.lastUpdated!=null)?this.lastUpdated.toIso8601String():null,
       };
+
+  CourseIndexModel toCourseIndexModel()=>CourseIndexModel(
+    uid: this.id.path,
+    authorName: this.authorName,
+    title: this.title,
+    description:this.description,
+    previewThumbnailUrl: this.previewThumbnailUrl,
+    totalUsers: this.totalUsers,
+    sellingPrice:this.sellingPrice,
+  );
 }

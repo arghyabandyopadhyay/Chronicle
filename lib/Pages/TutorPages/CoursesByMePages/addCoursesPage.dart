@@ -1,8 +1,5 @@
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
-import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/CoursesByMePages/editVideoPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
 import 'package:chronicle/Widgets/editCourseVideosList.dart';
 import 'package:flutter/cupertino.dart';

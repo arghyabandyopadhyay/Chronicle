@@ -4,7 +4,6 @@ import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Pages/MasterPages/chronicleMasterPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
-import 'package:chronicle/Pages/TutorPages/registersPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -119,7 +118,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                       if(GlobalClass.userDetail.isAppRegistered==1)Navigator.pushReplacement(
                           context,
                           CupertinoPageRoute(
-                              builder: (context) => RegistersPage()))
+                              builder: (context) => ChronicleMasterPage(register:null,isTutor: true)))
                       else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(isTutor:false)))
                     }
                     else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))

@@ -20,17 +20,18 @@ class VideoIndexModel {
 
   VideoIndexModel({this.directory, this.name,this.description,this.masterFilter,this.downloadUrl,this.thumbnailSize,this.thumbnailUrl,this.cloudStorageSize,this.doubts});
 
-  factory VideoIndexModel.fromJson(Map<String, dynamic> json1,String idKey) {
+  factory VideoIndexModel.fromJson(Map<String, dynamic> json1,String path) {
+
     List<DoubtModel> getDoubts(Map<String, dynamic> jsonList){
-      List<DoubtModel> doubts = [];
+      List<DoubtModel> doubtsList = [];
       if (jsonList!= null) {
         jsonList.keys.forEach((key) {
-          DoubtModel doubt = DoubtModel.fromJson(jsonDecode(jsonEncode(jsonList[key])));
-          doubt.setId(databaseReference.child('${GlobalClass.user.uid}/registers/$idKey/client/' + key));
-          doubts.add(doubt);
+          DoubtModel doubt = DoubtModel.fromJson(jsonDecode(jsonEncode(jsonList[key])),key);
+          doubt.setId(databaseReference.child('$path/Doubts/' + key));
+          doubtsList.add(doubt);
         });
       }
-      return doubts;
+      return doubtsList;
     }
     return VideoIndexModel(
       directory: json1['Directory'],
@@ -41,7 +42,7 @@ class VideoIndexModel {
       cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
       thumbnailSize:json1['ThumbnailSize']!=null?json1['ThumbnailSize']:0,
       thumbnailUrl:json1['ThumbnailUrl'],
-      // doubts:getDoubts(jsonDecode(jsonEncode(json1['Doubts'])))
+      doubts:json1['Doubts']!=null?getDoubts(jsonDecode(jsonEncode(json1['Doubts']))):null
     );
   }
 
@@ -49,6 +50,16 @@ class VideoIndexModel {
   {
     this.id=id;
   }
+
+  //Add new doubt to the video
+  void addDoubtToVideo(DoubtModel doubt){
+    var doubtId=this.id.child("Doubts").push();
+    doubtId.set(doubt.toJson());
+    doubt.setId(doubtId);
+    if(this.doubts!=null)this.doubts.add(doubt);
+    else this.doubts=[doubt];
+  }
+
 
   Map<String,dynamic> toJson() =>
       {

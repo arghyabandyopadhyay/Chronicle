@@ -12,7 +12,6 @@ import '../Modules/database.dart';
 import '../customColors.dart';
 import 'MasterPages/chronicleMasterPage.dart';
 import 'errorDisplayPage.dart';
-import 'TutorPages/registersPage.dart';
 
 class RoutingPage extends StatefulWidget {
   @override
@@ -42,7 +41,7 @@ class _RoutingPageState extends State<RoutingPage> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: RegistersPage())
+                          home: ChronicleMasterPage(register:null,isTutor: true))
                     }
                   else {
                     await getAllRegisterIndex().then((registers) => {
@@ -62,7 +61,7 @@ class _RoutingPageState extends State<RoutingPage> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: RegistersPage())
+                          home: ChronicleMasterPage(register:null,isTutor: true))
                     })
                   }
                 })

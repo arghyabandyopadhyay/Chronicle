@@ -165,11 +165,11 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                ModalOptionModel(particulars: "Call",icon: Icons.call,iconColor:CustomColors.callIconColor,onTap: (){
+                ModalOptionModel(particulars: "Call",icon: Icons.call,onTap: (){
                   Navigator.pop(popupContext);
                   callModule(widget.client,scaffoldMessengerKey);
                 }),
-                ModalOptionModel(particulars: "Add to Contacts",icon: Icons.contacts_outlined,iconColor:CustomColors.addToContactIconColor,onTap: ()async{
+                ModalOptionModel(particulars: "Add to Contacts",icon: Icons.contacts_outlined,onTap: ()async{
                   Navigator.pop(popupContext);
                   PermissionStatus permissionStatus = await _getContactPermission();
                   if (permissionStatus == PermissionStatus.granted) {
@@ -206,7 +206,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                     _handleInvalidPermissions(permissionStatus);
                   }
                 }),
-                ModalOptionModel(particulars: "Sms Reminder",icon: Icons.send,iconColor:CustomColors.sendIconColor,onTap: (){
+                ModalOptionModel(particulars: "Sms Reminder",icon: Icons.send,onTap: (){
                   Navigator.pop(popupContext);
                   showModalBottomSheet(context: context, builder: (_)=>
                       OptionModalBottomSheet(
@@ -215,7 +215,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                         list: [
                           ModalOptionModel(
                               particulars: "Send Sms using Default Sim",
-                              icon: Icons.sim_card_outlined,iconColor:CustomColors.simCardIconColor,
+                              icon: Icons.sim_card_outlined,
                               onTap: (){
                                 Navigator.of(_).pop();
                                 showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -234,7 +234,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                               }),
                           ModalOptionModel(
                               particulars: "Send Sms using Sms Gateway",
-                              icon: FontAwesomeIcons.server,iconColor:CustomColors.serverIconColor,
+                              icon: FontAwesomeIcons.server,
                               onTap: (){
                                 if(GlobalClass.userDetail.smsAccessToken!=null
                                     &&GlobalClass.userDetail.smsApiUrl!=null
@@ -273,19 +273,19 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                                 }
                               }),],));
                 }),
-                ModalOptionModel(particulars: "WhatsApp",icon:FontAwesomeIcons.whatsappSquare,iconColor:CustomColors.whatsAppGreen, onTap: () async {
+                ModalOptionModel(particulars: "WhatsApp",icon:FontAwesomeIcons.whatsappSquare, onTap: () async {
                   Navigator.pop(popupContext);
                   whatsAppModule(widget.client, scaffoldMessengerKey);
                 }),
-                if(this.widget.client.due>-1)ModalOptionModel(particulars: "Add Due",iconColor:CustomColors.addDueIconColor,icon: Icons.more_time,onTap: (){
+                if(this.widget.client.due>-1)ModalOptionModel(particulars: "Add Due",icon: Icons.more_time,onTap: (){
                   Navigator.pop(popupContext);
                   addDueModule(this.widget.client,this);
                 }),
-                ModalOptionModel(particulars: "Add Payment",icon: Icons.payment,iconColor:CustomColors.addPaymentIconColor,onTap: (){
+                ModalOptionModel(particulars: "Add Payment",icon: Icons.payment,onTap: (){
                   Navigator.pop(popupContext);
                   addPaymentModule(this.widget.client,context,scaffoldMessengerKey,this);
                 }),
-                ModalOptionModel(particulars: "Delete",icon: Icons.delete,iconColor:CustomColors.deleteIconColor,onTap: (){
+                ModalOptionModel(particulars: "Delete",icon: Icons.delete,onTap: (){
                   Navigator.pop(popupContext);
                   deleteModule(widget.client, context, this);
                 }),

@@ -13,9 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-
 import '../../appBarVariables.dart';
-import '../../customColors.dart';
 import '../notificationsPage.dart';
 import '../purchasedCoursePage.dart';
 
@@ -154,7 +152,7 @@ class _HomePageState extends State<HomePage> {
             PopupMenuButton<ModalOptionModel>(
               itemBuilder: (BuildContext popupContext){
                 return [
-                  ModalOptionModel(particulars: "Wishlist",icon: FontAwesomeIcons.heart,iconColor:CustomColors.wishlistIconColor,onTap: () async {
+                  ModalOptionModel(particulars: "Wishlist",icon: FontAwesomeIcons.heart,onTap: () async {
                     Navigator.pop(popupContext);
                     Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>WishlistPage()));
                   }),
@@ -191,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                     scaffoldMessengerKey:scaffoldMessengerKey,
                     onTapList:(index) async {
                       Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                          PurchaseCoursePage(course:this.searchResult[index])));
+                          PurchaseCoursePage(isTutor:false,course:this.searchResult[index])));
 
                     },
                   )):
@@ -206,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                     scrollController: scrollController,
                     onTapList:(index) async {
                       Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                          PurchaseCoursePage(course:GlobalClass.myPurchasedCourses[index])));
+                          PurchaseCoursePage(isTutor:false,course:GlobalClass.myPurchasedCourses[index])));
 
                     },
                   )

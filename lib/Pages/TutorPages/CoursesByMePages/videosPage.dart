@@ -13,10 +13,10 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
 import '../../../customColors.dart';
 import '../../../globalClass.dart';
 import 'addVideoPage.dart';
@@ -193,7 +193,7 @@ class _VideosPageState extends State<VideosPage> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
                     scrollController.position.minScrollExtent,
@@ -201,7 +201,7 @@ class _VideosPageState extends State<VideosPage> {
                     curve: Curves.fastOutSlowIn,
                   );
                 }),
-                ModalOptionModel(particulars: "Upload",icon:Icons.video_call_outlined,iconColor:CustomColors.uploadIconColor, onTap: () async {
+                ModalOptionModel(particulars: "Upload",icon:Icons.video_call_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   // final file = await ImagePicker().getVideo(source: ImageSource.gallery,maxDuration: const Duration(seconds: 300),);
                   // if(file!=null)showDialog(context: context, builder: (_)=>new AlertDialog(
@@ -331,7 +331,7 @@ class _VideosPageState extends State<VideosPage> {
         ],
       );
   }
-  Future<void> uploadFile(String filePath,String name,String description,String masterFilter) async {
+  Future<void> uploadFile(String filePath,String thumbnailFilePath,String name,String description,String masterFilter) async {
     try {
       progressValue=0;
       final DateTime now = DateTime.now();
@@ -362,7 +362,7 @@ class _VideosPageState extends State<VideosPage> {
       await task;
       globalShowInSnackBar(scaffoldMessengerKey,"The video has been uploaded. Uploading metadata...");
       String url=await downloadURL('${GlobalClass.user.uid}/$today/$storageId');
-      String thumbnailFilePath = await VideoThumbnail.thumbnailFile(
+      if(thumbnailFilePath==null||thumbnailFilePath=="")thumbnailFilePath = await VideoThumbnail.thumbnailFile(
         video: url,
         thumbnailPath: (await getTemporaryDirectory()).path,
         imageFormat: ImageFormat.WEBP,
@@ -446,7 +446,7 @@ class _VideosPageState extends State<VideosPage> {
                 if(selectedList.length<1){
                   if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.searchResult[index]]);
                   else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(video:this.searchResult[index])));
+                      VideoPlayerPage(isTutor:true,video:this.searchResult[index])));
                 }
                 else {
                   setState(() {
@@ -484,7 +484,7 @@ class _VideosPageState extends State<VideosPage> {
                 if(selectedList.length<1){
                   if(widget.isAddVideoToCourse) Navigator.of(context).pop([this.videos[index]]);
                   else Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      VideoPlayerPage(video:this.videos[index])));
+                      VideoPlayerPage(isTutor:true,video:this.videos[index])));
                 }
                 else {
                   setState(() {

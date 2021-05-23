@@ -2,31 +2,28 @@ import 'package:firebase_database/firebase_database.dart';
 
 class DoubtModel {
   DatabaseReference id;
-  String userUid;
-  String videoUid;
+  String userName;
   String question;
   String answer;
 
-  DoubtModel({this.userUid,this.videoUid,this.question,this.answer});
-
-  factory DoubtModel.fromJson(Map<String, dynamic> json1) {
+  DoubtModel({this.userName,this.question,this.answer});
+  factory DoubtModel.fromJson(Map<String, dynamic> json1,String path) {
     return DoubtModel(
-        userUid: json1['UserUid'],
-        videoUid: json1['VideoUid'],
+        userName: json1['UserName'],
         question:json1['Question'],
         answer:json1['Answer'],
     );
   }
-
-  void setId(DatabaseReference id)
-  {
+  void setId(DatabaseReference id){
     this.id=id;
   }
-
+  //Reply to the doubt
+  void replyToDoubtToVideo(){
+    this.id.update(this.toJson());
+  }
   Map<String,dynamic> toJson() =>
       {
-        "UserUid": userUid,
-        "VideoUid": videoUid,
+        "UserName": userName,
         "Question":question,
         "Answer":answer,
       };

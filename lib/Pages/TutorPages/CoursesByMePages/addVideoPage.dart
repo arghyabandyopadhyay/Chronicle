@@ -1,14 +1,12 @@
-import 'dart:io';
 
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:date_field/date_field.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 class AddVideoPage extends StatefulWidget {
-  final Function(String filePath,String name,String description,String masterFilter) callback;
+  final Function(String filePath,String thumnailFilePath,String name,String description,String masterFilter) callback;
   const AddVideoPage({Key key, this.callback}) : super(key: key);
   @override
   _AddVideoPageState createState() => _AddVideoPageState();
@@ -20,7 +18,9 @@ class _AddVideoPageState extends State<AddVideoPage> {
   var descriptionTextField=TextEditingController();
   var keyWordsTextField=TextEditingController();
   var fileTextField=TextEditingController();
+  var thumbnailTextField=TextEditingController();
   PickedFile file ;
+  PickedFile thumbnailFile ;
   final focus = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   //Functions
@@ -31,7 +31,7 @@ class _AddVideoPageState extends State<AddVideoPage> {
     }
     else {
       form.save();
-      widget.callback(fileTextField.text,nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),descriptionTextField.text,keyWordsTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),""));
+      widget.callback(fileTextField.text,thumbnailTextField.text,nameTextField.text.replaceAll(new RegExp(r'[^\s\w]+'),""),descriptionTextField.text,keyWordsTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),"")+nameTextField.text.toLowerCase().replaceAll(new RegExp(r'[^\s\w]+'),""));
       Navigator.pop(context);
       FocusScope.of(context).unfocus();
     }
@@ -170,6 +170,42 @@ class _AddVideoPageState extends State<AddVideoPage> {
                       fileTextField.text=file.path;
                     });
                   },),
+                ]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/education.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: TextFormField(
+                    enabled: false,
+                    textCapitalization: TextCapitalization.words,
+                    controller: thumbnailTextField,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(),
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: "Thumbnail",
+                      helperText: "If left empty, thumbnail will be automatically generated.",
+                      contentPadding:
+                      EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                    ),
+                  ),),
+                  if(thumbnailTextField.text.isEmpty)IconButton(icon:Icon(Icons.insert_photo_outlined),onPressed: ()async{
+                    thumbnailFile=await ImagePicker().getImage(source: ImageSource.gallery,);
+                    setState(() {
+                      thumbnailTextField.text=thumbnailFile.path;
+                    });
+                  },)
+                  else IconButton(icon:Icon(Icons.remove_circle),onPressed: ()async{
+                    setState(() {
+                      thumbnailTextField.text="";
+                      thumbnailFile=null;
+                    });
+                  },)
                 ]),
                 SizedBox(height: 8,),
                 sizedBoxSpace,

@@ -69,7 +69,7 @@ class RegisterOptionBottomSheet extends StatelessWidget {
         ],
       ),
       body: GlobalClass.registerList==null||GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: RegisterList(true,this.isAddToRegister,this.selectedClients,scaffoldMessengerKey)),
+        Expanded(child: RegisterList(true,this.isAddToRegister,this.selectedClients,scaffoldMessengerKey,null)),
       ]),
     ),key: scaffoldMessengerKey,);
 

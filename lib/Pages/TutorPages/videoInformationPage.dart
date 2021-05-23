@@ -67,7 +67,7 @@
 //           PopupMenuButton<ModalOptionModel>(
 //             itemBuilder: (BuildContext popupContext){
 //               return [
-//                 ModalOptionModel(particulars: "Share",icon: Icons.share,iconColor:CustomColors.callIconColor,onTap: (){
+//                 ModalOptionModel(particulars: "Share",icon: Icons.share,onTap: (){
 //                   Navigator.pop(popupContext);
 //                   shareModule(widget.video,scaffoldMessengerKey);
 //                 }),

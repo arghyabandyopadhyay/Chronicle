@@ -8,7 +8,6 @@ import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
-import 'package:chronicle/customColors.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,14 +21,12 @@ import '../../Widgets/registerNewClientWidget.dart';
 import '../notificationsPage.dart';
 import 'clientInformationPage.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
-import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:typed_data';
-import '../../customColors.dart';
 
 
 class ClientPage extends StatefulWidget {
@@ -270,7 +267,7 @@ class _ClientPageState extends State<ClientPage> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,onTap: (){
                 Navigator.pop(popupContext);
                 showModalBottomSheet(
                     context: widget.mainScreenContext,
@@ -281,7 +278,7 @@ class _ClientPageState extends State<ClientPage> {
                         list: [
                           ModalOptionModel(
                             icon:Icons.more_time,
-                            iconColor: CustomColors.addDueIconColor,
+
                             particulars:"Dues First",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Dues First", clients);
@@ -290,7 +287,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.hourglass_bottom_outlined,iconColor: CustomColors.lastMonthTextColor,
+                            icon:Icons.hourglass_bottom_outlined,
                             particulars:"Last Months First",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Last Months First", clients);
@@ -299,7 +296,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.payment_outlined,iconColor: CustomColors.addPaymentIconColor,
+                            icon:Icons.payment_outlined,
                             particulars:"Paid First",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Paid First", clients);
@@ -308,7 +305,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                            icon:Icons.sort_by_alpha_outlined,
                             particulars:"A-Z",
                             onTap: (){setState(() {
                               clients=sortClientsModule("A-Z", clients);
@@ -317,7 +314,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                            icon:Icons.sort_by_alpha_outlined,
                             particulars:"Z-A",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Z-A", clients);
@@ -326,7 +323,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                            icon:Icons.date_range_outlined,
                             particulars:"Start Date Ascending",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Start Date Ascending", clients);
@@ -335,7 +332,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.date_range_outlined,iconColor: CustomColors.startDateIconColor,
+                            icon:Icons.date_range_outlined,
                             particulars:"Start Date Descending",
                             onTap: (){setState(() {
                               clients=sortClientsModule("Start Date Descending", clients);
@@ -344,7 +341,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                            icon:Icons.date_range_outlined,
                             particulars:"End Date Ascending",
                             onTap: (){setState(() {
                               clients=sortClientsModule("End Date Ascending", clients);
@@ -353,7 +350,7 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
-                            icon:Icons.date_range_outlined,iconColor: CustomColors.endDateIconColor,
+                            icon:Icons.date_range_outlined,
                             particulars:"End Date Descending",
                             onTap: (){setState(() {
                               clients=sortClientsModule("End Date Descending", clients);
@@ -366,7 +363,7 @@ class _ClientPageState extends State<ClientPage> {
                     }
                 );
               }),
-                ModalOptionModel(particulars: "Rename",icon:Icons.edit, iconColor:CustomColors.editIconColor,onTap: () async {
+                ModalOptionModel(particulars: "Rename",icon:Icons.edit, onTap: () async {
                   Navigator.pop(popupContext);
                   showDialog(context: context, builder: (_)=>new AlertDialog(
                     title: Text("Rename Register"),
@@ -402,7 +399,7 @@ class _ClientPageState extends State<ClientPage> {
                       }),],
                   ));
                 }),
-                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
                     scrollController.position.minScrollExtent,
@@ -579,11 +576,11 @@ class _ClientPageState extends State<ClientPage> {
                     ],
                   ));
                 }),
-                ModalOptionModel(particulars: "Upload Client list",icon:Icons.upload_file,iconColor: CustomColors.uploadIconColor, onTap: () async {
+                ModalOptionModel(particulars: "Upload Client list",icon:Icons.upload_file, onTap: () async {
                   Navigator.pop(popupContext);
                   getFilePath();
                 }),
-                ModalOptionModel(particulars: "Download Template",icon: Icons.download_sharp,iconColor: CustomColors.downloadIconColor,onTap: (){
+                ModalOptionModel(particulars: "Download Template",icon: Icons.download_sharp,onTap: (){
                   Navigator.pop(popupContext);
                   asset2Local("xlsx", "assets/clientList.xlsx");
                 })

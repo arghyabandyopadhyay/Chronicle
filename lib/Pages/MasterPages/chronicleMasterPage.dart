@@ -2,6 +2,7 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/tutorCoursesPage.dart';
 import 'package:chronicle/Pages/MasterPages/userInfoScreen.dart';
+import 'package:chronicle/Pages/TutorPages/registersPage.dart';
 import 'package:chronicle/customColors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,11 +30,11 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
   }
   List<Widget> _buildScreens() {
     return [
-      if(widget.isTutor)ClientPage(
+      if(widget.isTutor)widget.register!=null?ClientPage(
         register:widget.register,
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
-      ),
+      ):RegistersPage(context),
       if(widget.isTutor)TutorCoursesPage(
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,

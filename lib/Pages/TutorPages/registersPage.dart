@@ -7,10 +7,13 @@ import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
+import '../../appBarVariables.dart';
 import '../../globalClass.dart';
+import '../notificationsPage.dart';
 
 class RegistersPage extends StatefulWidget {
-  RegistersPage();
+  final BuildContext mainScreenContext;
+  RegistersPage(this.mainScreenContext);
   @override
   _RegistersPageState createState() => _RegistersPageState();
 }
@@ -49,10 +52,17 @@ class _RegistersPageState extends State<RegistersPage> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
-      appBar: AppBar(title: Text("Registers"),),
+      appBar: AppBar(title: AppBarVariables.appBarLeading(widget.mainScreenContext),
+      actions: [
+        new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+          setState(() {
+            Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
+          });
+        }),
+      ],),
       // drawer: UniversalDrawerWidget(scaffoldMessengerKey: scaffoldMessengerKey,state: this,isNotRegisterPage: false,masterContext: context),
       body: GlobalClass.registerList!=null?GlobalClass.registerList.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey)),
+        Expanded(child: RegisterList(false,false,null,scaffoldMessengerKey,widget.mainScreenContext)),
       ]):
       LoaderWidget(),
       floatingActionButton: FloatingActionButton.extended(onPressed: (){

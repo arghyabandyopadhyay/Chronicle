@@ -4,6 +4,7 @@ import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/purchasedCoursePage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
@@ -12,7 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../appBarVariables.dart';
-import '../../../customColors.dart';
+
 import '../../notificationsPage.dart';
 import 'addCoursesPage.dart';
 import 'editCoursesPage.dart';
@@ -156,7 +157,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
           PopupMenuButton<ModalOptionModel>(
             itemBuilder: (BuildContext popupContext){
               return [
-                ModalOptionModel(particulars: "Sort",icon: Icons.sort,iconColor:CustomColors.sortIconColor,onTap: (){
+                ModalOptionModel(particulars: "Sort",icon: Icons.sort,onTap: (){
                   Navigator.pop(popupContext);
                   showModalBottomSheet(
                       context: widget.mainScreenContext,
@@ -166,7 +167,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
                             appBarIcon: Icons.sort,
                             list: [
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.atozIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"A-Z",
                                 onTap: (){setState(() {
                                   courses=sortCoursesModule("A-Z", courses);
@@ -175,7 +176,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
                                 },
                               ),
                               ModalOptionModel(
-                                icon:Icons.sort_by_alpha_outlined,iconColor: CustomColors.ztoaIconColor,
+                                icon:Icons.sort_by_alpha_outlined,
                                 particulars:"Z-A",
                                 onTap: (){setState(() {
                                   courses=sortCoursesModule("Z-A", courses);
@@ -188,7 +189,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
                       }
                   );
                 }),
-                if(this.courses!=null&&this.courses.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined,iconColor:CustomColors.moveToTopIconColor, onTap: () async {
+                if(this.courses!=null&&this.courses.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
                   scrollController.animateTo(
                     scrollController.position.minScrollExtent,
@@ -219,7 +220,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
               scaffoldMessengerKey:scaffoldMessengerKey,
               onTapList:(index) async {
                 Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                    EditCoursesPage(course:this.searchResult[index]))).then((value) {
+                    PurchaseCoursePage(isTutor:true,course:this.searchResult[index]))).then((value) {
                   setState(() {if(value==null){}
                   else{
                     this.courses.remove(this.searchResult[index]);
@@ -240,7 +241,7 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
               scrollController: scrollController,
               onTapList:(index) async {
                 Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                    EditCoursesPage(course:this.courses[index]))).then((value){
+                    PurchaseCoursePage(isTutor:true,course:this.courses[index]))).then((value){
                   setState(() {
                     if(value==null) {}
                     else this.courses.remove(this.courses[index]);
@@ -251,10 +252,10 @@ class _TutorCoursesPageState extends State<TutorCoursesPage> {
             )
         )),
       ]): LoaderWidget(),
-      floatingActionButton: FloatingActionButton.extended(onPressed: (){
+      floatingActionButton: FloatingActionButton(onPressed: (){
         Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>AddCoursesPage(callback: this.newCourse,)));
       },
-        label: Text("Add Course"),icon: Icon(Icons.add),),
+        child:Icon(Icons.add),),
     ),key: scaffoldMessengerKey,);
   }
 }
