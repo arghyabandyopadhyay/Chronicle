@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                 else _handleSearchEnd();
               });
             }),
-            new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+            if(GlobalClass.userDetail.isAppRegistered==1)new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
               setState(() {
                 Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
               });

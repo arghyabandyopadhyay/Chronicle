@@ -63,7 +63,7 @@ class _ClientAccessEditPageState extends State<ClientAccessEditPage> {
     //isLoading mechanisms
     UserModel userDetails=await getChronicleUserDetails(uid);
     if(userDetails!=null){
-      ChronicleUserModel chronicleUserModel=new ChronicleUserModel(uid: uid,email: userDetails.email,canAccess: 0,displayName: userDetails.displayName);
+      ChronicleUserModel chronicleUserModel=new ChronicleUserModel(uid: uid,email: userDetails.email,isAppRegistered: 0,displayName: userDetails.displayName);
       chronicleUserModel.setId(chronicleUserRegistration(chronicleUserModel));
       userDetails.isAppRegistered=1;
       userDetails.canAccess=0;

@@ -30,8 +30,8 @@ class _DispatchNotificationConsoleState extends State<DispatchNotificationConsol
       setState(() {
         consoleTextController.text=consoleTextController.text+"\n"+"Downloading Client list Complete.";
       });
-      await Future.forEach(chronicleUsers,(chronicleUser) async{
-        if(chronicleUser.canAccess==1){
+      await Future.forEach(chronicleUsers,(ChronicleUserModel chronicleUser) async{
+        if(chronicleUser.isAppRegistered==1){
           DataModel data=await getAllData(chronicleUser.uid);
           await Future.forEach(data.registers,(registerElement) async {
             setState(() {

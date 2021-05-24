@@ -15,7 +15,7 @@ void updateChronicleUserDetails(ChronicleUserModel user, DatabaseReference id,bo
   id.update(user.toJson());
   if(isForAccessChange){
     UserModel userDetails=await getChronicleUserDetails(user.uid);
-    userDetails.canAccess=user.canAccess;
+    userDetails.isAppRegistered=user.isAppRegistered;
     userDetails.update();
   }
 }

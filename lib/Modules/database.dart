@@ -234,7 +234,7 @@ Future<List<CourseIndexModel>> getAllCourseIndexes(String coursesType,bool isGlo
       courses.add(course);
     });
   }
-  courses.sort((a,b)=>a.title.compareTo(b.title));
+  courses=sortCoursesModule(isGlobal?"NoOfUsers":"A-Z", courses);
   return courses;
 }
 

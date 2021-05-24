@@ -74,8 +74,8 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
         activeColorPrimary: CustomColors.primaryColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(Icons.search),
-        title: "Search",
+        icon: Icon(Icons.explore_outlined),
+        title: "Explore",
         inactiveColorPrimary: Colors.grey,
         activeColorPrimary: CustomColors.primaryColor,
       ),

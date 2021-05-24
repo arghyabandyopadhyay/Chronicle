@@ -54,7 +54,7 @@ class _RegistersPageState extends State<RegistersPage> {
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(title: AppBarVariables.appBarLeading(widget.mainScreenContext),
       actions: [
-        new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+        if(GlobalClass.userDetail.isAppRegistered==1)new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
           setState(() {
             Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
           });

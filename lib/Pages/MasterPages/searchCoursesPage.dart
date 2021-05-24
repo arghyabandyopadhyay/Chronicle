@@ -8,7 +8,10 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../appBarVariables.dart';
+import '../../globalClass.dart';
 import '../coursePreviewPage.dart';
+import '../notificationsPage.dart';
 
 
 class SearchCoursesPage extends StatefulWidget {
@@ -25,6 +28,7 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
   List<CourseIndexModel> courses;
   int _counter=0;
   bool _isLoading;
+  bool _isSearching=false;
   final TextEditingController _searchController = new TextEditingController();
   ScrollController scrollController = new ScrollController();
 
@@ -46,6 +50,23 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
   void initState() {
     super.initState();
     getCourseModels();
+    appBarTitle=AppBarVariables.appBarLeading(widget.mainScreenContext);
+  }
+  Widget appBarTitle;
+  void _handleSearchStart() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
+  void _handleSearchEnd() {
+    setState(() {
+      this.icon = new Icon(
+        Icons.search,
+      );
+      this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
+      _isSearching = false;
+      _searchController.clear();
+    });
   }
   void searchOperation(String searchText) {
     searchResult.clear();
@@ -97,10 +118,29 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(child: Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.search),
-        title: TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Courses",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,),),
-      body: this.searchResult!=null?this.searchResult.length==0?NoDataError():Column(children: <Widget>[
-        Expanded(child: Provider.value(
+        title: appBarTitle,
+        actions: [
+          new IconButton(icon: icon, onPressed:(){
+            setState(() {
+              if(this.icon.icon == Icons.search)
+              {
+                this.icon=new Icon(Icons.close);
+                this.appBarTitle=TextFormField(autofocus:true,controller: _searchController,style: TextStyle(fontSize: 15),decoration: InputDecoration(border: const OutlineInputBorder(borderSide: BorderSide.none),hintText: "Search Courses..",hintStyle: TextStyle(fontSize: 15)),onChanged: searchOperation,);
+                _handleSearchStart();
+              }
+              else _handleSearchEnd();
+            });
+          }),
+          if(GlobalClass.userDetail.isAppRegistered==1)new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
+            setState(() {
+              Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
+            });
+          }),
+        ],
+      ),
+      body: this.courses!=null?this.courses.length==0?NoDataError():Column(children: <Widget>[
+        Expanded(child:
+        _isSearching?Provider.value(
             value: _counter,
             updateShouldNotify: (oldValue, newValue) => true,
             child: CourseList(listItems:this.searchResult,scaffoldMessengerKey:scaffoldMessengerKey,
@@ -115,7 +155,23 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
 
               },
             )
-        )),
+        ):Provider.value(
+            value: _counter,
+            updateShouldNotify: (oldValue, newValue) => true,
+            child: CourseList(listItems:this.courses,scaffoldMessengerKey:scaffoldMessengerKey,
+              refreshData: (){
+                return refreshData();
+              },
+              refreshIndicatorKey: refreshIndicatorKey,
+              scrollController: scrollController,
+              onTapList:(index) async {
+                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    CoursePreviewPage(course:this.courses[index])));
+
+              },
+            )
+        )
+        ),
       ]): LoaderWidget(),
     ),key: scaffoldMessengerKey,);
   }

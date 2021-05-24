@@ -236,7 +236,11 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
 
 List<CourseIndexModel> sortCoursesModule(String sortType,List<CourseIndexModel> listToBeSorted){
   List<CourseIndexModel> sortedList=[];
-  if(sortType=="A-Z"){
+  if(sortType=="NoOfUsers"){
+    listToBeSorted.sort((a,b)=>b.totalUsers-a.totalUsers);
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="A-Z"){
     listToBeSorted.sort((a,b)=>a.title.toLowerCase().compareTo(b.title.toLowerCase()));
     sortedList=listToBeSorted;
   }

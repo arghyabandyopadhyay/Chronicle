@@ -3,6 +3,7 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/TutorPages/invoiceCreator.dart';
 import 'package:chronicle/appBarVariables.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
@@ -398,6 +399,10 @@ class _ClientPageState extends State<ClientPage> {
                         Navigator.of(_).pop();
                       }),],
                   ));
+                }),
+                ModalOptionModel(particulars: "Create Invoice",icon:Icons.receipt_long_outlined, onTap: () async {
+                  Navigator.pop(popupContext);
+                  Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (invoiceCreatorPageContext)=>InvoiceCreator()));
                 }),
                 if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
