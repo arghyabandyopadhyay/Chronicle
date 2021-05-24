@@ -246,7 +246,7 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
       ):LoaderWidget(),
       floatingActionButton:FloatingActionButton.extended(heroTag: "checkoutCoursePreviewPageHeroTag",onPressed:(){
         Navigator.of(context).push(CupertinoPageRoute(builder: (checkoutPageContext)=>CheckoutPage(courses: [widget.course],isFromPreviewPage: true,)));
-    }, label: Text("Checkout @ ₹ ${widget.course.sellingPrice.toStringAsFixed(2)} excl taxes."),icon: Icon(Icons.payment_outlined),),
+    }, label: Text("Checkout @ ₹${widget.course.sellingPrice.toStringAsFixed(2)} excl taxes."),icon: Icon(Icons.payment_outlined),),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     ),key: scaffoldMessengerKey,);
   }

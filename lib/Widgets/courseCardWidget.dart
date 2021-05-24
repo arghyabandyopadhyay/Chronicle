@@ -75,6 +75,8 @@ class _CourseCardWidgetState extends State<CourseCardWidget> {
                 Text(widget.item.description,maxLines: 3,),
                 SizedBox(height: 8,),
                 Row(children:[Text("A course by "),Text(widget.item.authorName,style: TextStyle(fontWeight: FontWeight.bold),)]),
+                SizedBox(height: 8,),
+                Text("₹${widget.item.sellingPrice.toStringAsFixed(2)} excl taxes.",style: TextStyle(fontWeight: FontWeight.bold),)
               ],))
           ],
       ),),
