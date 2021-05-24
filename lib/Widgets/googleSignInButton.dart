@@ -118,8 +118,8 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                       if(GlobalClass.userDetail.isAppRegistered==1)Navigator.pushReplacement(
                           context,
                           CupertinoPageRoute(
-                              builder: (context) => ChronicleMasterPage(register:null,isTutor: true)))
-                      else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(isTutor:false)))
+                              builder: (context) => ChronicleMasterPage()))
+                      else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage()))
                     }
                     else Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context)=>ErrorDisplayPage(appBarText: "Id Blocked",asset: "idBlocked.jpg",message: 'Please contact System Administrator',)))
 

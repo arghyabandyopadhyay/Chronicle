@@ -41,7 +41,7 @@ class _RoutingPageState extends State<RoutingPage> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: ChronicleMasterPage(register:null,isTutor: true))
+                          home: ChronicleMasterPage())
                     }
                   else {
                     await getAllRegisterIndex().then((registers) => {
@@ -54,14 +54,14 @@ class _RoutingPageState extends State<RoutingPage> {
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: ChronicleMasterPage(register:lastRegisterModels.first,isTutor: true))
+                          home: ChronicleMasterPage(register:lastRegisterModels.first))
                       else widget=MaterialApp(
                           title: 'Chronicle',
                           debugShowCheckedModeBanner: false,
                           theme: lightThemeData,
                           darkTheme: darkThemeData,
                           themeMode: ThemeMode.system,
-                          home: ChronicleMasterPage(register:null,isTutor: true))
+                          home: ChronicleMasterPage())
                     })
                   }
                 })
@@ -72,7 +72,7 @@ class _RoutingPageState extends State<RoutingPage> {
                       theme: lightThemeData,
                       darkTheme: darkThemeData,
                       themeMode: ThemeMode.system,
-                      home: ChronicleMasterPage(isTutor: false,))
+                      home: ChronicleMasterPage())
                 }
               }
               else{

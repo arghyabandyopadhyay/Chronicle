@@ -9,13 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
+import '../../globalClass.dart';
 import 'searchCoursesPage.dart';
 import 'homePage.dart';
 
 class ChronicleMasterPage extends StatefulWidget {
   final RegisterIndexModel register;
-  final bool isTutor;
-  ChronicleMasterPage({Key key,this.register,this.isTutor}) : super(key: key);
+  ChronicleMasterPage({Key key,this.register}) : super(key: key);
   @override
   _ChronicleMasterPageState createState() => _ChronicleMasterPageState();
 }
@@ -30,12 +30,12 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
   }
   List<Widget> _buildScreens() {
     return [
-      if(widget.isTutor)widget.register!=null?ClientPage(
+      if(GlobalClass.userDetail.isAppRegistered==1)widget.register!=null?ClientPage(
         register:widget.register,
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
       ):RegistersPage(context),
-      if(widget.isTutor)TutorCoursesPage(
+      if(GlobalClass.userDetail.isAppRegistered==1)TutorCoursesPage(
         scaffoldKey: masterPageScaffoldKey,
         mainScreenContext: context,
       ),
@@ -55,13 +55,13 @@ class _ChronicleMasterPageState extends State<ChronicleMasterPage> {
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
-      if(widget.isTutor)PersistentBottomNavBarItem(
+      if(GlobalClass.userDetail.isAppRegistered==1)PersistentBottomNavBarItem(
         icon: Icon(Icons.supervised_user_circle_outlined),
         title: "Clients",
         inactiveColorPrimary: Colors.grey,
         activeColorPrimary: CustomColors.primaryColor,
       ),
-      if(widget.isTutor)PersistentBottomNavBarItem(
+      if(GlobalClass.userDetail.isAppRegistered==1)PersistentBottomNavBarItem(
         icon: Icon(Icons.subscriptions_outlined),
         title: "Courses By Me",
         inactiveColorPrimary: Colors.grey,

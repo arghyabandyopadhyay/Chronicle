@@ -65,7 +65,7 @@ class _RegisterListState extends State<RegisterList> {
               }
               else{
                 if(widget.isDialog)Navigator.of(context).pop();
-                Navigator.of(widget.mainScreenContext!=null?widget.mainScreenContext:context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(register:GlobalClass.registerList[index],isTutor: true, )));
+                Navigator.of(widget.mainScreenContext!=null?widget.mainScreenContext:context).pushReplacement(CupertinoPageRoute(builder: (context)=>ChronicleMasterPage(register:GlobalClass.registerList[index])));
                 GlobalClass.lastRegister=GlobalClass.registerList[index].id.key;
                 setLastRegister(GlobalClass.registerList[index].id.key);
               }
