@@ -56,7 +56,7 @@ class _CourseListState extends State<CourseList> {
               child:ListView.builder(
                 controller: widget.scrollController,
                 physics: AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.only(bottom: 100),
+                padding: EdgeInsets.only(bottom: 100,left: 10,right: 10),
                 itemCount: displayList.length,
                 itemBuilder: (context, index) {
                   return CourseCardWidget(

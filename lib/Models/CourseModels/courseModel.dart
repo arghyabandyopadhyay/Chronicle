@@ -69,6 +69,11 @@ class CourseModel {
   {
     this.id=id;
   }
+  void update(){
+    this.id.update(this.toJson());
+    var tempId=databaseReference.child("CourseIndexes/${this.courseIndexKey}");
+    tempId.update(this.toCourseIndexModel().toJson());
+  }
   //For the add course screen
   void addCourseVideoIndexes(){
     this.videos.forEach((element) {
@@ -141,6 +146,7 @@ class CourseModel {
 
   CourseIndexModel toCourseIndexModel()=>CourseIndexModel(
     uid: this.id.path,
+    authorUid: this.authorUid,
     authorName: this.authorName,
     title: this.title,
     description:this.description,

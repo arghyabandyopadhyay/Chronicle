@@ -2,13 +2,14 @@ import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/checkoutPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'coursePreviewPage.dart';
+import '../globalClass.dart';
 
 
 class WishlistPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _WishlistPageState extends State<WishlistPage> {
   int _counter=0;
   bool _isLoading;
   bool _isSearching=false;
-  List<CourseIndexModel> wishList;
+  List<CourseIndexModel> wishlist;
   List<CourseIndexModel> searchResult = [];
   Icon icon = new Icon(
     Icons.search,
@@ -29,8 +30,6 @@ class _WishlistPageState extends State<WishlistPage> {
 
   //Controller
   final TextEditingController _searchController = new TextEditingController();
-  final TextEditingController textEditingController=new TextEditingController();
-  final TextEditingController renameRegisterTextEditingController=new TextEditingController();
   final GlobalKey<RefreshIndicatorState> refreshIndicatorKey =new GlobalKey<RefreshIndicatorState>();
   ScrollController scrollController = new ScrollController();
   //Widgets
@@ -55,7 +54,7 @@ class _WishlistPageState extends State<WishlistPage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=wishList.where((CourseIndexModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=wishlist.where((CourseIndexModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }
@@ -70,13 +69,20 @@ class _WishlistPageState extends State<WishlistPage> {
         {
           if(!_isLoading){
             _isLoading=true;
-            return getAllCourseIndexes("Wishlist",false).then((courses) {
+            if(GlobalClass.myCourses==null)return getAllCourseIndexes("Wishlist",false).then((courses) {
               if(mounted)this.setState(() {
-                wishList = courses;
+                GlobalClass.myCourses = courses;
+                wishlist=GlobalClass.myCourses.where((element) => element.courseStatus=="Wishlist").toList();
                 _counter++;
                 _isLoading=false;
                 this.appBarTitle = Text("Wishlist");
               });
+            });
+            else return this.setState(() {
+              this.wishlist=GlobalClass.myCourses.where((element) => element.courseStatus=="Wishlist").toList();
+              _counter++;
+              _isLoading=false;
+              this.appBarTitle = Text("Wishlist");
             });
           }
           else{
@@ -102,21 +108,36 @@ class _WishlistPageState extends State<WishlistPage> {
       return;
     }
   }
-  void getCourseModels() {
-    getAllCourseIndexes("Wishlist",false).then((courses) => {
+  Future<void> getCourseModels() async {
+    if(GlobalClass.myCourses==null)getAllCourseIndexes("Wishlist",false).then((courses) => {
       if(mounted)this.setState(() {
-        this.wishList=courses;
+        GlobalClass.myCourses = courses;
+        wishlist=GlobalClass.myCourses.where((element) => element.courseStatus=="Wishlist").toList();
         _counter++;
         _isLoading=false;
         this.appBarTitle = Text("Wishlist");
       })
     });
+    else{
+      await Future.delayed(Duration(milliseconds: 500));
+      if(mounted)this.setState(() {
+        this.wishlist=GlobalClass.myCourses.where((element) => element.courseStatus=="Wishlist").toList();
+        _counter++;
+        _isLoading=false;
+        this.appBarTitle = Text("Wishlist");
+      });
+    }
   }
+
   @override
   void initState() {
     super.initState();
     getCourseModels();
     this.appBarTitle = Text("Wishlist");
+  }
+  @override
+  void dispose() {
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -136,7 +157,7 @@ class _WishlistPageState extends State<WishlistPage> {
               });
             }),
           ],),
-        body: wishList!=null?wishList.length==0?NoDataError():Column(children: <Widget>[
+        body: wishlist!=null?wishlist.length==0?NoDataError():Column(children: <Widget>[
           Expanded(child: _isSearching?
           Provider.value(
               value: _counter,
@@ -148,29 +169,39 @@ class _WishlistPageState extends State<WishlistPage> {
                 },
                 scrollController:scrollController,
                 scaffoldMessengerKey:scaffoldMessengerKey,
-                onTapList:(index) async {
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      CoursePreviewPage(course:this.searchResult[index])));
-
+                onTapList:(index) {
+                  setState(() {
+                    deleteDatabaseNode(searchResult[index].id);
+                    GlobalClass.myCourses.remove(searchResult[index]);
+                    searchResult.remove(searchResult[index]);
+                    globalShowInSnackBar(scaffoldMessengerKey, "Removed from your Wishlist!!");
+                  });
                 },
               )):
           Provider.value(
               value: _counter,
               updateShouldNotify: (oldValue, newValue) => true,
-              child: CourseList(listItems:wishList,scaffoldMessengerKey:scaffoldMessengerKey,
+              child: CourseList(listItems:wishlist,scaffoldMessengerKey:scaffoldMessengerKey,
                 refreshData: (){
                   return refreshData();
                 },
                 refreshIndicatorKey: refreshIndicatorKey,
                 scrollController: scrollController,
-                onTapList:(index) async {
-                  Navigator.of(context).push(CupertinoPageRoute(builder: (context)=>
-                      CoursePreviewPage(course:wishList[index])));
-
+                onTapList:(index) {
+                  setState(() {
+                    deleteDatabaseNode(wishlist[index].id);
+                    GlobalClass.myCourses.remove(wishlist[index]);
+                    wishlist.remove(wishlist[index]);
+                    globalShowInSnackBar(scaffoldMessengerKey, "Removed from your Wishlist!!");
+                  });
                 },
               )
           )),
-        ]): LoaderWidget()
+        ]): LoaderWidget(),
+        floatingActionButton:
+        FloatingActionButton.extended(heroTag: "WishlistHeroTag",onPressed:(){
+          Navigator.of(context).push(CupertinoPageRoute(builder: (checkoutPageContext)=>CheckoutPage(courses: this.wishlist,isFromPreviewPage: false,)));
+        }, label: Text("Checkout"),icon: Icon(Icons.payment_outlined),)
     ),);
   }
 }

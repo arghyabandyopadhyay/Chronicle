@@ -9,6 +9,6 @@ class GlobalClass
   static UserModel userDetail;
   static User user;
   static List<RegisterIndexModel> registerList;
-  static List<CourseIndexModel> myPurchasedCourses;
+  static List<CourseIndexModel> myCourses;
   static String lastRegister;
 }

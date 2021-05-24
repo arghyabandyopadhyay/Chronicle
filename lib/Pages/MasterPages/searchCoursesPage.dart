@@ -2,6 +2,7 @@ import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Pages/purchasedCoursePage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
 import 'package:connectivity/connectivity.dart';
@@ -37,6 +38,9 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
     Icons.search,
   );
   void getCourseModels() {
+    if(GlobalClass.myCourses==null){
+      getAllCourseIndexes("Courses", false).then((value) => GlobalClass.myCourses=value);
+    }
     getAllCourseIndexes(null,true).then((courses) => {
       if(mounted)this.setState(() {
         this.courses = courses;
@@ -150,8 +154,10 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
               refreshIndicatorKey: refreshIndicatorKey,
               scrollController: scrollController,
               onTapList:(index) async {
-                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                if(GlobalClass.myCourses.where((element) => (element.uid==this.searchResult[index].uid&&element.courseStatus=="Courses")).length==0)Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
                     CoursePreviewPage(course:this.searchResult[index])));
+                else Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    PurchaseCoursePage(course:this.searchResult[index],isTutor: (GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.user.uid==this.searchResult[index].authorUid),)));
 
               },
             )
@@ -165,9 +171,10 @@ class _SearchCoursesPageState extends State<SearchCoursesPage> {
               refreshIndicatorKey: refreshIndicatorKey,
               scrollController: scrollController,
               onTapList:(index) async {
-                Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                if(GlobalClass.myCourses.where((element) => ((element.uid==this.courses[index].uid)&&element.courseStatus=="Courses")).length==0)Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
                     CoursePreviewPage(course:this.courses[index])));
-
+                else Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
+                    PurchaseCoursePage(course:this.courses[index],isTutor: (GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.user.uid==this.courses[index].authorUid),)));
               },
             )
         )

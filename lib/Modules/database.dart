@@ -225,12 +225,12 @@ Future<CourseModel> getCourse(CourseIndexModel courseIndex) async {
 }
 
 Future<List<CourseIndexModel>> getAllCourseIndexes(String coursesType,bool isGlobal) async {
-  DataSnapshot dataSnapshot = await databaseReference.child(isGlobal?('CourseIndexes/'):('${GlobalClass.user.uid}/$coursesType/')).once();
+  DataSnapshot dataSnapshot = await databaseReference.child(isGlobal?('CourseIndexes/'):coursesType=="CoursesByMe"?('${GlobalClass.user.uid}/CoursesByMe/'):('${GlobalClass.user.uid}/Courses/')).once();
   List<CourseIndexModel> courses = [];
   if (dataSnapshot.value != null) {
     dataSnapshot.value.forEach((key, value) {
       CourseIndexModel course = CourseIndexModel.fromJson(jsonDecode(jsonEncode(value)),key);
-      course.setId(databaseReference.child((isGlobal?('CourseIndexes/'):('${GlobalClass.user.uid}/$coursesType/')) + key));
+      course.setId(databaseReference.child((isGlobal?('CourseIndexes/'):coursesType=="CoursesByMe"?('${GlobalClass.user.uid}/CoursesByMe/'):('${GlobalClass.user.uid}/Courses/')) + key));
       courses.add(course);
     });
   }
@@ -239,12 +239,14 @@ Future<List<CourseIndexModel>> getAllCourseIndexes(String coursesType,bool isGlo
 }
 
 DatabaseReference addCoursesToOwnLists(String coursesType,CourseIndexModel courseIndex) {
-  var id = databaseReference.child(('${GlobalClass.user.uid}/$coursesType/')).push();
+  var id = databaseReference.child(('${GlobalClass.user.uid}/Courses/')).push();
+  courseIndex.courseStatus=coursesType;
   id.set(courseIndex.toJson());
-  if(GlobalClass.myPurchasedCourses!=null&&coursesType=="Courses"){
-    courseIndex.setId(id);
-    GlobalClass.myPurchasedCourses.add(courseIndex);
+  courseIndex.setId(id);
+  if(GlobalClass.myCourses!=null){
+    GlobalClass.myCourses.add(courseIndex);
   }
+  else GlobalClass.myCourses=[courseIndex];
   return id;
 }
 

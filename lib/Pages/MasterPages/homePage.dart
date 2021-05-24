@@ -4,7 +4,6 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
-import 'package:chronicle/Pages/wishlistPage.dart';
 import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
 import 'package:chronicle/globalClass.dart';
@@ -14,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import '../../appBarVariables.dart';
+import '../wishlistPage.dart';
 import '../notificationsPage.dart';
 import '../purchasedCoursePage.dart';
 
@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   bool _isSearching=false;
 
   List<CourseIndexModel> searchResult = [];
+  List<CourseIndexModel> purchasedCourses;
   Icon icon = new Icon(
     Icons.search,
   );
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
   {
     searchResult.clear();
     if(_isSearching){
-      searchResult=GlobalClass.myPurchasedCourses.where((CourseIndexModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
+      searchResult=purchasedCourses.where((CourseIndexModel element) => (element.title.toLowerCase()).contains(searchText.toLowerCase().replaceAll(new RegExp(r"\W+"), ""))).toList();
       setState(() {
       });
     }
@@ -81,7 +82,8 @@ class _HomePageState extends State<HomePage> {
             _isLoading=true;
             return getAllCourseIndexes("Courses",false).then((courses) {
               if(mounted)this.setState(() {
-                GlobalClass.myPurchasedCourses = courses;
+                GlobalClass.myCourses = courses;
+                purchasedCourses=GlobalClass.myCourses.where((element) => element.courseStatus=="Courses").toList();
                 _counter++;
                 _isLoading=false;
                 this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
@@ -114,7 +116,8 @@ class _HomePageState extends State<HomePage> {
   void getCourseModels() {
     getAllCourseIndexes("Courses",false).then((courses) => {
       if(mounted)this.setState(() {
-        GlobalClass.myPurchasedCourses = courses;
+        GlobalClass.myCourses = courses;
+        purchasedCourses=GlobalClass.myCourses.where((element) => element.courseStatus=="Courses").toList();
         _counter++;
         _isLoading=false;
         this.appBarTitle = AppBarVariables.appBarLeading(widget.mainScreenContext);
@@ -149,21 +152,9 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (notificationPageContext)=>NotificationsPage()));
               });
             }),
-            PopupMenuButton<ModalOptionModel>(
-              itemBuilder: (BuildContext popupContext){
-                return [
-                  ModalOptionModel(particulars: "Wishlist",icon: FontAwesomeIcons.heart,onTap: () async {
-                    Navigator.pop(popupContext);
-                    Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>WishlistPage()));
-                  }),
-                ].map((ModalOptionModel choice){
-                  return PopupMenuItem<ModalOptionModel>(
-                    value: choice,
-                    child: ListTile(title: Text(choice.particulars),leading: Icon(choice.icon,color: choice.iconColor),onTap: choice.onTap,),
-                  );
-                }).toList();
-              },
-            ),
+            new IconButton(icon: Icon(FontAwesomeIcons.heart), onPressed:() async {
+              Navigator.of(widget.mainScreenContext).push(new CupertinoPageRoute(builder: (qrCodePageContext)=>WishlistPage()));
+            }),
           ],),
         body: Column(
           children: [
@@ -175,7 +166,7 @@ class _HomePageState extends State<HomePage> {
               leading: Icon(Icons.video_collection_outlined),
               title: Text("My Videos"),
               subtitle: Text("The Videos uploaded by you"),),
-            Expanded(child: GlobalClass.myPurchasedCourses!=null?GlobalClass.myPurchasedCourses.length==0?NoDataError():Column(children: <Widget>[
+            Expanded(child: purchasedCourses!=null?purchasedCourses.length==0?NoDataError():Column(children: <Widget>[
               Expanded(child: _isSearching?
               Provider.value(
                   value: _counter,
@@ -189,14 +180,14 @@ class _HomePageState extends State<HomePage> {
                     scaffoldMessengerKey:scaffoldMessengerKey,
                     onTapList:(index) async {
                       Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                          PurchaseCoursePage(isTutor:false,course:this.searchResult[index])));
+                          PurchaseCoursePage(isTutor:(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.user.uid==this.searchResult[index].authorUid),course:this.searchResult[index])));
 
                     },
                   )):
               Provider.value(
                   value: _counter,
                   updateShouldNotify: (oldValue, newValue) => true,
-                  child: CourseList(listItems:GlobalClass.myPurchasedCourses,scaffoldMessengerKey:scaffoldMessengerKey,
+                  child: CourseList(listItems:purchasedCourses,scaffoldMessengerKey:scaffoldMessengerKey,
                     refreshData: (){
                       return refreshData();
                     },
@@ -204,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                     scrollController: scrollController,
                     onTapList:(index) async {
                       Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>
-                          PurchaseCoursePage(isTutor:false,course:GlobalClass.myPurchasedCourses[index])));
+                          PurchaseCoursePage(isTutor:(GlobalClass.userDetail.isAppRegistered==1&&GlobalClass.user.uid==this.purchasedCourses[index].authorUid),course:purchasedCourses[index])));
 
                     },
                   )
