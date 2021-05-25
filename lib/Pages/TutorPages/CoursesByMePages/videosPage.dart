@@ -6,7 +6,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/storage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/videoList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;

@@ -2,7 +2,7 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/registerList.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

@@ -5,7 +5,7 @@ import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/purchasedCoursePage.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseList.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';

@@ -5,7 +5,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/OwnerModules/ownerModule.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/OwnerModules/chronicleUsersList.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';

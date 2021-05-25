@@ -6,7 +6,7 @@ import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/invoiceCreator.dart';
 import 'package:chronicle/appBarVariables.dart';
 import 'package:chronicle/globalClass.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';

@@ -1,7 +1,7 @@
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';

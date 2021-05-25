@@ -7,7 +7,7 @@ import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/editCoursesPage.dart';
 import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/courseHomePageVideoList.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';

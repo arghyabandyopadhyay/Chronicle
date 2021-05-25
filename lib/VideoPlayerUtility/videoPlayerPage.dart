@@ -150,7 +150,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:chronicle/Models/CourseModels/doubtModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/Widgets/Simmers/loaderWidget.dart';
+import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/doubtList.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:flutter/cupertino.dart';
