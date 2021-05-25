@@ -27,6 +27,7 @@ class _CourseCardWidgetState extends State<CourseCardWidget> {
         widget.onTapList(widget.index);
       },
       child: Container(
+        color: Colors.transparent,
         margin: EdgeInsets.symmetric(vertical: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -76,87 +77,10 @@ class _CourseCardWidgetState extends State<CourseCardWidget> {
                 SizedBox(height: 8,),
                 Row(children:[Text("A course by "),Text(widget.item.authorName,style: TextStyle(fontWeight: FontWeight.bold),)]),
                 SizedBox(height: 8,),
-                Text("₹${widget.item.sellingPrice.toStringAsFixed(2)} excl taxes.",style: TextStyle(fontWeight: FontWeight.bold),)
+                Text("₹${widget.item.sellingPrice.toStringAsFixed(2)}",style: TextStyle(fontWeight: FontWeight.bold),)
               ],))
           ],
       ),),
-    );
-
-
-    return ListTile(
-      onTap: () {
-        widget.onTapList(widget.index);
-      },
-      // contentPadding: EdgeInsets.symmetric(horizontal: 10),
-      // isThreeLine: true,
-      // title: this.widget.item.previewThumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
-      //   this.widget.item.previewThumbnailUrl,
-      //   fit: BoxFit.fitWidth,alignment: Alignment.topCenter,
-      // ),):null,
-      // title: this.widget.item.previewThumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:CachedNetworkImage(
-      //   imageUrl: widget.item.previewThumbnailUrl,
-      //   imageBuilder: (context, imageProvider) => Container(
-      //     decoration: BoxDecoration(
-      //       color: Colors.white,
-      //       image: DecorationImage(
-      //         image: imageProvider,
-      //         fit: BoxFit.fitWidth,
-      //         alignment: Alignment.topCenter,
-      //         //colorFilter:ColorFilter.mode(Colors.red, BlendMode.colorBurn)
-      //       ),
-      //     ),
-      //   ),
-      //   placeholder: (context, url) => Container(
-      //       child: Center(
-      //         child: Shimmer.fromColors(
-      //           baseColor: Colors.grey[300].withOpacity(0.3),
-      //           highlightColor: Colors.white,
-      //           enabled: true,
-      //           child: Container(
-      //             color: Colors.white,
-      //           ),
-      //         ),
-      //       )
-      //   ),
-      //   errorWidget: (context, url, error) => Icon(Icons.error),
-      // )):null,
-      // subtitle: Text(" "+this.widget.item.title+"\n "+((this.widget.item.authorName!=null)?this.widget.item.authorName:""),),
-      leading:widget.item.previewThumbnailUrl!=null?CachedNetworkImage(
-        imageUrl: widget.item.previewThumbnailUrl,
-        height: 100,
-        width: 100,
-        imageBuilder: (context, imageProvider) => Container(
-          height: 100,
-          width: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.fitWidth,
-              //colorFilter:ColorFilter.mode(Colors.red, BlendMode.colorBurn)
-            ),
-          ),
-        ),
-        placeholder: (context, url) => Container(
-            height: 100,
-            width: 100,
-            child: Center(
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[300].withOpacity(0.3),
-                highlightColor: Colors.white,
-                enabled: true,
-                child: Container(
-                  width:100,
-                  height: 100,
-                  color: Colors.white,
-                ),
-              ),
-            )
-        ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ):null,
-      title: Text(widget.item.title,style: TextStyle(fontWeight: FontWeight.w900),),
-      subtitle: Text(widget.item.description),
     );
   }
 }
@@ -170,3 +94,79 @@ class _CourseCardWidgetState extends State<CourseCardWidget> {
 //   ):null,
 //   title: Text(this.widget.item.title),
 //   subtitle: Text(this.widget.item.authorName,),);
+
+//    return ListTile(
+//       onTap: () {
+//         widget.onTapList(widget.index);
+//       },
+//       // contentPadding: EdgeInsets.symmetric(horizontal: 10),
+//       // isThreeLine: true,
+//       // title: this.widget.item.previewThumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:Image.network(
+//       //   this.widget.item.previewThumbnailUrl,
+//       //   fit: BoxFit.fitWidth,alignment: Alignment.topCenter,
+//       // ),):null,
+//       // title: this.widget.item.previewThumbnailUrl!=null?AspectRatio(aspectRatio: 16/9,child:CachedNetworkImage(
+//       //   imageUrl: widget.item.previewThumbnailUrl,
+//       //   imageBuilder: (context, imageProvider) => Container(
+//       //     decoration: BoxDecoration(
+//       //       color: Colors.white,
+//       //       image: DecorationImage(
+//       //         image: imageProvider,
+//       //         fit: BoxFit.fitWidth,
+//       //         alignment: Alignment.topCenter,
+//       //         //colorFilter:ColorFilter.mode(Colors.red, BlendMode.colorBurn)
+//       //       ),
+//       //     ),
+//       //   ),
+//       //   placeholder: (context, url) => Container(
+//       //       child: Center(
+//       //         child: Shimmer.fromColors(
+//       //           baseColor: Colors.grey[300].withOpacity(0.3),
+//       //           highlightColor: Colors.white,
+//       //           enabled: true,
+//       //           child: Container(
+//       //             color: Colors.white,
+//       //           ),
+//       //         ),
+//       //       )
+//       //   ),
+//       //   errorWidget: (context, url, error) => Icon(Icons.error),
+//       // )):null,
+//       // subtitle: Text(" "+this.widget.item.title+"\n "+((this.widget.item.authorName!=null)?this.widget.item.authorName:""),),
+//       leading:widget.item.previewThumbnailUrl!=null?CachedNetworkImage(
+//         imageUrl: widget.item.previewThumbnailUrl,
+//         height: 100,
+//         width: 100,
+//         imageBuilder: (context, imageProvider) => Container(
+//           height: 100,
+//           width: 100,
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             image: DecorationImage(
+//               image: imageProvider,
+//               fit: BoxFit.fitWidth,
+//               //colorFilter:ColorFilter.mode(Colors.red, BlendMode.colorBurn)
+//             ),
+//           ),
+//         ),
+//         placeholder: (context, url) => Container(
+//             height: 100,
+//             width: 100,
+//             child: Center(
+//               child: Shimmer.fromColors(
+//                 baseColor: Colors.grey[300].withOpacity(0.3),
+//                 highlightColor: Colors.white,
+//                 enabled: true,
+//                 child: Container(
+//                   width:100,
+//                   height: 100,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             )
+//         ),
+//         errorWidget: (context, url, error) => Icon(Icons.error),
+//       ):null,
+//       title: Text(widget.item.title,style: TextStyle(fontWeight: FontWeight.w900),),
+//       subtitle: Text(widget.item.description),
+//     );
