@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/customColors.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 

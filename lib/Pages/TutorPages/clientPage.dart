@@ -305,6 +305,24 @@ class _ClientPageState extends State<ClientPage> {
                             },
                           ),
                           ModalOptionModel(
+                            icon:Icons.sort_outlined,
+                            particulars:"Registration Id Ascending",
+                            onTap: (){setState(() {
+                              clients=sortClientsModule("Registration Id Ascending", clients);
+                            });
+                            Navigator.pop(alertDialogContext);
+                            },
+                          ),
+                          ModalOptionModel(
+                            icon:Icons.sort_outlined,
+                            particulars:"Registration Id Descending",
+                            onTap: (){setState(() {
+                              clients=sortClientsModule("Registration Id Descending", clients);
+                            });
+                            Navigator.pop(alertDialogContext);
+                            },
+                          ),
+                          ModalOptionModel(
                             icon:Icons.sort_by_alpha_outlined,
                             particulars:"A-Z",
                             onTap: (){setState(() {

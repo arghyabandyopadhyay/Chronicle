@@ -1,7 +1,6 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/Pages/TutorPages/CoursesByMePages/videosPage.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../coursePreviewPage.dart';
 import 'editVideoPage.dart';
 
 

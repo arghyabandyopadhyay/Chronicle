@@ -1,19 +1,14 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
-import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/wishlistPage.dart';
 import 'package:chronicle/VideoPlayerUtility/videoPlayerPage.dart';
 import 'package:chronicle/Widgets/loaderWidget.dart';
-import 'package:chronicle/Widgets/courseHomePageVideoList.dart';
 import 'package:chronicle/Widgets/previewVideoCardWidget.dart';
-import 'package:chronicle/Widgets/videoCardWidget.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 import '../customColors.dart';
 import '../globalClass.dart';
@@ -26,7 +21,6 @@ class CoursePreviewPage extends StatefulWidget {
 }
 class _CoursePreviewPageState extends State<CoursePreviewPage> {
   CourseModel courseDetail;
-  int _counter=0;
   bool _isLoading;
   String courseStatus;
   CourseIndexModel myCourseInstance;
@@ -47,7 +41,6 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
             return getCourse(widget.course).then((courseDetail) {
               if(mounted)this.setState(() {
                 this.courseDetail = courseDetail;
-                _counter++;
                 _isLoading=false;
               });
             });
@@ -110,7 +103,6 @@ class _CoursePreviewPageState extends State<CoursePreviewPage> {
           if(courseDetail==null){
             this.courseDetail=CourseModel(videos: null);
           }
-          _counter++;
           _isLoading=false;
         })
       }

@@ -1,4 +1,3 @@
-import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/PdfModule/api/pdfApi.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
 import 'package:chronicle/PdfModule/model/customer.dart';

@@ -160,7 +160,7 @@ class _ChronicleState extends State<Chronicle> {
   }
 
   Future<void> requestPermissions() async {
-    NotificationSettings settings =
+    // NotificationSettings settings =
     await FirebaseMessaging.instance.requestPermission(
       announcement: true,
       carPlay: true,

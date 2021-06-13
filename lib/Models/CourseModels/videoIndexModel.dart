@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:chronicle/Models/CourseModels/doubtModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../globalClass.dart';
 
 class VideoIndexModel {
   String directory;

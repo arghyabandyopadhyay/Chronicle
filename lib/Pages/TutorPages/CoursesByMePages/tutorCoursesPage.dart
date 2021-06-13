@@ -16,7 +16,6 @@ import '../../../appBarVariables.dart';
 
 import '../../notificationsPage.dart';
 import 'addCoursesPage.dart';
-import 'editCoursesPage.dart';
 
 
 class TutorCoursesPage extends StatefulWidget {

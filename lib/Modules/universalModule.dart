@@ -186,6 +186,21 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
     temp=listToBeSorted.where((element) => element.due!=0).toList();
     sortedList.addAll(temp);
   }
+
+  else if(sortType=="Registration Id Ascending"){
+    var temp=listToBeSorted.where((element) => element.registrationId==null||element.registrationId=="").toList();
+    listToBeSorted.removeWhere((element) => element.registrationId==null||element.registrationId=="");
+    listToBeSorted.sort((a,b)=>a.registrationId.toLowerCase().compareTo(b.registrationId.toLowerCase()));
+    listToBeSorted.addAll(temp);
+    sortedList=listToBeSorted;
+  }
+  else if(sortType=="Registration Id Descending"){
+    var temp=listToBeSorted.where((element) => element.registrationId==null||element.registrationId=="").toList();
+    listToBeSorted.removeWhere((element) => element.registrationId==null||element.registrationId=="");
+    listToBeSorted.sort((a,b)=>b.registrationId.toLowerCase().compareTo(a.registrationId.toLowerCase()));
+    listToBeSorted.addAll(temp);
+    sortedList=listToBeSorted;
+  }
   else if(sortType=="Paid First"){
     List<ClientModel> temp=listToBeSorted.where((element) => element.due<0).toList();
     sortedList.addAll(temp);
