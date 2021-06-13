@@ -175,7 +175,6 @@ class _ClientPageState extends State<ClientPage> {
     return true;
   }
   void newClientModel(ClientModel client) {
-    client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
     client.setId(addClientInRegister(client,widget.register.uid));
     if(mounted)this.setState(() {
       clients.add(client);

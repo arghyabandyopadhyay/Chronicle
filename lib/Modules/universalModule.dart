@@ -395,3 +395,6 @@ void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> s
   currentFocus.unfocus();
   globalShowInSnackBar(scaffoldMessengerKey,"Changes have been saved");
 }
+String generateMasterFilter(ClientModel client){
+  return (client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.registrationId!=null)?client.registrationId:client.id.key)).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
+}

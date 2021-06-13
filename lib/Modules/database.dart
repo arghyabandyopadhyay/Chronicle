@@ -22,6 +22,7 @@ final databaseReference=database.reference();
 DatabaseReference addClientInRegister(ClientModel client,String registerId)
 {
   var id=databaseReference.child('${GlobalClass.user.uid}/registers/$registerId/client/').push();
+  client.masterFilter=generateMasterFilter(client);
   id.set(client.toJson());
   return id;
 }
@@ -75,7 +76,7 @@ Future<DatabaseReference> addUserDetail() async {
 }
 
 void updateClient(ClientModel client, DatabaseReference id) {
-  client.masterFilter=(client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.startDate!=null)?client.startDate.toIso8601String():"")+((client.endDate!=null)?client.endDate.toIso8601String():"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
+  client.masterFilter=generateMasterFilter(client);
   id.update(client.toJson());
 }
 ///gets the list of clients in a register.
