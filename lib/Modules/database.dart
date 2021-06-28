@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/registerModel.dart';
 import 'package:chronicle/Models/tokenModel.dart';
@@ -145,6 +146,13 @@ Future<List<RegisterModel>> getAllRegisters() async {
   }
   registers.sort((a,b)=>a.name.compareTo(b.name));
   return registers;
+}
+Future<DataModel> getBackupData() async {
+  DataSnapshot dataSnapshot = await databaseReference.child(GlobalClass.user.uid+"/").once();
+  DataModel data;
+  data = DataModel.fromJson(jsonDecode(jsonEncode(dataSnapshot.value)),GlobalClass.user.uid);
+  data.setId(databaseReference.child(GlobalClass.user.uid+"/"));
+  return data;
 }
 ///gets list of register indexes enlisted in the account.
 Future<List<RegisterIndexModel>> getAllRegisterIndex() async {

@@ -10,12 +10,14 @@ import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
+import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_sms/flutter_sms.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:sms/sms.dart';
 import '../../Models/clientModel.dart';
 import '../../Widgets/clientList.dart';
 import '../../Widgets/registerNewClientWidget.dart';
@@ -87,11 +89,15 @@ class _ClientPageState extends State<ClientPage> {
     }
   }
   Future<String> get localPath async {
-    final directory = await getExternalStorageDirectory();
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    Directory directory = await DownloadsPathProvider.downloadsDirectory;
     return directory.path;
   }
   fileLocalName(String type, String assetPath) async {
-    String dic = await localPath + "/filereader/files/";
+    String dic = await localPath+"/";
     return dic + "ClientUploadExcelFile"+ "." + type;
   }
   void getFilePath() async {
@@ -164,6 +170,7 @@ class _ClientPageState extends State<ClientPage> {
   }
   asset2Local(String type, String assetPath) async {
     var path=await fileLocalName(type, assetPath);
+    print(path);
     File file = File(path);
     if (await fileExists(type, assetPath)) {
       await file.delete();
@@ -890,13 +897,14 @@ class _ClientPageState extends State<ClientPage> {
                 actions: [
                   ActionChip(label: Text("Yes"), onPressed: (){
                     setState(() {
-                      SmsSender sender = new SmsSender();
+                      // SmsSender sender = new SmsSender();
+                      List<String> addressList=[];
                       selectedList.forEach((element) {
                         String address = element.mobileNo;
-                        String message = "${element.name}, ${textEditingController.text}";
-                        if(address!=null&&address!="")
-                          sender.sendSms(new SmsMessage(address, message));
+                        if(address!=null&&address!="")addressList.add(address);
+                          // sender.sendSms(new SmsMessage(address, message));
                       });
+                      sendSMS(message: textEditingController.text, recipients: addressList);
                       globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
                       for(ClientModel a in selectedList)
                       {

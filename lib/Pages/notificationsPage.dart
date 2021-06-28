@@ -8,9 +8,9 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:sms/sms.dart';
 import '../Models/clientModel.dart';
 import '../Widgets/clientList.dart';
 import 'TutorPages/clientInformationPage.dart';
@@ -171,13 +171,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                 content: Text("Are you sure to send a reminder to all the clients?"),
                                 actions: [
                                   ActionChip(label: Text("Yes"), onPressed: (){
-                                    SmsSender sender = new SmsSender();
+                                    List<String> addressList=[];
                                     clients.forEach((ClientModel element) {
                                       String address = element.mobileNo;
-                                      if(address!=null&&address!="")
-                                        sender.sendSms(new SmsMessage(address, "${element.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                            ", please clear your dues for further continuation of services."}"));
+                                      if(address!=null&&address!="")addressList.add(address);
+
                                     });
+                                    sendSMS(message: "${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                                        ", please clear your dues for further continuation of services."}",recipients:addressList);
                                     Navigator.of(_).pop();
                                   }),
                                   ActionChip(label: Text("No"), onPressed: (){

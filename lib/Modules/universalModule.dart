@@ -5,16 +5,27 @@ import 'dart:typed_data';
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
+import 'package:chronicle/Models/dataModel.dart';
+import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
+import 'package:chronicle/Pages/TutorPages/clientPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
+import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
-import 'package:sms/sms.dart';
+import 'package:flutter_sms/flutter_sms.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'database.dart';
+import 'package:excel/excel.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:chronicle/Models/registerModel.dart';
 
 void globalShowInSnackBar(GlobalKey<ScaffoldMessengerState> messengerState,String content)
 {
@@ -132,13 +143,16 @@ whatsAppModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffold
 smsModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey)async{
   if(clientData.mobileNo!=null&&clientData.mobileNo!="")
   {
-    SmsSender sender = new SmsSender();
+    // SmsSender sender = new SmsSender();
     String address = clientData.mobileNo;
     String message = "${clientData.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
         ", please clear your dues for further continuation of services."}";
     if(address!=null&&address!="") {
-      sender.sendSms(new SmsMessage(address, message)).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
+      // sender.sendSms(new SmsMessage(address, message)).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
+      sendSMS(message: message, recipients: [address]).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
     }
+
+
   }
   else globalShowInSnackBar(scaffoldMessengerKey,"No Mobile no present!!");
 }
@@ -247,6 +261,117 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
   //   sortVal=1;
   // }
   return sortedList;
+}
+String getFormattedDate(DateTime dateTime){
+  if(dateTime!=null)return "${dateTime.day}${dateTime.month}${dateTime.year}";
+  else return null;
+}
+
+Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+  final appDirectory = await getExternalStorageDirectory();
+  Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
+  Excel excel = Excel.createExcel();
+  Sheet sheetObject = excel['Sheet1'];
+  // CellStyle cellStyle = CellStyle(backgroundColorHex: "#1AFF1A", fontFamily : getFontFamily(FontFamily.Calibri));
+  //
+  // cellStyle.underline = Underline.Single; // or Underline.Double
+  //
+  // var cell = sheetObject.cell(CellIndex.indexByString("A1"));
+  // cell.value = 8; // dynamic values support provided;
+  // cell.cellStyle = cellStyle;
+  //
+  // // printing cell-type
+  // print("CellType: "+ cell.cellType.toString());
+
+  List<String> dataList = ["RegistrationId","Name","FathersName","Dob(DDMMYYYY)","MobileNo","Education","Occupation","Address","Injuries","Sex","Caste","Height","Weight","NoOfPayments","StartDate(DDMMYYYY)"];
+  sheetObject.insertRowIterables(dataList, 0);
+  int i=1;
+  String backupFolderName="backup_${DateTime.now().toIso8601String()}";
+  DataModel data=await getBackupData();
+  await Future.forEach(data.registers,(RegisterModel registerElement) async {
+    await Future.forEach(registerElement.clients,(ClientModel clientElement) async{
+      List<String> dataList1 = [clientElement.registrationId,clientElement.name,clientElement.fathersName,getFormattedDate(clientElement.dob),clientElement.mobileNo,clientElement.education,clientElement.occupation,clientElement.address,clientElement.injuries,clientElement.sex,clientElement.caste,clientElement.height!=null?clientElement.height.toString():null,clientElement.weight!=null?clientElement.weight.toString():null,clientElement.due.toString(),getFormattedDate(clientElement.startDate)];
+      sheetObject.insertRowIterables(dataList1, i++);
+    });
+
+    File("${appDirectory.path}/${backupFolderName}_temp/${registerElement.name+"_"+registerElement.id.key}.xlsx")
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(excel.encode());
+  });
+  final dataDir = Directory("${appDirectory.path}/${backupFolderName}_temp/");
+  try {
+    final zipFile = File("${tempDir.path}/$backupFolderName.zip");
+    ZipFile.createFromDirectory(sourceDir: dataDir, zipFile: zipFile, recurseSubDirs: true).then((value) => File("${appDirectory.path}/${backupFolderName}_temp/").delete(recursive: true));
+  } catch (e) {
+    print(e);
+  }
+  globalShowInSnackBar(scaffoldMessengerKey, "Backup $backupFolderName.zip has been created at Download/");
+}
+Future<void> uploadBackupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+  final appDirectory = await getExternalStorageDirectory();
+  FilePickerResult filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['zip']);
+  String filePath=filePickerResult.paths[0];
+  if (filePath == '') {
+    return;
+  }
+  final zipFile = File(filePath);
+  final destinationDir = Directory(appDirectory.path+"/backupZipTemp/");
+  try {
+    ZipFile.extractToDirectory(zipFile: zipFile, destinationDir: destinationDir);
+  } catch (e) {
+    print(e);
+  }
+
+  await for (var entity in
+  destinationDir.list(recursive: true, followLinks: false)) {
+    File registerExcel=File(entity.path);
+    String registerName=((registerExcel.path.split('/').last).split('.').first).split('_').first;
+    DatabaseReference registerId=addRegister(registerName);
+    RegisterIndexModel registerIndex=RegisterIndexModel(uid: registerId.key,name: registerName);
+    registerIndex.setId(addRegisterIndex(registerIndex));
+    GlobalClass.registerList.add(registerIndex);
+
+    var bytes = File(entity.path).readAsBytesSync();
+    var excel = Excel.decodeBytes(bytes);
+    int i = 0;
+    List<dynamic> keys = [];
+    List<Map<String, dynamic>> json = [];
+    for (var table in excel.tables.keys) {
+      for (List<Data> row in excel.tables[table].rows) {
+        if (i == 0) {
+          keys = row;
+          i++;
+        }
+        else {
+          Map<String, dynamic> temp = Map<String, dynamic>();
+          int j = 0;
+          String tk = '';
+          for (Data key in keys) {
+            tk = key.value;
+            temp[tk] = row[j]!=null?row[j].value.toString():null;
+            j++;
+          }
+          json.add(temp);
+        }
+      }
+    }
+    json.forEach((jsonItem)
+    {
+      ExcelClientModel excelClientModel=ExcelClientModel.fromJson(jsonItem);
+      ClientModel temp=excelClientModel.toClientModel();
+      temp.setId(addClientInRegister(temp,registerIndex.uid));
+    });
+  }
+  await File(appDirectory.path+"/backupZipTemp/").delete(recursive: true);
+  globalShowInSnackBar(scaffoldMessengerKey, "Backup loaded");
 }
 
 List<CourseIndexModel> sortCoursesModule(String sortType,List<CourseIndexModel> listToBeSorted){
@@ -411,5 +536,5 @@ void changesSavedModule(BuildContext context,GlobalKey<ScaffoldMessengerState> s
   globalShowInSnackBar(scaffoldMessengerKey,"Changes have been saved");
 }
 String generateMasterFilter(ClientModel client){
-  return (client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.registrationId!=null)?client.registrationId:client.id.key)).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
+  return (client.name+((client.mobileNo!=null)?client.mobileNo:"")+((client.registrationId!=null)?client.registrationId:(client.id!=null)?client.id.key:"")).replaceAll(new RegExp(r'\W+'),"").toLowerCase();
 }

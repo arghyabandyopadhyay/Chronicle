@@ -470,6 +470,15 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   Navigator.pop(popupContext);
                   Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (settingsContext)=>SettingsPage()));
                 }),
+                ModalOptionModel(particulars: "Backup Data",icon:Icons.cloud_download_outlined, onTap: () async {
+                  Navigator.pop(popupContext);
+                  await backupModule(scaffoldMessengerKey);
+                  //add code for showing progress
+                }),
+                ModalOptionModel(particulars: "Upload Backup Data",icon:Icons.cloud_upload_outlined, onTap: () async {
+                  Navigator.pop(popupContext);
+                  uploadBackupModule(scaffoldMessengerKey);
+                }),
                 if(GlobalClass.user!=null&&GlobalClass.userDetail!=null&&GlobalClass.userDetail.isOwner==1)ModalOptionModel(particulars: "Dispatch Notification",icon: Icons.send,onTap: () async {
                     Navigator.of(popupContext).pop();
                     Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (context)=>DispatchNotificationConsole()));
