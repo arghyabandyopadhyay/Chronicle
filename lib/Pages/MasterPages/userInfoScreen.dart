@@ -477,6 +477,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 }),
                 ModalOptionModel(particulars: "Backup Data",icon:Icons.cloud_download_outlined, onTap: () async {
                   Navigator.pop(popupContext);
+                  progressValue=0;
                   setState(() {
                     isBackupOn=true;
                   });
