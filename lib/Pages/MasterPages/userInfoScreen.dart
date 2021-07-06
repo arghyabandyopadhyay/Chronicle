@@ -38,6 +38,8 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   bool _isSigningOut = false;
+  bool isBackupOn=false;
+  double progressValue=0.0;
   Razorpay razorpay;
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey<ScaffoldMessengerState>();
   Route _routeToRoutingPage() {
@@ -418,6 +420,9 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
       appBar: AppBar(
         // leading: IconButton(icon:Icon(Icons.menu),onPressed: (){widget.scaffoldKey.currentState.openDrawer();},),
         title: AppBarVariables.appBarLeading(widget.mainScreenContext),
+        bottom: PreferredSize(
+          child: (isBackupOn)?LinearProgressIndicator(value: progressValue,minHeight: 2,):Container(width: 0.0, height: 0.0), preferredSize: Size(double.infinity,2),
+        ),
         actions: [
           if(GlobalClass.userDetail.isAppRegistered==1)new IconButton(icon: Icon(Icons.notifications_outlined), onPressed:(){
             setState(() {
@@ -472,7 +477,17 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 }),
                 ModalOptionModel(particulars: "Backup Data",icon:Icons.cloud_download_outlined, onTap: () async {
                   Navigator.pop(popupContext);
-                  await backupModule(scaffoldMessengerKey);
+                  setState(() {
+                    isBackupOn=true;
+                  });
+                  await backupModule(scaffoldMessengerKey,(double val){
+                    setState(() {
+                      progressValue=val;
+                    });
+                  });
+                  setState(() {
+                    isBackupOn=false;
+                  });
                   //add code for showing progress
                 }),
                 ModalOptionModel(particulars: "Upload Backup Data",icon:Icons.cloud_upload_outlined, onTap: () async {

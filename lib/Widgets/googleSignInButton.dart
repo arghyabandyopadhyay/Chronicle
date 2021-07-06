@@ -5,7 +5,7 @@ import 'package:chronicle/Pages/MasterPages/chronicleMasterPage.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Pages/errorDisplayPage.dart';
 import 'package:chronicle/customColors.dart';
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';

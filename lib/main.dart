@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
-import 'package:device_info/device_info.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

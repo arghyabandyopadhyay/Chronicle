@@ -1,12 +1,16 @@
 import 'dart:convert';
 
+import 'package:chronicle/Models/tokenModel.dart';
 import 'package:chronicle/OwnerModules/chronicleUserModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Modules/universalModule.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import '../Modules/database.dart';
+import 'package:http/http.dart' as http;
 
 // Future<List<DataModel>> getAllData() async {
 //   DataSnapshot dataSnapshot = await databaseReference.child(databaseReference.root().path).once();
@@ -70,4 +74,54 @@ List<ChronicleUserModel> sortChronicleUsersModule(String sortType,List<Chronicle
     sortedList=listToBeSorted;
   }
   return sortedList;
+}
+
+Future<void> sendNotificationsToAll(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,String messageString,Function(String) update) async {
+  DateTime nowTemp=DateTime.now();
+  DateTime now=DateTime(nowTemp.year,nowTemp.month,nowTemp.day);
+  try {
+    update("Downloading Client list...");
+
+    List<ChronicleUserModel> chronicleUsers=await getAllChronicleClients();
+    update("Downloading Client list Complete.");
+    await Future.forEach(chronicleUsers,(ChronicleUserModel chronicleUser) async{
+      if(chronicleUser.isAppRegistered==1){
+        DataModel data=await getAllData(chronicleUser.uid);
+        await Future.forEach(data.registers,(registerElement) async {
+          update("Sending notifications for register ${registerElement.name}");
+          String updateBatch="";
+          await Future.forEach(registerElement.clients,(clientElement) async{
+            updateBatch=updateBatch+"\n"+"Processing ${chronicleUser.displayName} register ${registerElement.name}:${clientElement.name}";
+            if(clientElement.due<=-1&&DateTime(clientElement.startDate.year,clientElement.startDate.month+1,clientElement.startDate.day)==now){
+              clientElement.due=clientElement.due+1;
+              clientElement.startDate=now;
+              updateClient(clientElement, clientElement.id);
+            }
+            else if(clientElement.endDate!=null&&data.userDetails.first.tokens!=null){
+              DateTime now=DateTime.now();
+              DateTime today=DateTime(now.year,now.month,now.day);
+              int a=clientElement.endDate.difference(today).inDays;
+              if((a>=-1&&a<=2)&&clientElement.due>=0)
+              {
+                await Future.forEach(data.userDetails.first.tokens, (TokenModel element) async{
+                  await http.post(
+                    Uri.parse('https://fcm.googleapis.com/fcm/send'),
+                    headers: <String, String>{
+                      'Content-Type': 'application/json; charset=UTF-8',
+                      'Authorization':'key=$messageString'
+                    },
+                    body: constructFCMPayload(element.token,clientElement,registerElement.name),
+                  );
+                });
+                updateBatch=updateBatch+"\n"+"Notification sent to ${chronicleUser.displayName} for client ${clientElement.name} of register ${registerElement.name}";
+              }
+            }
+          });
+          update(updateBatch);
+        });
+      }
+    });
+  } catch (e) {
+    globalShowInSnackBar(scaffoldMessengerKey,e);
+  }
 }

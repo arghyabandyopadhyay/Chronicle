@@ -170,7 +170,6 @@ class _ClientPageState extends State<ClientPage> {
   }
   asset2Local(String type, String assetPath) async {
     var path=await fileLocalName(type, assetPath);
-    print(path);
     File file = File(path);
     if (await fileExists(type, assetPath)) {
       await file.delete();

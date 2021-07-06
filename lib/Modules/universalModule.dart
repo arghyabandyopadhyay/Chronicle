@@ -267,7 +267,7 @@ String getFormattedDate(DateTime dateTime){
   else return null;
 }
 
-Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,Function(double) update) async{
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
@@ -276,39 +276,37 @@ Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey
   Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
   Excel excel = Excel.createExcel();
   Sheet sheetObject = excel['Sheet1'];
-  // CellStyle cellStyle = CellStyle(backgroundColorHex: "#1AFF1A", fontFamily : getFontFamily(FontFamily.Calibri));
-  //
-  // cellStyle.underline = Underline.Single; // or Underline.Double
-  //
-  // var cell = sheetObject.cell(CellIndex.indexByString("A1"));
-  // cell.value = 8; // dynamic values support provided;
-  // cell.cellStyle = cellStyle;
-  //
-  // // printing cell-type
-  // print("CellType: "+ cell.cellType.toString());
-
   List<String> dataList = ["RegistrationId","Name","FathersName","Dob(DDMMYYYY)","MobileNo","Education","Occupation","Address","Injuries","Sex","Caste","Height","Weight","NoOfPayments","StartDate(DDMMYYYY)"];
   sheetObject.insertRowIterables(dataList, 0);
   int i=1;
   String backupFolderName="backup_${DateTime.now().toIso8601String()}";
   DataModel data=await getBackupData();
+  double progress=0;
+  double iteration=0.9/data.registers.length;
+  update(progress);
   await Future.forEach(data.registers,(RegisterModel registerElement) async {
+    progress+=iteration;
+    update(progress);
     await Future.forEach(registerElement.clients,(ClientModel clientElement) async{
       List<String> dataList1 = [clientElement.registrationId,clientElement.name,clientElement.fathersName,getFormattedDate(clientElement.dob),clientElement.mobileNo,clientElement.education,clientElement.occupation,clientElement.address,clientElement.injuries,clientElement.sex,clientElement.caste,clientElement.height!=null?clientElement.height.toString():null,clientElement.weight!=null?clientElement.weight.toString():null,clientElement.due.toString(),getFormattedDate(clientElement.startDate)];
       sheetObject.insertRowIterables(dataList1, i++);
     });
+    await Future.delayed(Duration(milliseconds: 100));
 
     File("${appDirectory.path}/${backupFolderName}_temp/${registerElement.name+"_"+registerElement.id.key}.xlsx")
       ..createSync(recursive: true)
       ..writeAsBytesSync(excel.encode());
   });
+
   final dataDir = Directory("${appDirectory.path}/${backupFolderName}_temp/");
   try {
     final zipFile = File("${tempDir.path}/$backupFolderName.zip");
     ZipFile.createFromDirectory(sourceDir: dataDir, zipFile: zipFile, recurseSubDirs: true).then((value) => File("${appDirectory.path}/${backupFolderName}_temp/").delete(recursive: true));
   } catch (e) {
-    print(e);
+    globalShowInSnackBar(scaffoldMessengerKey, "An error has occurred");
   }
+  update(1);
+  await Future.delayed(Duration(milliseconds: 500));
   globalShowInSnackBar(scaffoldMessengerKey, "Backup $backupFolderName.zip has been created at Download/");
 }
 Future<void> uploadBackupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
