@@ -83,15 +83,17 @@ class ExcelClientModel
         return "";
       }
     }
-    int getNoOfPayments(dynamic noOfPayments){
+    int getNoOfPayments(String noOfPaymentsString){
       try{
-        return json1['NoOfPayments']!=null&&json1['NoOfPayments']!=0?json1['NoOfPayments']:1;
+        int noOfPayments=int.parse(noOfPaymentsString);
+        return noOfPayments!=0?noOfPayments:1;
       }
       catch(E){
         return 1;
       }
     }
     int months=getNoOfPayments(json1['NoOfPayments']);
+    print(months);
     DateTime startDate;
     if(json1['StartDate(DDMMYYYY)']!=null){
       startDate=getDate(json1['StartDate(DDMMYYYY)']);

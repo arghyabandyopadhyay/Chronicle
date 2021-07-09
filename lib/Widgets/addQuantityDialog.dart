@@ -26,6 +26,17 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
   void initState() {
     super.initState();
   }
+  void handleSubmitted(value) {
+    try{
+      if(modeOfPaymentDropDown!=null)Navigator.of(context).pop(new PaymentDetailsModel(noOfPayments: int.parse(quantityController.text),paymentType:modeOfPaymentDropDown,unitPrice:double.parse(unitPriceController.text),remarks:remarksController.text));
+      else globalShowInSnackBar(widget.scaffoldMessengerKey,"Please select a mode of payment.");
+    }
+    catch(E){
+      globalShowInSnackBar(widget.scaffoldMessengerKey,"Invalid Values in quantity or unit price");
+      quantityController.clear();
+      unitPriceController.clear();
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -114,7 +125,8 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                 controller: unitPriceController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  border: InputBorder.none,
+                  border: const OutlineInputBorder(),
+                  contentPadding:EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   hintText: 'Enter Amount(per quantity)',
                   suffixIcon:_showCrossUnitPrice?IconButton(icon: Icon(Icons.clear),onPressed: (){
                     unitPriceController.text="";
@@ -167,7 +179,8 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                 controller: remarksController,
                 autofocus: true,
                 decoration: InputDecoration(
-                  border: InputBorder.none,
+                  border: const OutlineInputBorder(),
+                  contentPadding:EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
                   hintText: 'Add Remarks',
                   suffixIcon:_showCrossRemarks?IconButton(icon: Icon(Icons.clear),onPressed: (){
                     remarksController.text="";
@@ -192,28 +205,14 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                 },
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.done,
-                onFieldSubmitted: (value){
-                  try{
-                    if(modeOfPaymentDropDown!=null)Navigator.of(context).pop(new PaymentDetailsModel(noOfPayments: int.parse(quantityController.text),paymentType:modeOfPaymentDropDown,unitPrice:double.parse(unitPriceController.text),remarks:remarksController.text));
-                    else globalShowInSnackBar(widget.scaffoldMessengerKey,"Please select a mode of payment.");
-                  }
-                  catch(E){
-                    globalShowInSnackBar(widget.scaffoldMessengerKey,"Invalid Values");
-                  }
-                },
+                onFieldSubmitted: handleSubmitted,
               ),
               SizedBox(height: 10,),
               SizedBox(
                 width: MediaQuery.of(context).size.width*0.9,
                 child: ElevatedButton(
-                  onPressed: () {
-                    try{
-                      if(modeOfPaymentDropDown!=null)Navigator.of(context).pop(new PaymentDetailsModel(noOfPayments: int.parse(quantityController.text),paymentType:modeOfPaymentDropDown,unitPrice:double.parse(unitPriceController.text),remarks:remarksController.text));
-                      else globalShowInSnackBar(widget.scaffoldMessengerKey,"Please select a mode of payment.");
-                    }
-                    catch(E){
-                      globalShowInSnackBar(widget.scaffoldMessengerKey,"Invalid Values");
-                    }
+                  onPressed: (){
+                    handleSubmitted(null);
                   },
                   child: Text(
                     "Ok",textScaleFactor: 1,

@@ -260,7 +260,7 @@ String getFormattedDate(DateTime dateTime){
 }
 
 String getLaymanDueValue(int due){
-  int temp=(due+due<0?1:0)*-1;
+  int temp=(due+(due<0?-1:0))*-1;
   return temp.toString();
 }
 Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,Function(double) update) async{
@@ -306,6 +306,10 @@ Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey
   globalShowInSnackBar(scaffoldMessengerKey, "Backup $backupFolderName.zip has been created at Download/");
 }
 Future<void> uploadBackupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  //Todo: First we need to clear old data
+  //Todo: Then add new data
+  //Todo: Also take an backup of current data
+  //Todo: If there is an error, upload old backup data
   var status = await Permission.storage.status;
   if (!status.isGranted) {
     await Permission.storage.request();
@@ -509,9 +513,9 @@ addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldM
               paymentToDate=clientData.endDate;
             }
             else{
+              paymentFromDate=clientData.startDate;
               clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month-1,clientData.endDate.day);
               clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
-              paymentFromDate=clientData.startDate;
               paymentToDate=clientData.endDate;
             }
           }
@@ -522,7 +526,7 @@ addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldM
         updateClient(clientData, clientData.id);
       });
       String invoiceNumber=(clientData.registrationId!=null&&clientData.registrationId!=""?clientData.registrationId:clientData.id.key)+"_"+DateFormat('dd_MM_yyyy').format(DateTime.now())+"_"+clientData.lastInvoiceNo.toString();
-      generateInvoice(clientData,intVal,paymentDetails.unitPrice,'${clientData.name}_$invoiceNumber',invoiceNumber,paymentDetails.remarks,paymentDetails.paymentType,paymentFromDate,paymentToDate);
+      generateInvoice(clientData,paymentDetails.noOfPayments,paymentDetails.unitPrice,'${clientData.name}_$invoiceNumber',invoiceNumber,paymentDetails.remarks,paymentDetails.paymentType,paymentFromDate,paymentToDate);
     }
   });
 }
