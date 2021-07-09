@@ -89,7 +89,7 @@ class _ClientPageState extends State<ClientPage> {
     return dic + "ClientUploadExcelFile"+ "." + type;
   }
   void getFilePath() async {
-    // try {
+    try {
       FilePickerResult filePickerResult = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx', 'csv', 'xls']);
       String filePath=filePickerResult.paths[0];
       if (filePath == '') {
@@ -145,9 +145,9 @@ class _ClientPageState extends State<ClientPage> {
         ClientModel temp=excelClientModel.toClientModel();
         newClientModel(temp);
       });
-    // } catch (e) {
-    //   globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!"+e.toString());
-    // }
+    } catch (e) {
+      globalShowInSnackBar(scaffoldMessengerKey, "Something Went Wrong !!");
+    }
   }
   fileExists(String type, String assetPath) async {
     String fileName = await fileLocalName(type, assetPath);

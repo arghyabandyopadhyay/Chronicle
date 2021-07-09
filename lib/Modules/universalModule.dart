@@ -433,16 +433,7 @@ deleteCourseAsync(CourseIndexModel courseIndexModel) async {
   course.delete();
   deleteDatabaseNode(courseIndexModel.id);
 }
-generateInvoice(
-    ClientModel clientData,
-    int noOfMonths,
-    double unitPrice,
-    String title,
-    String invoiceNumber,
-    String remarks,
-    String modeOfPayment,
-    DateTime fromDate,
-    DateTime toDate) async {
+generateInvoice(ClientModel clientData,int noOfMonths,double unitPrice,String title,String invoiceNumber,String remarks,String modeOfPayment,DateTime fromDate,DateTime toDate) async {
 
   String downloadDir=await localPath;
 

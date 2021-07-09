@@ -93,7 +93,6 @@ class ExcelClientModel
       }
     }
     int months=getNoOfPayments(json1['NoOfPayments']);
-    print(months);
     DateTime startDate;
     if(json1['StartDate(DDMMYYYY)']!=null){
       startDate=getDate(json1['StartDate(DDMMYYYY)']);
