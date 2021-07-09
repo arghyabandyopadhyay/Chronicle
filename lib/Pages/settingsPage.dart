@@ -19,10 +19,13 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   bool showNotifications=false;
   TextEditingController reminderMessageText=new TextEditingController();
+  TextEditingController termsAndConditionsText=new TextEditingController();
+  TextEditingController organizationAddressText=new TextEditingController();
   TextEditingController smsApiText=new TextEditingController();
   TextEditingController smsUserIdText=new TextEditingController();
   TextEditingController smsAccessTokenText=new TextEditingController();
   TextEditingController smsMobileNoText=new TextEditingController();
+  TextEditingController organizationNameText=new TextEditingController();
   GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey=GlobalKey();
   //Controller
   @override
@@ -32,6 +35,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
   Future<bool> _loadSettings() async {
     reminderMessageText.text=GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end, please clear your dues for further continuation of services.";
+    termsAndConditionsText.text=GlobalClass.userDetail.termsAndConditions!=null&&GlobalClass.userDetail.termsAndConditions!=""?GlobalClass.userDetail.termsAndConditions:"";
+    organizationAddressText.text=GlobalClass.userDetail.organizationAddress!=null?GlobalClass.userDetail.organizationAddress:"";
+    organizationNameText.text=GlobalClass.userDetail.organizationName!=null?GlobalClass.userDetail.organizationName:"";
     smsApiText.text=GlobalClass.userDetail.smsApiUrl!=null?GlobalClass.userDetail.smsApiUrl:"";
     smsUserIdText.text=GlobalClass.userDetail.smsUserId!=null?GlobalClass.userDetail.smsUserId:"";
     smsAccessTokenText.text=GlobalClass.userDetail.smsAccessToken!=null?GlobalClass.userDetail.smsAccessToken:"";
@@ -41,11 +47,15 @@ class _SettingsPageState extends State<SettingsPage> {
   }
   void handleSubmitted(){
     GlobalClass.userDetail.reminderMessage=reminderMessageText.text;
+    GlobalClass.userDetail.termsAndConditions=termsAndConditionsText.text;
     GlobalClass.userDetail.smsApiUrl=smsApiText.text;
     GlobalClass.userDetail.smsUserId=smsUserIdText.text;
     GlobalClass.userDetail.smsAccessToken=smsAccessTokenText.text;
     GlobalClass.userDetail.smsMobileNo=smsMobileNoText.text;
-    if(reminderMessageText.text.isNotEmpty)GlobalClass.userDetail.update();
+    GlobalClass.userDetail.organizationName=organizationNameText.text;
+    GlobalClass.userDetail.organizationAddress=organizationAddressText.text;
+    if(reminderMessageText.text.isEmpty)GlobalClass.userDetail.reminderMessage="Your subscription has come to an end, please clear your dues for further continuation of services.";
+    GlobalClass.userDetail.update();
     changesSavedModule(context,scaffoldMessengerKey);
   }
   @override
@@ -62,6 +72,40 @@ class _SettingsPageState extends State<SettingsPage> {
             return ListView(
               padding: EdgeInsets.only(left: 20,right: 20,top: 10),
               children: [
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  controller: organizationNameText,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(),
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: "Organization Name",
+                    helperText: "Name of your organization, that will appear in your invoices.",
+                    contentPadding:
+                    EdgeInsets.all(10.0),
+                  ),
+                ),
+                SizedBox(height: 10,),
+                Container(
+                    height: 150,
+                    child: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      maxLength: 200,
+                      controller: organizationAddressText,
+                      textInputAction: TextInputAction.newline,
+                      style: TextStyle(),
+                      expands: true,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "Organization Address",
+                        helperText: "Address of your organization, that will appear in your invoices",
+                        contentPadding:
+                        EdgeInsets.all(10.0),
+                      ),
+                    )),
+                SizedBox(height: 10,),
                 Container(
                     height: 150,
                     child: TextFormField(
@@ -77,6 +121,26 @@ class _SettingsPageState extends State<SettingsPage> {
                         border: const OutlineInputBorder(),
                         labelText: "Reminder Message",
                         helperText: "Type the message you want to be sent to your clients as a reminder",
+                        contentPadding:
+                        EdgeInsets.all(10.0),
+                      ),
+                    )),
+                SizedBox(height: 10,),
+                Container(
+                    height: 200,
+                    child: TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                      maxLength: 300,
+                      controller: termsAndConditionsText,
+                      textInputAction: TextInputAction.newline,
+                      style: TextStyle(),
+                      expands: true,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: "Terms and Conditions",
+                        helperText: "Type the terms and conditions to be specified in invoices.",
                         contentPadding:
                         EdgeInsets.all(10.0),
                       ),

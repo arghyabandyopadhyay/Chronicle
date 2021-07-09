@@ -7,9 +7,14 @@ import 'package:chronicle/Models/CourseModels/courseModel.dart';
 import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/dataModel.dart';
 import 'package:chronicle/Models/excelClientModel.dart';
+import 'package:chronicle/Models/paymentDetailsModel.dart';
 import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/videoIndexModel.dart';
-import 'package:chronicle/Pages/TutorPages/clientPage.dart';
+import 'package:chronicle/Modules/utils.dart';
+import 'package:chronicle/PdfModule/api/pdfApi.dart';
+import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
+import 'package:chronicle/PdfModule/model/invoice.dart';
+import 'package:chronicle/PdfModule/model/supplier.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/addQuantityDialog.dart';
 import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
@@ -20,7 +25,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:flutter_sms/flutter_sms.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'database.dart';
 import 'package:excel/excel.dart';
@@ -131,7 +138,7 @@ whatsAppModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffold
   if(clientData.mobileNo!=null&&clientData.mobileNo!="")
   {
     var url = "https://wa.me/+91${clientData.mobileNo}?text=${clientData.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-        ", please clear your dues for further continuation of services."}";
+        ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions";
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -146,7 +153,7 @@ smsModule(ClientModel clientData,GlobalKey<ScaffoldMessengerState> scaffoldMesse
     // SmsSender sender = new SmsSender();
     String address = clientData.mobileNo;
     String message = "${clientData.name}, ${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-        ", please clear your dues for further continuation of services."}";
+        ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions";
     if(address!=null&&address!="") {
       // sender.sendSms(new SmsMessage(address, message)).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
       sendSMS(message: message, recipients: [address]).then((value) => globalShowInSnackBar(scaffoldMessengerKey,"Message has been sent to ${clientData.name}!!"));
@@ -245,21 +252,6 @@ List<ClientModel> sortClientsModule(String sortType,List<ClientModel> listToBeSo
     listToBeSorted.sort((a,b)=>b.endDate.toIso8601String().compareTo(a.endDate.toIso8601String()));
     sortedList=listToBeSorted;
   }
-  // if(sortVal==1)
-  // {
-  //
-  //   sortVal=0;
-  // }
-  // else
-  // {
-  //   List<ClientModel> temp=clients.where((element) => element.due<=0).toList();
-  //   clients.removeWhere((element) => element.due<=0);
-  //   clients.addAll(temp);
-  //   temp=clients.where((element) => element.due>0).toList();
-  //   clients.removeWhere((element) => element.due>0);
-  //   clients.addAll(temp);
-  //   sortVal=1;
-  // }
   return sortedList;
 }
 String getFormattedDate(DateTime dateTime){
@@ -267,6 +259,10 @@ String getFormattedDate(DateTime dateTime){
   else return null;
 }
 
+String getLaymanDueValue(int due){
+  int temp=(due+due<0?1:0)*-1;
+  return temp.toString();
+}
 Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,Function(double) update) async{
   var status = await Permission.storage.status;
   if (!status.isGranted) {
@@ -276,7 +272,7 @@ Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey
   Directory tempDir = await DownloadsPathProvider.downloadsDirectory;
   Excel excel = Excel.createExcel();
   Sheet sheetObject = excel['Sheet1'];
-  List<String> dataList = ["RegistrationId","Name","FathersName","Dob(DDMMYYYY)","MobileNo","Education","Occupation","Address","Injuries","Sex","Caste","Height","Weight","NoOfPayments","StartDate(DDMMYYYY)"];
+  List<String> dataList = ["RegistrationId","Name","FathersName","Dob(DDMMYYYY)","JoiningDate(DDMMYYYY)","MobileNo","Education","Occupation","Address","Injuries","Sex","Caste","Height","Weight","NoOfPayments","StartDate(DDMMYYYY)"];
   sheetObject.insertRowIterables(dataList, 0);
   int i=1;
   String backupFolderName="backup_${DateTime.now().toIso8601String()}";
@@ -288,7 +284,7 @@ Future<void> backupModule(GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey
     progress+=iteration;
     update(progress);
     await Future.forEach(registerElement.clients,(ClientModel clientElement) async{
-      List<String> dataList1 = [clientElement.registrationId,clientElement.name,clientElement.fathersName,getFormattedDate(clientElement.dob),clientElement.mobileNo,clientElement.education,clientElement.occupation,clientElement.address,clientElement.injuries,clientElement.sex,clientElement.caste,clientElement.height!=null?clientElement.height.toString():null,clientElement.weight!=null?clientElement.weight.toString():null,clientElement.due.toString(),getFormattedDate(clientElement.startDate)];
+      List<String> dataList1 = [clientElement.registrationId,clientElement.name,clientElement.fathersName,getFormattedDate(clientElement.dob),getFormattedDate(clientElement.joiningDate),clientElement.mobileNo,clientElement.education,clientElement.occupation,clientElement.address,clientElement.injuries,clientElement.sex,clientElement.caste,clientElement.height!=null?clientElement.height.toString():null,clientElement.weight!=null?clientElement.weight.toString():null,getLaymanDueValue(clientElement.due),getFormattedDate(clientElement.startDate)];
       sheetObject.insertRowIterables(dataList1, i++);
     });
     await Future.delayed(Duration(milliseconds: 100));
@@ -433,19 +429,73 @@ deleteCourseAsync(CourseIndexModel courseIndexModel) async {
   course.delete();
   deleteDatabaseNode(courseIndexModel.id);
 }
+generateInvoice(
+    ClientModel clientData,
+    int noOfMonths,
+    double unitPrice,
+    String title,
+    String invoiceNumber,
+    String remarks,
+    String modeOfPayment,
+    DateTime fromDate,
+    DateTime toDate) async {
+
+  String downloadDir=await localPath;
+
+  final date = DateTime.now();
+  final invoice = Invoice(
+    title: title,
+    modeOfPayment: modeOfPayment,
+    supplier: Supplier(
+      name: GlobalClass.userDetail.organizationName,
+      address: GlobalClass.userDetail.organizationAddress,
+      email: GlobalClass.userDetail.email,
+    ),
+    customer: clientData,
+    info: InvoiceInfo(
+      date: date,
+      remarks: remarks,
+      number: invoiceNumber,
+      termsAndConditions: GlobalClass.userDetail.termsAndConditions
+    ),
+    items: [
+      InvoiceItem(
+        description: "From ${Utils.formatDate(fromDate)} to ${Utils.formatDate(toDate)}",
+        quantity: noOfMonths,
+        gst: 0.0,
+        unitPrice: unitPrice
+      ),
+    ],
+  );
+
+  final pdfFile = await PdfInvoiceApi.generate(invoice);
+  String registrationIdTemp=(clientData.registrationId!=null&&clientData.registrationId!=""?clientData.registrationId:clientData.id.key);
+  // PdfApi.openFile(pdfFile);
+  File("$downloadDir/Invoices/${registrationIdTemp}_${clientData.name}/$invoiceNumber.pdf")
+    ..createSync(recursive: true)
+    ..writeAsBytesSync(pdfFile.readAsBytesSync());
+  Share.shareFiles(["$downloadDir/Invoices/${registrationIdTemp}_${clientData.name}/$invoiceNumber.pdf"], text: title);
+}
 addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey, state,){
-  showDialog(context: context, builder: (_) =>new AddQuantityDialog()
+  showDialog(context: context, builder: (_) =>new AddQuantityDialog(scaffoldMessengerKey: scaffoldMessengerKey,)
   ).then((value) {
-    try
+    if(value!=null)
     {
-      int intVal=int.parse(value.toString());
+      PaymentDetailsModel paymentDetails=value;
+      int intVal=paymentDetails.noOfPayments;
+      DateTime paymentFromDate;
+      DateTime paymentToDate;
       state.setState(() {
         if(clientData.due>intVal) {
+          paymentFromDate=clientData.startDate;
           clientData.startDate=DateTime(clientData.startDate.year,clientData.startDate.month+intVal,clientData.startDate.day);
+          paymentToDate=clientData.startDate;
         }
         else{
           if(clientData.due<0){
+            paymentFromDate=clientData.endDate;
             clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+intVal,clientData.endDate.day);
+            paymentToDate=clientData.endDate;
           }
           else{
             DateTime nowTemp=DateTime.now();
@@ -455,21 +505,34 @@ addPaymentModule(ClientModel clientData,BuildContext context,GlobalKey<ScaffoldM
               clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month,clientData.endDate.day);
               clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
               intVal=intVal-1;
+              paymentFromDate=clientData.startDate;
+              paymentToDate=clientData.endDate;
             }
             else{
               clientData.startDate=DateTime(clientData.endDate.year,clientData.endDate.month-1,clientData.endDate.day);
               clientData.endDate=DateTime(clientData.endDate.year,clientData.endDate.month+(intVal-clientData.due),clientData.endDate.day);
+              paymentFromDate=clientData.startDate;
+              paymentToDate=clientData.endDate;
             }
           }
         }
         clientData.due=clientData.due-intVal;
+        if(clientData.lastInvoiceNo==null)clientData.lastInvoiceNo=0;
+        clientData.lastInvoiceNo++;
         updateClient(clientData, clientData.id);
       });
-    }
-    catch(E){
-      globalShowInSnackBar(scaffoldMessengerKey, "Invalid Quantity!!");
+      String invoiceNumber=(clientData.registrationId!=null&&clientData.registrationId!=""?clientData.registrationId:clientData.id.key)+"_"+DateFormat('dd_MM_yyyy').format(DateTime.now())+"_"+clientData.lastInvoiceNo.toString();
+      generateInvoice(clientData,intVal,paymentDetails.unitPrice,'${clientData.name}_$invoiceNumber',invoiceNumber,paymentDetails.remarks,paymentDetails.paymentType,paymentFromDate,paymentToDate);
     }
   });
+}
+Future<String> get localPath async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await Permission.storage.request();
+  }
+  Directory directory = await DownloadsPathProvider.downloadsDirectory;
+  return directory.path;
 }
 String getFormattedMobileNo(String value)
 {

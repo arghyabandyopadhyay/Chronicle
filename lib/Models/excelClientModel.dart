@@ -15,11 +15,12 @@ class ExcelClientModel
   String masterFilter;
   DateTime startDate;
   DateTime endDate;
+  DateTime joiningDate;
   DateTime dob;
   double height;
   double weight;
   int noOfPayments;
-  ExcelClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.noOfPayments,this.masterFilter});
+  ExcelClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.joiningDate,this.height,this.dob,this.weight,this.noOfPayments,this.masterFilter});
 
   factory ExcelClientModel.fromJson(Map<String, dynamic> json1) {
     DateTime getDate(String date){
@@ -84,7 +85,7 @@ class ExcelClientModel
     }
     int getNoOfPayments(dynamic noOfPayments){
       try{
-        return json1['NoOfPayments']!=null||json1['NoOfPayments']>0?json1['NoOfPayments']:1;
+        return json1['NoOfPayments']!=null&&json1['NoOfPayments']!=0?json1['NoOfPayments']:1;
       }
       catch(E){
         return 1;
@@ -103,7 +104,7 @@ class ExcelClientModel
       DateTime now=DateTime.now();
       startDate=DateTime(now.year,now.month,now.day);
     }
-    DateTime endDate = DateTime(startDate.year,startDate.month+months,startDate.day);
+    DateTime endDate = DateTime(startDate.year,startDate.month+(months).abs(),startDate.day);
     String name=json1['Name']!=null?json1['Name']:"";
     String mobile=json1['MobileNo']!=null?getFormattedMobileNo(json1['MobileNo']):null;
     return ExcelClientModel(
@@ -119,6 +120,7 @@ class ExcelClientModel
         caste: json1['Caste']!=null?getCaste(json1['Caste']):null,
         startDate: startDate,
         endDate: endDate,
+        joiningDate: json1['JoiningDate(DDMMYYYY)']!=null?getDate(json1['JoiningDate(DDMMYYYY)']):null,
         dob: json1['Dob(DDMMYYYY)']!=null?getDate(json1['Dob(DDMMYYYY)']):null,
         height: json1['Height']!=null?double.parse(json1['Height']):null,
         weight: json1['Weight']!=null?double.parse(json1['Weight']):null,
@@ -140,9 +142,10 @@ class ExcelClientModel
       startDate: startDate,
       endDate: endDate,
       dob: dob,
+      joiningDate: joiningDate,
       height: height,
       weight: weight,
-      due: (noOfPayments-1)*-1,
+      due: noOfPayments>0?(noOfPayments-1)*-1:noOfPayments.abs(),
       masterFilter:masterFilter
   );
 }

@@ -163,7 +163,7 @@ class _ClientListState extends State<ClientList> {
                                               ActionChip(label: Text("Yes"), onPressed: (){
                                                 try{
                                                   postForBulkMessage([widget.listItems[index]],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                                      ", please clear your dues for further continuation of services."}");
+                                                      ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions");
                                                   globalShowInSnackBar(widget.scaffoldMessengerKey,"Message Sent!!");
                                                 }
                                                 catch(E){

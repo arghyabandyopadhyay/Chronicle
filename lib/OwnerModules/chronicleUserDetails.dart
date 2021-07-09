@@ -162,19 +162,29 @@ class _ChronicleUserDetailsPageState extends State<ChronicleUserDetailsPage> {
       ),
       floatingActionButtonLocation:
       FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: "sendReminderHeroTag",
-        icon: Icon(Icons.contact_mail),
-        label: Text("Send Reminder",),
-        onPressed: ()async {
-          String url = 'mailto:<${widget.user.email}>?subject=Subscription for the account ${widget.user.email} at Chronicle &body= Dear ${widget.user.displayName}, \n${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-              ", please clear your dues for further continuation of services.\n With Regards,\n Chronicle"}';
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
-          }
-        },
+      floatingActionButton: Row(
+        children: [FloatingActionButton.extended(
+          heroTag: "sendReminderHeroTag",
+          icon: Icon(Icons.contact_mail),
+          label: Text("Send Reminder",),
+          onPressed: ()async {
+            String url = 'mailto:<${widget.user.email}>?subject=Subscription for the account ${widget.user.email} at Chronicle &body= Dear ${widget.user.displayName}, \n${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
+                ", please clear your dues for further continuation of services.\n With Regards,\n Chronicle"}';
+            if (await canLaunch(url)) {
+              await launch(url);
+            } else {
+              globalShowInSnackBar(scaffoldMessengerKey, 'Oops!! Something went wrong.');
+            }
+          },
+        ),
+          FloatingActionButton.extended(
+            heroTag: "saveChronicleUserDetailsHeroTag",
+            icon: Icon(Icons.save_outlined),
+            label: Text("Save",),
+            onPressed: () {
+
+            },
+          )],
       ),
     ));
   }

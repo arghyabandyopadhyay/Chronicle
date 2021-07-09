@@ -1,4 +1,5 @@
 
+import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Models/modalOptionModel.dart';
 import 'package:chronicle/Models/userModel.dart';
 import 'package:chronicle/Modules/database.dart';
@@ -8,7 +9,6 @@ import 'package:chronicle/OwnerModules/dispatchNotificationConsole.dart';
 import 'package:chronicle/Pages/helpAndFeedbackPage.dart';
 import 'package:chronicle/Pages/settingsPage.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
-import 'package:chronicle/PdfModule/model/customer.dart';
 import 'package:chronicle/PdfModule/model/invoice.dart';
 import 'package:chronicle/PdfModule/model/supplier.dart';
 import 'package:flutter/cupertino.dart';
@@ -99,7 +99,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   Future<void> handlerPaymentSuccess(PaymentSuccessResponse response) async {
     globalShowInSnackBar(scaffoldMessengerKey,"SUCCESS: " + response.paymentId);
     final date = DateTime.now();
-    final dueDate = date.add(Duration(days: 7));
 
     final invoice = Invoice(
       title: "Chronicle Yearly Payment ${DateTime.now().year}",
@@ -108,296 +107,21 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
         address: 'Smriti nagar, Bhilai',
         email: 'chroniclebusinesssolutions@gmail.com',
       ),
-      customer: Customer(
+      customer: ClientModel(
         name: GlobalClass.userDetail.displayName,
-        email: GlobalClass.userDetail.email,
+        mobileNo: GlobalClass.userDetail.email,
       ),
       info: InvoiceInfo(
         date: date,
-        dueDate: dueDate,
-        description: 'My description...',
+        remarks: 'My description...',
         number: '${DateTime.now().year}-9999',
       ),
       items: [
         InvoiceItem(
           description: 'Coffee',
-          date: DateTime.now(),
           quantity: 3,
-          vat: 0.19,
+          gst: 0.19,
           unitPrice: 5.99,
-        ),
-        InvoiceItem(
-          description: 'Water',
-          date: DateTime.now(),
-          quantity: 8,
-          vat: 0.19,
-          unitPrice: 0.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Orange',
-          date: DateTime.now(),
-          quantity: 3,
-          vat: 0.19,
-          unitPrice: 2.99,
-        ),
-        InvoiceItem(
-          description: 'Apple',
-          date: DateTime.now(),
-          quantity: 8,
-          vat: 0.19,
-          unitPrice: 3.99,
-        ),
-        InvoiceItem(
-          description: 'Mango',
-          date: DateTime.now(),
-          quantity: 1,
-          vat: 0.19,
-          unitPrice: 1.59,
-        ),
-        InvoiceItem(
-          description: 'Blue Berries',
-          date: DateTime.now(),
-          quantity: 5,
-          vat: 0.19,
-          unitPrice: 0.99,
-        ),
-        InvoiceItem(
-          description: 'Lemon',
-          date: DateTime.now(),
-          quantity: 4,
-          vat: 0.19,
-          unitPrice: 1.29,
         ),
       ],
     );

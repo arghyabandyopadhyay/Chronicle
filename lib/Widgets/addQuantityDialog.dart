@@ -1,9 +1,12 @@
+import 'package:chronicle/Models/paymentDetailsModel.dart';
+import 'package:chronicle/Modules/universalModule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
 class AddQuantityDialog extends StatefulWidget {
-  const AddQuantityDialog({Key key}) : super(key: key);
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey;
+  const AddQuantityDialog({Key key,this.scaffoldMessengerKey}) : super(key: key);
   @override
   _AddQuantityDialogState createState() => _AddQuantityDialogState();
 }
@@ -11,8 +14,13 @@ class AddQuantityDialog extends StatefulWidget {
 class _AddQuantityDialogState extends State<AddQuantityDialog>  {
   // This widget is the root of your application.
   TextEditingController quantityController=new TextEditingController();
+  TextEditingController remarksController=new TextEditingController();
+  TextEditingController unitPriceController=new TextEditingController();
   List<int> items=[1,2,3,4,5,12];
   bool _showCross=false;
+  bool _showCrossUnitPrice=false;
+  bool _showCrossRemarks=false;
+  String modeOfPaymentDropDown;
   //Overrides
   @override
   void initState() {
@@ -25,7 +33,7 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
           borderRadius:
           BorderRadius.circular(20.0)), //this right here
       child: Container(
-        height: 170,
+        height: 400,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -60,18 +68,7 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                   }
                 },
                 keyboardType: TextInputType.number,
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width*0.9,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(quantityController.text);
-                  },
-                  child: Text(
-                    "Ok",textScaleFactor: 1,
-                    style: TextStyle(),
-                  ),
-                ),
+                textInputAction: TextInputAction.none,
               ),
               new Flexible(
                 child: Container(
@@ -89,8 +86,8 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                           width: MediaQuery.of(context).size.width/8,
                           padding: EdgeInsets.symmetric(horizontal: 10),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(width: 1.0,style: BorderStyle.solid),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(width: 1.0,style: BorderStyle.solid),
                           ),
                           child: Text(items[id].toString(),
                             textScaleFactor: 1,
@@ -109,6 +106,118 @@ class _AddQuantityDialogState extends State<AddQuantityDialog>  {
                         },
                       );
                     },
+                  ),
+                ),
+              ),
+              SizedBox(height: 10,),
+              TextFormField(
+                controller: unitPriceController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Enter Amount(per quantity)',
+                  suffixIcon:_showCrossUnitPrice?IconButton(icon: Icon(Icons.clear),onPressed: (){
+                    unitPriceController.text="";
+                    setState(() {
+                      _showCrossUnitPrice=false;
+                    });
+                  },):null,
+                ),
+                onChanged: (value) {
+                  if(value==""&&_showCrossUnitPrice)
+                  {
+                    setState(() {
+                      _showCrossUnitPrice=false;
+                    });
+                  }
+                  else if(!_showCrossUnitPrice)
+                  {
+                    setState(() {
+                      _showCrossUnitPrice=true;
+                    });
+                  }
+                },
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.none
+              ),
+              SizedBox(height: 10,),
+              DropdownButtonFormField(
+                value: modeOfPaymentDropDown,
+                icon: Icon(Icons.arrow_downward),
+                decoration: InputDecoration(
+                  labelText: "Mode of Payment",
+                  contentPadding:
+                  EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                  border: const OutlineInputBorder(),
+                ),
+                items: <String>['Cash', 'Online'].map((String value) {
+                  return new DropdownMenuItem<String>(
+                    value: value,
+                    child: new Text(value),
+                  );
+                }).toList(),
+                onChanged: (String newValue) {
+                  setState(() {
+                    modeOfPaymentDropDown = newValue;
+                  });
+                },
+              ),
+              SizedBox(height: 10,),
+              TextFormField(
+                controller: remarksController,
+                autofocus: true,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Add Remarks',
+                  suffixIcon:_showCrossRemarks?IconButton(icon: Icon(Icons.clear),onPressed: (){
+                    remarksController.text="";
+                    setState(() {
+                      _showCrossRemarks=false;
+                    });
+                  },):null,
+                ),
+                onChanged: (value) {
+                  if(value==""&&_showCrossRemarks)
+                  {
+                    setState(() {
+                      _showCrossRemarks=false;
+                    });
+                  }
+                  else if(!_showCrossRemarks)
+                  {
+                    setState(() {
+                      _showCrossRemarks=true;
+                    });
+                  }
+                },
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: (value){
+                  try{
+                    if(modeOfPaymentDropDown!=null)Navigator.of(context).pop(new PaymentDetailsModel(noOfPayments: int.parse(quantityController.text),paymentType:modeOfPaymentDropDown,unitPrice:double.parse(unitPriceController.text),remarks:remarksController.text));
+                    else globalShowInSnackBar(widget.scaffoldMessengerKey,"Please select a mode of payment.");
+                  }
+                  catch(E){
+                    globalShowInSnackBar(widget.scaffoldMessengerKey,"Invalid Values");
+                  }
+                },
+              ),
+              SizedBox(height: 10,),
+              SizedBox(
+                width: MediaQuery.of(context).size.width*0.9,
+                child: ElevatedButton(
+                  onPressed: () {
+                    try{
+                      if(modeOfPaymentDropDown!=null)Navigator.of(context).pop(new PaymentDetailsModel(noOfPayments: int.parse(quantityController.text),paymentType:modeOfPaymentDropDown,unitPrice:double.parse(unitPriceController.text),remarks:remarksController.text));
+                      else globalShowInSnackBar(widget.scaffoldMessengerKey,"Please select a mode of payment.");
+                    }
+                    catch(E){
+                      globalShowInSnackBar(widget.scaffoldMessengerKey,"Invalid Values");
+                    }
+                  },
+                  child: Text(
+                    "Ok",textScaleFactor: 1,
+                    style: TextStyle(),
                   ),
                 ),
               ),

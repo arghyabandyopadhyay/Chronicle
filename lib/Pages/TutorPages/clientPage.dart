@@ -3,20 +3,17 @@ import 'package:chronicle/Models/registerIndexModel.dart';
 import 'package:chronicle/Modules/apiModule.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
-import 'package:chronicle/Pages/TutorPages/invoiceCreator.dart';
 import 'package:chronicle/appBarVariables.dart';
 import 'package:chronicle/globalClass.dart';
 import 'package:chronicle/Widgets/loaderWidget.dart';
 import 'package:chronicle/Widgets/optionModalBottomSheet.dart';
 import 'package:chronicle/Widgets/registerOptionBottomSheet.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_sms/flutter_sms.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import '../../Models/clientModel.dart';
 import '../../Widgets/clientList.dart';
@@ -27,7 +24,6 @@ import 'package:chronicle/Models/excelClientModel.dart';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -87,14 +83,6 @@ class _ClientPageState extends State<ClientPage> {
       setState(() {
       });
     }
-  }
-  Future<String> get localPath async {
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-    Directory directory = await DownloadsPathProvider.downloadsDirectory;
-    return directory.path;
   }
   fileLocalName(String type, String assetPath) async {
     String dic = await localPath+"/";
@@ -422,10 +410,6 @@ class _ClientPageState extends State<ClientPage> {
                         Navigator.of(_).pop();
                       }),],
                   ));
-                }),
-                ModalOptionModel(particulars: "Create Invoice",icon:Icons.receipt_long_outlined, onTap: () async {
-                  Navigator.pop(popupContext);
-                  Navigator.of(widget.mainScreenContext).push(CupertinoPageRoute(builder: (invoiceCreatorPageContext)=>InvoiceCreator()));
                 }),
                 if(this.clients!=null&&this.clients.length!=0)ModalOptionModel(particulars: "Move to top",icon:Icons.vertical_align_top_outlined, onTap: () async {
                   Navigator.pop(popupContext);
@@ -882,7 +866,6 @@ class _ClientPageState extends State<ClientPage> {
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   labelText: "Message",
-                  prefixText: "[Client Name,]",
                   helperText: "Type the message you want to be sent to the selected Clients",
                   contentPadding:EdgeInsets.all(10.0),
                 ),

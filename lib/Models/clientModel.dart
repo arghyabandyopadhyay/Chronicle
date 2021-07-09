@@ -18,11 +18,13 @@ class ClientModel
   DateTime startDate;
   DateTime endDate;
   DateTime dob;
+  DateTime joiningDate;
   double height;
   double weight;
+  int lastInvoiceNo;
   int due;
   bool isSelected=false;
-  ClientModel({this.registrationId,this.name,this.sex,this.caste,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due,this.masterFilter});
+  ClientModel({this.registrationId,this.name,this.lastInvoiceNo,this.sex,this.caste,this.joiningDate,this.mobileNo,this.fathersName,this.education,this.occupation,this.address,this.injuries,this.startDate,this.endDate,this.height,this.dob,this.weight,this.due,this.masterFilter});
   void setId(DatabaseReference id)
   {
     this.id=id;
@@ -47,9 +49,11 @@ class ClientModel
         startDate: DateTime.parse(startDate),
         endDate: DateTime.parse(endDate),
         dob: json1['Dob']!=null?DateTime.parse(json1['Dob']):null,
+        joiningDate: json1['JoiningDate']!=null?DateTime.parse(json1['JoiningDate']):null,
         height: json1['Height']!=null?double.parse(json1['Height'].toString()):null,
         weight: json1['Weight']!=null?double.parse(json1['Weight'].toString()):null,
         due: json1['Due']!=null?json1['Due']:0,
+        lastInvoiceNo: json1['LastInvoiceNumber']!=null?json1['LastInvoiceNumber']:0,
         masterFilter:masterFilter
     );
   }
@@ -68,9 +72,11 @@ class ClientModel
         startDate: this.startDate,
         endDate: this.endDate,
         dob: this.dob,
+        joiningDate: this.joiningDate,
         height: this.height,
         weight: this.weight,
         due: this.due,
+        lastInvoiceNo: this.lastInvoiceNo,
         masterFilter: this.masterFilter
     );
   }
@@ -89,9 +95,11 @@ class ClientModel
         "EndDate":(this.endDate!=null)?this.endDate.toIso8601String():null,
         "Caste":this.caste,
         "Dob":(this.dob!=null)?this.dob.toIso8601String():null,
+        "JoiningDate":(this.joiningDate!=null)?this.joiningDate.toIso8601String():null,
         "Height":this.height,
         "Weight":this.weight,
         "Due":this.due,
+        "LastInvoiceNumber":this.lastInvoiceNo,
         "MasterFilter":this.masterFilter,
       };
 }

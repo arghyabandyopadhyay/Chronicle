@@ -263,11 +263,36 @@ class _RegisterClientPageState extends State<RegisterClientPage> {
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText: 'DOB',
+                      hintText: 'Date of Birth'
                     ),
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
                     onDateSelected: (DateTime value) {
                       clientData.dob=value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/doj.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DateTimeFormField(
+                    decoration: const InputDecoration(
+                      hintStyle: TextStyle(),
+                      errorStyle: TextStyle(),
+                      border: OutlineInputBorder(),
+                      suffixIcon: Icon(Icons.event_note),
+                      labelText: 'DOJ',
+                      hintText: 'Date of Joining'
+                    ),
+                    mode: DateTimeFieldPickerMode.date,
+                    autovalidateMode: AutovalidateMode.always,
+                    onDateSelected: (DateTime value) {
+                      clientData.joiningDate=value;
                     },
                   ),),]),
                 SizedBox(height: 8,),

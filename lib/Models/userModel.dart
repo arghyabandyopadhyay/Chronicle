@@ -18,16 +18,19 @@ class UserModel
   String messageString;
   String repo;
   String reminderMessage;
+  String termsAndConditions;
   String smsApiUrl;
   String smsUserId;
   String smsMobileNo;
   String smsAccessToken;
+  String organizationName;
+  String organizationAddress;
   int cloudStorageSize;
   int cloudStorageSizeLimit;
   int isAppRegistered;
   double yearlyPaymentPrice;
   List<TokenModel> tokens;
-  UserModel({this.displayName,this.cloudStorageSizeLimit,this.yearlyPaymentPrice,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.tokens,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered,this.repo,this.smsApiUrl,this.smsMobileNo,this.smsUserId,this.smsAccessToken,this.cloudStorageSize});
+  UserModel({this.displayName,this.termsAndConditions,this.cloudStorageSizeLimit,this.yearlyPaymentPrice,this.email,this.phoneNumber,this.canAccess,this.qrcodeDetail,this.tokens,this.isOwner,this.messageString,this.reminderMessage,this.isAppRegistered,this.repo,this.smsApiUrl,this.smsMobileNo,this.smsUserId,this.smsAccessToken,this.cloudStorageSize,this.organizationName,this.organizationAddress});
   factory UserModel.fromJson(Map<String, dynamic> json1,String idKey) {
     String decrypt(String encryptedPassword){
       String decryptedPassword = utf8.decode(base64Decode(encryptedPassword));
@@ -59,6 +62,9 @@ class UserModel
         messageString:json1['MessageString'],
         repo:json1['Repo'],
         reminderMessage:json1['ReminderMessage'],
+        termsAndConditions:json1['TermsAndConditions'],
+        organizationName:json1['OrganizationName'],
+        organizationAddress:json1['OrganizationAddress'],
         cloudStorageSize:json1['CloudStorageSize']!=null?json1['CloudStorageSize']:0,
         cloudStorageSizeLimit:json1['CloudStorageSizeLimit']!=null?json1['CloudStorageSizeLimit']:10000000000,
         yearlyPaymentPrice:json1['YearlyPaymentPrice']!=null?json1['YearlyPaymentPrice']:1000,
@@ -81,6 +87,9 @@ class UserModel
         "QrCodeDetail":this.qrcodeDetail,
         "CloudStorageSize":this.cloudStorageSize!=null?this.cloudStorageSize:0,
         "ReminderMessage":this.reminderMessage,
+        "TermsAndConditions":this.termsAndConditions,
+        "OrganizationName":this.organizationName,
+        "OrganizationAddress":this.organizationAddress,
         "IsAppRegistered":this.isAppRegistered,
         "SmsApiUrl":this.smsApiUrl,
         "SmsUserId":this.smsUserId!=null?encrypt(this.smsUserId):null,

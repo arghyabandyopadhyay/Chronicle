@@ -178,7 +178,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
                                     });
                                     sendSMS(message: "${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                        ", please clear your dues for further continuation of services."}",recipients:addressList);
+                                        ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions",recipients:addressList);
                                     Navigator.of(_).pop();
                                   }),
                                   ActionChip(label: Text("No"), onPressed: (){
@@ -209,7 +209,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                                     ActionChip(label: Text("Yes"), onPressed: (){
                                       try{
                                         postForBulkMessage(clients,"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                            ", please clear your dues for further continuation of services."}");
+                                            ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions");
                                         globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
                                       }
                                       catch(E){

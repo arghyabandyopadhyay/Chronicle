@@ -253,7 +253,7 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                                       ActionChip(label: Text("Yes"), onPressed: (){
                                         try{
                                           postForBulkMessage([widget.client],"${GlobalClass.userDetail.reminderMessage!=null&&GlobalClass.userDetail.reminderMessage!=""?GlobalClass.userDetail.reminderMessage:"Your subscription has come to an end"
-                                              ", please clear your dues for further continuation of services."}");
+                                              ", please clear your dues for further continuation of services."}\npowered by Chronicle Business Solutions");
                                           globalShowInSnackBar(scaffoldMessengerKey,"Message Sent!!");
                                         }
                                         catch(E){
@@ -405,12 +405,38 @@ class _ClientInformationPageState extends State<ClientInformationPage> {
                       border: OutlineInputBorder(),
                       suffixIcon: Icon(Icons.event_note),
                       labelText: 'DOB',
+                      hintText:'Date of Birth'
                     ),
                     initialValue: widget.client.dob,
                     mode: DateTimeFieldPickerMode.date,
                     autovalidateMode: AutovalidateMode.always,
                     onDateSelected: (DateTime value) {
                       widget.client.dob=value;
+                    },
+                  ),),]),
+                SizedBox(height: 8,),
+                Row(children:[
+                  CircleAvatar(
+                    radius: 25,
+                    child: Image.asset(
+                      'assets/doj.png',
+                      height: 30,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),Expanded(child: DateTimeFormField(
+                    decoration: const InputDecoration(
+                        hintStyle: TextStyle(),
+                        errorStyle: TextStyle(),
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(Icons.event_note),
+                        labelText: 'DOJ',
+                        hintText: 'Date of Joining'
+                    ),
+                    mode: DateTimeFieldPickerMode.date,
+                    autovalidateMode: AutovalidateMode.always,
+                    initialValue: widget.client.joiningDate,
+                    onDateSelected: (DateTime value) {
+                      widget.client.joiningDate=value;
                     },
                   ),),]),
                 SizedBox(height: 15,),

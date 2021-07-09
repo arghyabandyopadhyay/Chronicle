@@ -1,5 +1,6 @@
 import 'package:chronicle/Models/CourseModels/courseIndexModel.dart';
 import 'package:chronicle/Models/CourseModels/courseModel.dart';
+import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Modules/errorPage.dart';
 import 'package:chronicle/Modules/universalModule.dart';
@@ -12,7 +13,6 @@ import '../globalClass.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:chronicle/PdfModule/api/pdfApi.dart';
 import 'package:chronicle/PdfModule/api/pdfInvoiceApi.dart';
-import 'package:chronicle/PdfModule/model/customer.dart';
 import 'package:chronicle/PdfModule/model/invoice.dart';
 import 'package:chronicle/PdfModule/model/supplier.dart';
 
@@ -57,7 +57,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
   Future<void> handlerPaymentSuccess(PaymentSuccessResponse response) async {
     globalShowInSnackBar(scaffoldMessengerKey,"SUCCESS: " + response.paymentId);
     final date = DateTime.now();
-    final dueDate = date.add(Duration(days: 7));
     final invoice = Invoice(
         title: "Chronicle Yearly Payment ${DateTime.now().year}",
         supplier: Supplier(
@@ -65,21 +64,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
           address: 'Smriti nagar, Bhilai',
           email: 'chroniclebusinesssolutions@gmail.com',
         ),
-        customer: Customer(
-          name: GlobalClass.userDetail.displayName,
-          email: GlobalClass.userDetail.email,
-        ),
+        customer: new ClientModel(name: GlobalClass.userDetail.displayName,mobileNo: GlobalClass.userDetail.email),
         info: InvoiceInfo(
           date: date,
-          dueDate: dueDate,
-          description: 'My description...',
+          remarks: 'My description...',
           number: '${DateTime.now().year}-${DateTime.now().millisecondsSinceEpoch}',
         ),
         items: widget.courses.map((e) => InvoiceItem(
           description: e.title,
-          date: DateTime.now(),
           quantity: 1,
-          vat: 0.18,
+          gst: 0.18,
           unitPrice: e.sellingPrice,
         ),).toList()
     );
@@ -118,8 +112,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
         .map((item) => item.sellingPrice)
         .reduce((item1, item2) => item1 + item2);
     final vatPercent = 0.18;
-    final vat = netTotal * vatPercent;
-    total = netTotal + vat;
+    final gst = netTotal * vatPercent;
+    total = netTotal + gst;
     razorpay = new Razorpay();
 
     razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlerPaymentSuccess);

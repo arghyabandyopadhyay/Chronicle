@@ -1,13 +1,13 @@
+import 'package:chronicle/Models/clientModel.dart';
 import 'package:chronicle/PdfModule/model/supplier.dart';
-
-import 'customer.dart';
 
 class Invoice {
   final String title;
   final InvoiceInfo info;
   final Supplier supplier;
-  final Customer customer;
+  final ClientModel customer;
   final List<InvoiceItem> items;
+  final String modeOfPayment;
 
   const Invoice({
     this.title,
@@ -15,35 +15,34 @@ class Invoice {
      this.supplier,
      this.customer,
      this.items,
+     this.modeOfPayment
   });
 }
 
 class InvoiceInfo {
-  final String description;
+  final String remarks;
+  final String termsAndConditions;
   final String number;
   final DateTime date;
-  final DateTime dueDate;
 
   const InvoiceInfo({
-     this.description,
+     this.remarks,
+     this.termsAndConditions,
      this.number,
      this.date,
-     this.dueDate,
   });
 }
 
 class InvoiceItem {
   final String description;
-  final DateTime date;
   final int quantity;
-  final double vat;
+  final double gst;
   final double unitPrice;
 
   const InvoiceItem({
      this.description,
-     this.date,
      this.quantity,
-     this.vat,
+     this.gst,
      this.unitPrice,
   });
 }
