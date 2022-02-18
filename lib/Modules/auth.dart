@@ -1,5 +1,5 @@
-import 'package:chronicle/Modules/sharedPreferenceHandler.dart';
-import 'package:chronicle/Modules/universalModule.dart';
+import 'package:chronicle/Modules/shared_preference_handler.dart';
+import 'package:chronicle/Modules/universal_module.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -20,7 +19,8 @@ Future<User> signInWithGoogle() async {
       idToken: googleSignInAuthentication.idToken,
       accessToken: googleSignInAuthentication.accessToken);
 
-  final UserCredential authResult = await _auth.signInWithCredential(credential);
+  final UserCredential authResult =
+      await _auth.signInWithCredential(credential);
   final User user = authResult.user;
 
   assert(!user.isAnonymous);
@@ -35,6 +35,7 @@ Future<User> signInWithGoogle() async {
 void signOutGoogle() async {
   await googleSignIn.signOut();
 }
+
 class FirebaseAuthService {
   String uid;
   String name;
@@ -43,7 +44,7 @@ class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-  FirebaseAuthService({ FirebaseAuth firebaseAuth,  GoogleSignIn googleSignin})
+  FirebaseAuthService({FirebaseAuth firebaseAuth, GoogleSignIn googleSignin})
       : _firebaseAuth = firebaseAuth,
         _googleSignIn = googleSignin;
 
@@ -83,18 +84,21 @@ class FirebaseAuthService {
     return _userFromFirebase(user);
   }
 }
-class Authentication{
+
+class Authentication {
   static String uniqueId;
   static String uniqueuserName;
   static String uniqueuserEmail;
   static String uniqueUserimageUrl;
   static Future<FirebaseApp> initializeFirebase({
-     BuildContext context,
+    BuildContext context,
   }) async {
     FirebaseApp firebaseApp = await Firebase.initializeApp();
     return firebaseApp;
   }
-  static Future<User> signInWithGoogle(BuildContext context,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+
+  static Future<User> signInWithGoogle(BuildContext context,
+      GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User user;
     if (kIsWeb) {
@@ -102,22 +106,21 @@ class Authentication{
 
       try {
         final UserCredential userCredential =
-        await _auth.signInWithPopup(authProvider);
+            await _auth.signInWithPopup(authProvider);
 
         user = userCredential.user;
       } catch (e) {
-        globalShowInSnackBar(scaffoldMessengerKey,e);
+        globalShowInSnackBar(scaffoldMessengerKey, e);
       }
-    }
-    else{
+    } else {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount googleSignInAccount =
-      (await googleSignIn.signIn());
+          (await googleSignIn.signIn());
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+            await googleSignInAccount.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
@@ -126,7 +129,7 @@ class Authentication{
 
         try {
           final UserCredential userCredential =
-          await auth.signInWithCredential(credential);
+              await auth.signInWithCredential(credential);
 
           user = userCredential.user;
         } on FirebaseAuthException catch (e) {
@@ -134,14 +137,14 @@ class Authentication{
             ScaffoldMessenger.of(context).showSnackBar(
               Authentication.customSnackBar(
                 content:
-                'The account already exists with a different credential.',
+                    'The account already exists with a different credential.',
               ),
             );
           } else if (e.code == 'invalid-credential') {
             ScaffoldMessenger.of(context).showSnackBar(
               Authentication.customSnackBar(
                 content:
-                'Error occurred while accessing credentials. Try again.',
+                    'Error occurred while accessing credentials. Try again.',
               ),
             );
           }
@@ -165,7 +168,7 @@ class Authentication{
     return user;
   }
 
-  static SnackBar customSnackBar({ String content}) {
+  static SnackBar customSnackBar({String content}) {
     return SnackBar(
       backgroundColor: Colors.black,
       content: Text(
@@ -175,12 +178,14 @@ class Authentication{
     );
   }
 
-  Future<User> registerWithEmailPassword(String email, String password,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  Future<User> registerWithEmailPassword(String email, String password,
+      GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     await Firebase.initializeApp();
     User user;
 
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -193,18 +198,21 @@ class Authentication{
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        globalShowInSnackBar(scaffoldMessengerKey,'The password provided is too weak.');
+        globalShowInSnackBar(
+            scaffoldMessengerKey, 'The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
-        globalShowInSnackBar(scaffoldMessengerKey,'The account already exists for that email.');
+        globalShowInSnackBar(
+            scaffoldMessengerKey, 'The account already exists for that email.');
       }
     } catch (e) {
-      globalShowInSnackBar(scaffoldMessengerKey,e);
+      globalShowInSnackBar(scaffoldMessengerKey, e);
     }
 
     return user;
   }
 
-  Future<User> signInWithEmailPassword(String email, String password,GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
+  Future<User> signInWithEmailPassword(String email, String password,
+      GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey) async {
     await Firebase.initializeApp();
     User user;
 
@@ -224,9 +232,10 @@ class Authentication{
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        globalShowInSnackBar(scaffoldMessengerKey,'No user found for that email.');
+        globalShowInSnackBar(
+            scaffoldMessengerKey, 'No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        globalShowInSnackBar(scaffoldMessengerKey,'Wrong password provided.');
+        globalShowInSnackBar(scaffoldMessengerKey, 'Wrong password provided.');
       }
     }
 
@@ -269,4 +278,3 @@ class Authentication{
     }
   }
 }
-

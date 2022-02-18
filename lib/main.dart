@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chronicle/Models/tokenModel.dart';
+import 'package:chronicle/Models/token_model.dart';
 import 'package:chronicle/Modules/database.dart';
 import 'package:chronicle/Pages/notificationsPage.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -9,12 +9,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rxdart/rxdart.dart';
-import 'Models/receivedNotificationModel.dart';
+import 'Models/received_notification_model.dart';
 import 'Modules/auth.dart';
 import 'Pages/routingPage.dart';
-import 'globalClass.dart';
+import 'global_class.dart';
 import 'Pages/errorDisplayPage.dart';
-import 'customColors.dart';
+import 'custom_colors.dart';
 import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -30,6 +30,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 }
+
 /// Create a [AndroidNotificationChannel] for heads up notifications
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
@@ -38,47 +39,49 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   importance: Importance.high,
 );
 String selectedNotificationPayload;
+
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
-final BehaviorSubject<ReceivedNotificationModel> didReceiveLocalNotificationSubject =BehaviorSubject<ReceivedNotificationModel>();
+    FlutterLocalNotificationsPlugin();
+final BehaviorSubject<ReceivedNotificationModel>
+    didReceiveLocalNotificationSubject =
+    BehaviorSubject<ReceivedNotificationModel>();
 final BehaviorSubject<String> selectNotificationSubject =
-BehaviorSubject<String>();
-void main() async{
+    BehaviorSubject<String>();
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('@drawable/notificationicon');
+      AndroidInitializationSettings('@drawable/notificationicon');
 
   /// Note: permissions aren't requested here just to demonstrate that can be
   /// done later
   final IOSInitializationSettings initializationSettingsIOS =
-  IOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {
-        didReceiveLocalNotificationSubject.add(ReceivedNotificationModel(
-            id: id, title: title, body: body, payload: payload));
-      });
+      IOSInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+          onDidReceiveLocalNotification:
+              (int id, String title, String body, String payload) async {
+            didReceiveLocalNotificationSubject.add(ReceivedNotificationModel(
+                id: id, title: title, body: body, payload: payload));
+          });
   const MacOSInitializationSettings initializationSettingsMacOS =
-  MacOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false);
+      MacOSInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false);
   final InitializationSettings initializationSettings = InitializationSettings(
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
       macOS: initializationSettingsMacOS);
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
-        if (payload != null) {
-        }
-        selectedNotificationPayload = payload;
-        selectNotificationSubject.add(payload);
-      });
+    if (payload != null) {}
+    selectedNotificationPayload = payload;
+    selectNotificationSubject.add(payload);
+  });
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -88,8 +91,9 @@ void main() async{
   /// default FCM channel to enable heads up notifications.
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
+
   /// Update the iOS foreground notification presentation options to allow
   /// heads up notifications.
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -99,63 +103,91 @@ void main() async{
   );
   runApp(Chronicle());
 }
+
 class Chronicle extends StatefulWidget {
   const Chronicle({Key key}) : super(key: key);
   @override
   _ChronicleState createState() => _ChronicleState();
 }
+
 class _ChronicleState extends State<Chronicle> {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>(debugLabel:"navigator");
+  final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: "navigator");
   Stream<String> _tokenStream;
   void setToken(String token) async {
-    bool foundDeviceHistory=false;
+    bool foundDeviceHistory = false;
     GlobalClass.user = FirebaseAuth.instance.currentUser;
-    if(Platform.isAndroid){
+    if (Platform.isAndroid) {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       GlobalClass.applicationToken = token;
-      if(GlobalClass.user!=null)getUserDetails().then((value) => {
-        if(value.tokens==null){
-          addToken(value, TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
-        }
-        else{
-          value.tokens.forEach((element) {
-            if(element.deviceId==androidInfo.androidId) {
-              if(element.token!=token)
+      if (GlobalClass.user != null)
+        getUserDetails().then((value) => {
+              if (value.tokens == null)
                 {
-                  element.token = token;
-                  updateToken(element);
+                  addToken(
+                      value,
+                      TokenModel(
+                          token: token,
+                          deviceId: androidInfo.androidId,
+                          deviceModel: androidInfo.model))
                 }
-              foundDeviceHistory=true;
-            }
-          }),
-          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: androidInfo.androidId,deviceModel: androidInfo.model))
-        },
-      });
-    }
-    else if (Platform.isIOS) {
+              else
+                {
+                  value.tokens.forEach((element) {
+                    if (element.deviceId == androidInfo.androidId) {
+                      if (element.token != token) {
+                        element.token = token;
+                        updateToken(element);
+                      }
+                      foundDeviceHistory = true;
+                    }
+                  }),
+                  if (!foundDeviceHistory)
+                    addToken(
+                        value,
+                        TokenModel(
+                            token: token,
+                            deviceId: androidInfo.androidId,
+                            deviceModel: androidInfo.model))
+                },
+            });
+    } else if (Platform.isIOS) {
       // request permissions if we're on android
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
       GlobalClass.applicationToken = token;
-      if(GlobalClass.user!=null)getUserDetails().then((value) => {
-        if(value.tokens==null){
-          addToken(value, TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
-        }
-        else{
-          value.tokens.forEach((element) {
-            if(element.deviceId==iosInfo.identifierForVendor) {
-              if(element.token!=token)
-              {
-                element.token = token;
-                updateToken(element);
-              }
-              foundDeviceHistory=true;
-            }
-          }),
-          if(!foundDeviceHistory)addToken(value,TokenModel(token: token,deviceId: iosInfo.identifierForVendor,deviceModel: iosInfo.model))
-        },
-      });
+      if (GlobalClass.user != null)
+        getUserDetails().then((value) => {
+              if (value.tokens == null)
+                {
+                  addToken(
+                      value,
+                      TokenModel(
+                          token: token,
+                          deviceId: iosInfo.identifierForVendor,
+                          deviceModel: iosInfo.model))
+                }
+              else
+                {
+                  value.tokens.forEach((element) {
+                    if (element.deviceId == iosInfo.identifierForVendor) {
+                      if (element.token != token) {
+                        element.token = token;
+                        updateToken(element);
+                      }
+                      foundDeviceHistory = true;
+                    }
+                  }),
+                  if (!foundDeviceHistory)
+                    addToken(
+                        value,
+                        TokenModel(
+                            token: token,
+                            deviceId: iosInfo.identifierForVendor,
+                            deviceModel: iosInfo.model))
+                },
+            });
     }
   }
 
@@ -167,6 +199,7 @@ class _ChronicleState extends State<Chronicle> {
       criticalAlert: true,
     );
   }
+
   void _configureDidReceiveLocalNotificationSubject() {
     didReceiveLocalNotificationSubject.stream
         .listen((ReceivedNotificationModel receivedNotification) async {
@@ -184,7 +217,8 @@ class _ChronicleState extends State<Chronicle> {
               isDefaultAction: true,
               onPressed: () async {
                 Navigator.of(context, rootNavigator: true).pop();
-                navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
+                navigatorKey.currentState.push(CupertinoPageRoute(
+                    builder: (context) => NotificationsPage()));
               },
               child: const Text('Ok'),
             )
@@ -193,12 +227,13 @@ class _ChronicleState extends State<Chronicle> {
       );
     });
   }
+
   void _configureSelectNotificationSubject() {
     selectNotificationSubject.stream.listen((String payload) async {
-      navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
+      navigatorKey.currentState
+          .push(CupertinoPageRoute(builder: (context) => NotificationsPage()));
     });
   }
-
 
   @override
   void initState() {
@@ -207,7 +242,8 @@ class _ChronicleState extends State<Chronicle> {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
+        navigatorKey.currentState.push(
+            CupertinoPageRoute(builder: (context) => NotificationsPage()));
       }
     });
 
@@ -231,7 +267,8 @@ class _ChronicleState extends State<Chronicle> {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      navigatorKey.currentState.push(CupertinoPageRoute(builder: (context)=>NotificationsPage()));
+      navigatorKey.currentState
+          .push(CupertinoPageRoute(builder: (context) => NotificationsPage()));
     });
     FirebaseMessaging.instance.getToken().then(setToken);
     _tokenStream = FirebaseMessaging.instance.onTokenRefresh;
@@ -240,105 +277,109 @@ class _ChronicleState extends State<Chronicle> {
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
   }
+
   @override
   void dispose() {
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
     super.dispose();
   }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return MaterialApp(
-      navigatorKey: navigatorKey,
-      title: 'Chronicle',
-      debugShowCheckedModeBanner: false,
-      theme: lightThemeData,
-      darkTheme: darkThemeData,
-      themeMode: ThemeMode.system,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        backgroundColor:CustomColors.primaryColor ,
-        body:FutureBuilder(
-            future: Authentication.initializeFirebase(context: context),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return ErrorDisplayPage(appBarText: "Error 404",asset: "errorHasOccured.jpg",message: 'Please contact System Administrator',);
-              }
-              else if (snapshot.connectionState == ConnectionState.done) {
-                return RoutingPage();
-              }
-              // return Scaffold(
-              //     appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
-              //     body: Container(
-              //         width: double.infinity,
-              //         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-              //         child: Column(
-              //           mainAxisSize: MainAxisSize.max,
-              //           children: <Widget>[
-              //             Expanded(
-              //               child: Shimmer.fromColors(
-              //                   baseColor: Colors.white,
-              //                   highlightColor: Colors.grey.withOpacity(0.5),
-              //                   enabled: true,
-              //                   child: ListView.builder(
-              //                     itemBuilder: (_, __) => Padding(
-              //                       padding: const EdgeInsets.only(bottom: 8.0),
-              //                       child: Row(
-              //                         crossAxisAlignment: CrossAxisAlignment.start,
-              //                         children: [
-              //                           Container(
-              //                             width: 48.0,
-              //                             height: 48.0,
-              //                             color: Colors.white,
-              //                           ),
-              //                           const Padding(
-              //                             padding: EdgeInsets.symmetric(horizontal: 8.0),
-              //                           ),
-              //                           Expanded(
-              //                             child: Column(
-              //                               crossAxisAlignment: CrossAxisAlignment.start,
-              //                               children: <Widget>[
-              //                                 Container(
-              //                                   width: double.infinity,
-              //                                   height: 8.0,
-              //                                   color: Colors.white,
-              //                                 ),
-              //                                 const Padding(
-              //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
-              //                                 ),
-              //                                 Container(
-              //                                   width: double.infinity,
-              //                                   height: 8.0,
-              //                                   color: Colors.white,
-              //                                 ),
-              //                                 const Padding(
-              //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
-              //                                 ),
-              //                                 Container(
-              //                                   width: 40.0,
-              //                                   height: 8.0,
-              //                                   color: Colors.white,
-              //                                 ),
-              //                               ],
-              //                             ),
-              //                           )
-              //                         ],
-              //                       ),
-              //                     ),
-              //                     itemCount: 4,
-              //                   )
-              //               ),
-              //             ),
-              //           ],
-              //         )
-              //     ));
-              return Container(height: 0,width: 0);
-            }
-        ),
-      )
-    );
+        navigatorKey: navigatorKey,
+        title: 'Chronicle',
+        debugShowCheckedModeBanner: false,
+        theme: lightThemeData,
+        darkTheme: darkThemeData,
+        themeMode: ThemeMode.system,
+        home: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: CustomColors.primaryColor,
+          body: FutureBuilder(
+              future: Authentication.initializeFirebase(context: context),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return ErrorDisplayPage(
+                    appBarText: "Error 404",
+                    asset: "errorHasOccured.jpg",
+                    message: 'Please contact System Administrator',
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  return RoutingPage();
+                }
+                // return Scaffold(
+                //     appBar: AppBar(title: Text("Chronicle"),elevation: 0,leading: Icon(Icons.menu),),
+                //     body: Container(
+                //         width: double.infinity,
+                //         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                //         child: Column(
+                //           mainAxisSize: MainAxisSize.max,
+                //           children: <Widget>[
+                //             Expanded(
+                //               child: Shimmer.fromColors(
+                //                   baseColor: Colors.white,
+                //                   highlightColor: Colors.grey.withOpacity(0.5),
+                //                   enabled: true,
+                //                   child: ListView.builder(
+                //                     itemBuilder: (_, __) => Padding(
+                //                       padding: const EdgeInsets.only(bottom: 8.0),
+                //                       child: Row(
+                //                         crossAxisAlignment: CrossAxisAlignment.start,
+                //                         children: [
+                //                           Container(
+                //                             width: 48.0,
+                //                             height: 48.0,
+                //                             color: Colors.white,
+                //                           ),
+                //                           const Padding(
+                //                             padding: EdgeInsets.symmetric(horizontal: 8.0),
+                //                           ),
+                //                           Expanded(
+                //                             child: Column(
+                //                               crossAxisAlignment: CrossAxisAlignment.start,
+                //                               children: <Widget>[
+                //                                 Container(
+                //                                   width: double.infinity,
+                //                                   height: 8.0,
+                //                                   color: Colors.white,
+                //                                 ),
+                //                                 const Padding(
+                //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
+                //                                 ),
+                //                                 Container(
+                //                                   width: double.infinity,
+                //                                   height: 8.0,
+                //                                   color: Colors.white,
+                //                                 ),
+                //                                 const Padding(
+                //                                   padding: EdgeInsets.symmetric(vertical: 2.0),
+                //                                 ),
+                //                                 Container(
+                //                                   width: 40.0,
+                //                                   height: 8.0,
+                //                                   color: Colors.white,
+                //                                 ),
+                //                               ],
+                //                             ),
+                //                           )
+                //                         ],
+                //                       ),
+                //                     ),
+                //                     itemCount: 4,
+                //                   )
+                //               ),
+                //             ),
+                //           ],
+                //         )
+                //     ));
+                return Container(height: 0, width: 0);
+              }),
+        ));
   }
 }
 
