@@ -5,7 +5,11 @@ connection.gradle.distribution=GRADLE_DISTRIBUTION(WRAPPER)
 connection.project.dir=
 eclipse.preferences.version=1
 gradle.user.home=
+<<<<<<< HEAD
 java.home=/usr/lib/jvm/java-11-openjdk-amd64
+=======
+java.home=/usr/lib/jvm/java-14-openjdk-amd64
+>>>>>>> 93d60ba05887b398f30d488625489cde8c00c1c0
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=true

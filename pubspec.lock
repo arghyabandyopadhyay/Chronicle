@@ -513,6 +513,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.11"
+<<<<<<< HEAD
   material_color_utilities:
     dependency: transitive
     description:
@@ -520,6 +521,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+=======
+>>>>>>> 93d60ba05887b398f30d488625489cde8c00c1c0
   meta:
     dependency: transitive
     description:
@@ -853,7 +856,11 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
+<<<<<<< HEAD
     version: "0.4.8"
+=======
+    version: "0.4.3"
+>>>>>>> 93d60ba05887b398f30d488625489cde8c00c1c0
   timezone:
     dependency: transitive
     description:
