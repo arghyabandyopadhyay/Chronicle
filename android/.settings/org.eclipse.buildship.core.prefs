@@ -1,15 +1,14 @@
+=\=\=\=\=\=\=
+<<<<<<<=HEAD
+>>>>>>>=93d60ba05887b398f30d488625489cde8c00c1c0
 arguments=
 auto.sync=false
 build.scans.enabled=false
-connection.gradle.distribution=GRADLE_DISTRIBUTION(WRAPPER)
+connection.gradle.distribution=GRADLE_DISTRIBUTION(VERSION(7.4.2))
 connection.project.dir=
 eclipse.preferences.version=1
 gradle.user.home=
-<<<<<<< HEAD
-java.home=/usr/lib/jvm/java-11-openjdk-amd64
-=======
-java.home=/usr/lib/jvm/java-14-openjdk-amd64
->>>>>>> 93d60ba05887b398f30d488625489cde8c00c1c0
+java.home=/Users/arghyabandyopadhyay/Library/Java/JavaVirtualMachines/openjdk-17.0.2/Contents/Home
 jvm.arguments=
 offline.mode=false
 override.workspace.settings=true
